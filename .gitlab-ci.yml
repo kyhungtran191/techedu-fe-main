@@ -8,7 +8,7 @@
 
 .default-runner: 
   tags:
-    - monorepo-test-runner-build-shell
+    - techedu-build-shell-runner-development
 
 .build-test-rules:
   rules:
