@@ -25,8 +25,7 @@
 variables:
     USER_PROJECT: "techedu"
     CI_REGISTRY_IMAGE: "${CI_REGISTRY_IMAGE}/client" # to switch other registry
-    TEMPORAL_VERSION: "${CI_COMMIT_SHORT_SHA}"      
-    GITLAB_PAT: "Hmd5fjrLX8zQgrbXJgax"
+    TEMPORAL_VERSION: "${CI_COMMIT_SHORT_SHA}"          
     VERSION_FILE: "version.txt"        
     DOCKER_BUILD_TAG_NAME: "${CI_PROJECT_NAME}/client"    
 
@@ -137,7 +136,6 @@ tag-development:
     - VERSION=$(cat $VERSION_FILE) # get version from versioning stage
     - echo "Release version >>> $VERSION <<<"
   script:
-    - echo ${GITLAB_PAT}
     - git tag "Development_Client_${VERSION}"
     - git push http://oauth2:${GITLAB_PAT}@${CI_SERVER_HOST}:8060/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git --tags
   dependencies: [versioning-development]
