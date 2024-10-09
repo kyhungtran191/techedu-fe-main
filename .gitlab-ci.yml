@@ -1,0 +1,233 @@
+.docker-login:
+    before_script:
+        - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+.docker-logout:
+    after_script:
+        - docker logout $CI_REGISTRY
+
+.default-runner: 
+  tags:
+    - monorepo-test-runner-build-shell
+
+.build-test-rules:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH =~ /^release\/.*$/'
+      when: never
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_COMMIT_REF_NAME =~ /^release\/.*$/'
+      when: never
+    - if: $CI_MERGE_REQUEST_ID
+      when: on_success
+    - if: $CI_COMMIT_BRANCH == "develop"
+      when: on_success
+    - when: never
+
+variables:
+    USER_PROJECT: "techedu"
+    CI_REGISTRY_IMAGE: "${CI_REGISTRY_IMAGE}/client" # to switch other registry
+    TEMPORAL_VERSION: "${CI_COMMIT_SHORT_SHA}"  
+    GITLAB_PAT: "QUhs-tXpJ3m9YyEKQGWp"
+    VERSION_FILE: "version.txt"        
+    DOCKER_BUILD_TAG_NAME: "${CI_PROJECT_NAME}/client"    
+
+stages:
+    - build  
+    - test
+    - approve
+    - versioning
+    - release
+    - tag
+    - deploy
+
+build:
+  stage: build
+  variables:
+    GIT_STRATEGY: "clone"
+  script:
+    - echo "Building the project"    
+    - docker build -f Dockerfile -t ${DOCKER_BUILD_TAG_NAME}:${TEMPORAL_VERSION} .        
+  extends: 
+    - .default-runner 
+    - .build-test-rules
+
+test:
+  stage: test
+  variables:
+    GIT_STRATEGY: "none"  
+  script:
+    - echo "Testing project in docker conatiner eg. docker run --rm my-app:${CI_COMMIT_SHA} ./run-unit-tests.sh"      
+  extends: 
+      - .default-runner 
+      - .build-test-rules 
+
+# Approve stage: Manual approval on release branches for tagging
+approve: 
+  stage: approve
+  variables:
+    GIT_STRATEGY: "none"
+  script:
+    - echo "Waiting for manual approval on release branch ..."
+  when: manual
+  allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^release\/.*$/'
+      when: manual
+    - when: never
+  extends: .default-runner     
+
+# Versioning stage: get version from release/.* branch name
+versioning-development: 
+  stage: versioning
+  variables:
+    GIT_STRATEGY: "none"
+  script:
+    - |
+      VERSION_REGEX='release\/([0-9]+\.[0-9]+\.[0-9A-Za-z\-]+)'
+      if [[ $CI_COMMIT_REF_NAME =~ $VERSION_REGEX ]]; then
+        VERSION="${BASH_REMATCH[1]}"
+        echo $VERSION > $VERSION_FILE
+      else
+          echo "Invalid branch name format. Expected 'release/x.x.x'."
+          exit 1
+      fi
+  artifacts: 
+    paths:
+      - $VERSION_FILE # temporal registry for storing docker file
+    expire_in: 1 week
+  allow_failure: false
+  needs: [approve]
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^release\/.*$/'
+      when: on_success
+    - when: never
+  extends: .default-runner     
+
+# Release stage: Build release artifacts (such as Docker images) and push to registry
+release:
+  stage: release
+  variables:
+    GIT_STRATEGY: "none"    
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - VERSION=$(cat $VERSION_FILE) # get version from versioning stage
+    - echo "Release version >>> $VERSION <<<"
+  after_script:
+    - docker logout $CI_REGISTRY
+  script:
+    - echo "Publishing build artifacts..."
+    - docker tag ${DOCKER_BUILD_TAG_NAME}:${TEMPORAL_VERSION} ${CI_REGISTRY_IMAGE}:${VERSION}
+    - docker tag ${DOCKER_BUILD_TAG_NAME}:${TEMPORAL_VERSION} ${CI_REGISTRY_IMAGE}:latest
+    - docker push ${CI_REGISTRY_IMAGE}:${VERSION}
+    - docker push ${CI_REGISTRY_IMAGE}:latest
+  dependencies: [build, versioning-development]
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^release\/.*$/'
+      when: on_success
+    - when: never    
+  extends: .default-runner     
+
+# Tagging stage
+tag-development:
+  stage: tag
+  variables:
+    GIT_STRATEGY: "none"    
+  before_script:
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+    - VERSION=$(cat $VERSION_FILE) # get version from versioning stage
+    - echo "Release version >>> $VERSION <<<"
+  script:
+    - git tag "Development_${SERVICE_NAME}_${VERSION}"
+    - git push http://oauth2:${GITLAB_PAT}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git --tags
+  dependencies: [versioning-development]
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^release\/.*$/'
+      when: on_success    
+    - when: never      
+  extends: .default-runner     
+
+# Deploy stage
+deploy-development:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: "none"    
+  before_script:
+    - VERSION=$(cat $VERSION_FILE) # get version from versioning stage
+    - echo "Release version >>> $VERSION <<<"
+  script:
+    - echo "Deploying the app into development environment..."
+    - sudo su ${USER_PROJECT} -c "docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY"
+    - sudo su ${USER_PROJECT} -c "cd /home/techedu/development; sed -i 's/^CLIENT_VERSION=.*/CLIENT_VERSION=${VERSION}/' .env"
+    - sudo su ${USER_PROJECT} -c "cd /home/techedu/development; docker-compose -f docker-compose.frontend.development.yml down"
+    - sudo su ${USER_PROJECT} -c "cd /home/techedu/development; docker-compose -f docker-compose.frontend.development.yml pull"
+    - sudo su ${USER_PROJECT} -c "cd /home/techedu/development; docker-compose -f docker-compose.frontend.development.yml up -d"
+  dependencies: [versioning-development]
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^release\/.*$/'
+      when: manual
+    - when: never
+  extends: .default-runner     
+
+versioning-production: 
+  stage: versioning
+  variables:
+    GIT_STRATEGY: "none"
+  script:
+    - |
+      VERSION_REGEX='release\/([0-9]+\.[0-9]+\.[0-9A-Za-z\-]+)'
+      if [[ $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ $VERSION_REGEX ]]; then
+        VERSION="${BASH_REMATCH[1]}"
+        echo $VERSION > $VERSION_FILE
+      else
+          echo "Invalid branch name format. Expected 'release/x.x.x'."
+          exit 1
+      fi
+  artifacts: 
+    paths:
+      - $VERSION_FILE # temporal registry for storing docker file
+    expire_in: 1 week
+  allow_failure: false
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^release\/.*$/'
+      when: on_success
+    - when: never
+  extends: .default-runner     
+
+tag-production:
+  stage: tag
+  variables:
+    GIT_STRATEGY: "none"    
+  before_script:
+    - git config --global user.name "${GITLAB_USER_NAME}"
+    - git config --global user.email "${GITLAB_USER_EMAIL}"
+    - VERSION=$(cat $VERSION_FILE) # get version from versioning stage
+    - echo "Release version >>> $VERSION <<<"
+  script:
+    - git tag "Production_${SERVICE_NAME}_${VERSION}"
+    - git push http://oauth2:${GITLAB_PAT}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git --tags
+  dependencies: [versioning-production]
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^release\/.*$/'
+      when: on_success
+    - when: never
+  extends: .default-runner     
+
+deploy-production:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: "none"    
+  before_script:
+    - VERSION=$(cat $VERSION_FILE) # get version from versioning stage
+    - echo "Release version >>> $VERSION <<<"
+  script:
+    - echo "Deploying the app into production environment..."
+    - sudo su ${USER_PROJECT} -c "docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY"
+    - sudo su ${USER_PROJECT} -c "cd /home/techedu/production; docker-compose -f docker-compose.frontend.production.yml down"
+    - sudo su ${USER_PROJECT} -c "cd /home/techedu/production; docker-compose -f docker-compose.frontend.production.yml pull"
+    - sudo su ${USER_PROJECT} -c "cd /home/techedu/production; docker-compose -f docker-compose.frontend.production.yml up -d"
+  dependencies: [versioning-production]
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^release\/.*$/'
+      when: manual
+    - when: never
+  extends: .default-runner     
