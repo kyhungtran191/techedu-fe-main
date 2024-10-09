@@ -136,6 +136,7 @@ tag-development:
     - VERSION=$(cat $VERSION_FILE) # get version from versioning stage
     - echo "Release version >>> $VERSION <<<"
   script:
+    - echo ${GITLAB_PAT}
     - git tag "Development_Client_${VERSION}"
     - git push http://oauth2:${GITLAB_PAT}@${CI_SERVER_HOST}:8060/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git --tags
   dependencies: [versioning-development]
