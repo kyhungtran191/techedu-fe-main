@@ -1,7 +1,10 @@
-import React, { useState, ReactNode, ElementType } from 'react'
+import React, { useState, ReactNode, ElementType, useEffect } from 'react'
 import DefaultHeader from './Header'
 import DefaultSidebar from './Sidebar'
 import { Link } from 'react-router-dom'
+import useResize from '@/hooks/useResize'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { MessageCircleWarning, RocketIcon } from 'lucide-react'
 
 interface SidebarProps {
   sidebarOpen: boolean
@@ -23,9 +26,32 @@ const ManageCourseLayout: React.FC<IProps> = ({ children, HeaderCustom, SidebarC
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const HeaderComponent = HeaderCustom || DefaultHeader
   const SidebarComponent = SidebarCustom || DefaultSidebar
+  const [alert, setAlert] = useState(false)
+  const [width, height] = useResize()
+  useEffect(() => {
+    if (width && width < 864) {
+      setAlert(true)
+    } else {
+      setAlert(false)
+    }
+  }, [width])
+
+  console.log(width)
+  console.log('first', alert)
 
   return (
     <div className=''>
+      <div
+        className={`fixed inset-0 text-white z-50 bg-black ${alert ? 'block' : 'hidden'} h-full flex items-center justify-center`}
+      >
+        <Alert className='max-w-[70vw] bg-black text-white border-black'>
+          <MessageCircleWarning className='block w-6 h-6 fill-white' />
+          <AlertTitle>Notice that!</AlertTitle>
+          <AlertDescription className='mt-3'>
+            We only support create course process for device larger than 864px
+          </AlertDescription>
+        </Alert>
+      </div>
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className='flex h-screen overflow-hidden'>
         {/* <!-- ===== Sidebar Start ===== --> */}
@@ -37,9 +63,9 @@ const ManageCourseLayout: React.FC<IProps> = ({ children, HeaderCustom, SidebarC
           {HeaderComponent &&
             (HeaderCustom ? (
               // If HeaderCustom is a function component that accepts props, pass them
-              <HeaderComponent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+              <HeaderComponent sidebarOpen={sidebarOpen} setSidebarOpen={(value: boolean) => setSidebarOpen(value)} />
             ) : (
-              <HeaderComponent />
+              <HeaderComponent sidebarOpen={sidebarOpen} setSidebarOpen={(value: boolean) => setSidebarOpen(value)} />
             ))}
 
           {/* <!-- ===== Main Content Start ===== --> */}
