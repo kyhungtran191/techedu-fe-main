@@ -92,7 +92,7 @@ export default function Lesson(props: TLesson) {
           <Button
             className={`${isAddNewContent ? 'flex' : 'hidden'} items-center border-neutral-black px-[18px] rounded-lg bg-transparent`}
             variant={'outline'}
-            // onClick={() => setIsAddFromLibrary(!isAddFromLibrary)}
+            onClick={() => setIsAddFromLibrary(!isAddFromLibrary)}
           >
             {isAddFromLibrary ? 'Upload Video' : 'Add from library'}
           </Button>
@@ -126,7 +126,7 @@ export default function Lesson(props: TLesson) {
       >
         {!isAddFromLibrary && (
           <>
-            <VideoUpload onSetFile={setFile} onUpload={handleUpload}></VideoUpload>
+            <VideoUpload onSetFile={setFile} onUpload={handleUpload} isAddNewContent={isAddNewContent}></VideoUpload>
             <div className='font-light text-[18px] mt-6'>
               <span className='font-normal'>Notes: </span>Files should be at least 720p and less than 4.0 GB.
             </div>

@@ -3,6 +3,7 @@ import Screen1 from './Screen1'
 import Screen2 from './Screen2'
 import Screen3 from './Screen3'
 import Screen4 from './Screen4'
+import { useEffect } from 'react'
 
 const screenMap: { [key: number]: React.FC } = {
   1: Screen1,
@@ -12,8 +13,7 @@ const screenMap: { [key: number]: React.FC } = {
 }
 
 export default function CreateCourse() {
-  // Screen 1
-  const { step } = useCourseSetUp()
+  const { step, isHavingValues, handleExit } = useCourseSetUp()
 
   const ScreenComponent = screenMap[step]
 

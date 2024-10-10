@@ -13,7 +13,7 @@ const steps = [
 ]
 
 export default function StepProgress() {
-  const { step, setStep } = useCourseSetUp()
+  const { step } = useCourseSetUp()
   return (
     <div className='container flex items-center justify-between w-full mb-6'>
       {steps.map((currentStep, index) => (

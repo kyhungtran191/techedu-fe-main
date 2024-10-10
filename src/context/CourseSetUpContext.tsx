@@ -1,18 +1,109 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useState, useEffect, useMemo } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import useLocalStorage from '@/hooks/useLocalStorage'
+
+export type TCourseSetUpData = {
+  title: string
+  description: string
+  field: string
+  thumbnail: string | null
+  time: number | null
+}
+
+interface ILocal {
+  courseData: TCourseSetUpData
+  step: number
+}
 
 export interface ICourseSetUp {
   step: number
   setStep: React.Dispatch<React.SetStateAction<number>>
+  isHavingValues: boolean
+  courseData: TCourseSetUpData
+  setCourseData: React.Dispatch<React.SetStateAction<TCourseSetUpData>>
+  handleExit: () => void
+  setLocalStorageData: React.Dispatch<React.SetStateAction<ILocal | null>>
 }
 
 const initState: ICourseSetUp = {
   step: 1,
-  setStep: () => {}
+  setStep: () => {},
+  isHavingValues: false,
+  courseData: {
+    title: '',
+    description: '',
+    field: '',
+    thumbnail: null,
+    time: null
+  },
+  setCourseData: () => {},
+  handleExit: () => {},
+  setLocalStorageData: () => {}
 }
 
 export const CourseStepContext = createContext<ICourseSetUp>(initState)
 
 export const CourseSetUpContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [step, setStep] = useState(1)
-  return <CourseStepContext.Provider value={{ step, setStep }}>{children}</CourseStepContext.Provider>
+  const [localStorageData, setLocalStorageData] = useLocalStorage<ILocal | null>({
+    key: 'courseData',
+    defaultValue: {
+      courseData: initState.courseData,
+      step: initState.step
+    }
+  })
+
+  const [step, setStep] = useState(localStorageData?.step || initState.step)
+  const [courseData, setCourseData] = useState<TCourseSetUpData>(localStorageData?.courseData || initState.courseData)
+
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  async function handleResetData() {
+    setLocalStorageData({
+      courseData: initState.courseData,
+      step: initState.step
+    })
+    setStep(initState.step)
+    setCourseData(initState.courseData)
+  }
+
+  const isHavingValues = useMemo(() => {
+    return Object.values(courseData).some((value) => value)
+  }, [courseData])
+
+  const handleExit = async () => {
+    if (isHavingValues) {
+      const confirmCancel = window.confirm('You have unsaved changes. Are you sure you want to cancel?')
+      if (confirmCancel) {
+        await handleResetData()
+        navigate('/')
+      }
+    } else {
+      setStep(1)
+      navigate('/')
+    }
+  }
+
+  // Reset dữ liệu chỉ khi gõ URL mới
+  useEffect(() => {
+    if (performance.navigation.type === performance.navigation.TYPE_NAVIGATE) {
+      handleResetData()
+    }
+  }, [location.pathname])
+
+  return (
+    <CourseStepContext.Provider
+      value={{
+        step,
+        setStep,
+        isHavingValues,
+        courseData,
+        setCourseData,
+        handleExit,
+        setLocalStorageData
+      }}
+    >
+      {children}
+    </CourseStepContext.Provider>
+  )
 }
