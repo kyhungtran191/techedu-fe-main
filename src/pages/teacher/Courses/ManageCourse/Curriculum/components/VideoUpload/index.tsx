@@ -6,10 +6,10 @@ import Upload from '@/icons/Upload'
 interface VideoUploadProps {
   onUpload: () => void
   onSetFile: Dispatch<SetStateAction<File | null>>
+  isAddNewContent: boolean
 }
 
-const VideoUpload: React.FC<VideoUploadProps> = ({ onUpload, onSetFile }) => {
-  const isAddNewContent = true
+const VideoUpload: React.FC<VideoUploadProps> = ({ onUpload, onSetFile, isAddNewContent }) => {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {

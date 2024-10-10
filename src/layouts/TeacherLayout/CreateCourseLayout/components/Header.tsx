@@ -1,14 +1,18 @@
 import React from 'react'
 import Logo from '@/assets/logo.png'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import useCourseSetUp from '@/hooks/useCourseSetUp'
 export default function CreateCourseHeader() {
+  const { isHavingValues, handleExit, setStep, setCourseData, setLocalStorageData } = useCourseSetUp()
+  const navigate = useNavigate()
+
   return (
     <div className='h-[76px]'>
-      <div className='flex items-center justify-between h-full text-white container-fluid'>
-        <Link to='/'>
-          <img src={Logo} alt='system_logo' className='w-[200px] h-[52px] object-cover flex-shrink-0 ' />
-        </Link>
-        <div className='z-10 cursor-pointer'>
+      <div className='flex items-center justify-between h-full text-white container-fluid relative z-20'>
+        <div onClick={handleExit}>
+          <img src={Logo} alt='system_logo' className='w-[200px] h-[52px] object-cover flex-shrink-0 cursor-pointer' />
+        </div>
+        <div className='z-10 cursor-pointer' onClick={handleExit}>
           <svg xmlns='http://www.w3.org/2000/svg' width='25' height='24' viewBox='0 0 25 24' fill='none' className=''>
             <g clipPath='url(#clip0_2570_1898)'>
               <path

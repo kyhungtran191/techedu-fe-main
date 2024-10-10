@@ -22,8 +22,12 @@ function Tiptap({
       }
     },
     onUpdate({ editor }) {
-      onChange(editor.getHTML())
-      console.log(editor.getHTML())
+      const content = editor.getHTML()
+      if (content === '<p></p>' || content === '<p><br></p>') {
+        onChange('')
+      } else {
+        onChange(editor.getHTML())
+      }
     }
   })
 

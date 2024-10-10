@@ -1,10 +1,9 @@
 import React, { useState, ReactNode, ElementType, useEffect } from 'react'
 import DefaultHeader from './Header'
 import DefaultSidebar from './Sidebar'
-import { Link } from 'react-router-dom'
 import useResize from '@/hooks/useResize'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { MessageCircleWarning, RocketIcon } from 'lucide-react'
+import { MessageCircleWarning } from 'lucide-react'
 
 interface SidebarProps {
   sidebarOpen: boolean
