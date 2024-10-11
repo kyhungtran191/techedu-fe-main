@@ -34,6 +34,7 @@ export default function Curriculum() {
   const params = useParams()
   console.log(params)
   console.log('section change', sections)
+  
   const handleDragAndDrop = (results: DropResult) => {
     const { source, destination, type } = results
 
