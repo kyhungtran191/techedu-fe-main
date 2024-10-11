@@ -26,6 +26,7 @@ import Profile from './pages/general/profile'
 import EnrolledCourses from './pages/student/enrolled-courses'
 import LearningSpaceHeader from './layouts/LearningSpaceLayout/LearningSpaceHeader'
 import { CourseSetUpContextProvider } from './context/CourseSetUpContext'
+import Role from './pages/admin/role'
 
 function App() {
   const isAuth = true
@@ -157,13 +158,14 @@ function App() {
       <Route
         path='/admin/'
         element={
-          <ThemeProvider defaultTheme='system' storageKey='vite-ui-theme'>
+          <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
             <AdminLayout />
           </ThemeProvider>
         }
       >
         <Route path='dashboard' element={<Dashboard />} />
         <Route path='courses' element={<div>Tasks</div>} />
+        <Route path='role' element={<Role></Role>}></Route>
       </Route>
     </Routes>
   )

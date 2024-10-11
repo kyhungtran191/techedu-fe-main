@@ -1,4 +1,4 @@
-import { BookA, LayoutDashboard, MessageCircle, Settings, UserCog, UserRound, UsersRound } from 'lucide-react'
+import { BookA, KeyRound, LayoutDashboard, MessageCircle, Settings, UserCog, UserRound, UsersRound } from 'lucide-react'
 
 export interface NavLink {
   title: string
@@ -17,6 +17,12 @@ export const sidelinks: SideLink[] = [
     label: '',
     href: '/admin/dashboard',
     icon: <LayoutDashboard />
+  },
+  {
+    title: 'Role',
+    label: '3',
+    href: '/admin/role',
+    icon: <KeyRound />
   },
   {
     title: 'Courses',

@@ -245,3 +245,7 @@ video {
     height: calc(100vh - 20px);
   }
 }
+
+.dragged {
+  transition: transform 0.2s ease-in-out;
+}
