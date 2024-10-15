@@ -37,7 +37,7 @@ export default function Footer() {
   ]
   return (
     <div className='flex items-start w-full  p-12 text-white bg-neutral-black min-h-[400px] justify-between'>
-      <img src={Logo} alt='' className='h-[52px] w-[196px] flex-shrink-0 object-cover' />
+      <img srcSet={`${Logo} 2x`} alt='' className='h-[52px] w-[196px] flex-shrink-0 object-cover' />
       <div className='flex-1 '>
         <div className='flex flex-wrap items-start justify-around'>
           {options.map((item, index) => (

@@ -143,7 +143,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   // Nếu không phải trang học tập, nhưng là trang chi tiết khóa học
   const isCourseDetail = !isCourseLearningDetail && /\/courses\/\d+/.test(pathname)
 
-
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
       <div
@@ -158,7 +157,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         {/* <!-- SIDEBAR HEADER --> */}
         <div className='flex items-center justify-between gap-2 '>
           <NavLink to='/'>
-            <img src={Logo} alt='Logo' />
+            <img srcSet={`${Logo} 2x`} alt='Logo' />
           </NavLink>
 
           <div

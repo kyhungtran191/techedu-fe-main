@@ -8,9 +8,13 @@ export default function CreateCourseHeader() {
 
   return (
     <div className='h-[76px]'>
-      <div className='flex items-center justify-between h-full text-white container-fluid relative z-20'>
+      <div className='relative z-20 flex items-center justify-between h-full text-white container-fluid'>
         <div onClick={handleExit}>
-          <img src={Logo} alt='system_logo' className='w-[200px] h-[52px] object-cover flex-shrink-0 cursor-pointer' />
+          <img
+            srcSet={`${Logo} 2x`}
+            alt='system_logo'
+            className='w-[200px] h-[52px] object-cover flex-shrink-0 cursor-pointer'
+          />
         </div>
         <div className='z-10 cursor-pointer' onClick={handleExit}>
           <svg xmlns='http://www.w3.org/2000/svg' width='25' height='24' viewBox='0 0 25 24' fill='none' className=''>
