@@ -17,7 +17,6 @@ import RatingStars from '@/components/RatingStars'
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Swiper as SwiperType } from 'swiper'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import ListContent from './components/ListContent'

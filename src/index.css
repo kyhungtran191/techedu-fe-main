@@ -153,6 +153,10 @@ video {
   height: calc(100vw * 0.35);
 }
 
+.height-video-preview {
+  height: calc(100vw * 0.4);
+}
+
 .height-30vw {
   height: calc(100vw * 0.3);
 }

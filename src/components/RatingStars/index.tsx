@@ -11,7 +11,7 @@ export default function RatingStars({ count, wrapperClass, customStar }: IProps)
       {Array(count)
         .fill(0)
         .map((item) => (
-          <img src={Star} alt='star_filter' className={`object-cover w-6 h-6 ${customStar}`} />
+          <img src={Star} alt='star_filter' className={`object-cover w-4 h-4 ms:w-6 ms:h-6 ${customStar}`} />
         ))}
     </div>
   )
