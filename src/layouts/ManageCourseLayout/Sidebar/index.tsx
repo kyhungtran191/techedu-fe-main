@@ -112,7 +112,7 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
         {/* <!-- SIDEBAR HEADER --> */}
         <div className='flex items-center justify-between gap-2 '>
           <NavLink to='/'>
-            <img src={Logo} alt='Logo' />
+            <img srcSet={`${Logo} 2x`} alt='Logo' />
           </NavLink>
           <button
             ref={trigger}

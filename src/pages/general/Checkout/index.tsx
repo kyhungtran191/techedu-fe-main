@@ -13,7 +13,7 @@ export default function Checkout() {
   return (
     <div className='w-screen grid sm:grid-cols-[357px_1fr] h-screen max-h-screen'>
       <div className='flex flex-col h-screen px-6 py-12 overflow-y-auto no-scrollbar bg-primary-3'>
-        <img src={Logo} alt='' className='w-[220px] h-[52px] object-cover' />
+        <img srcSet={`${Logo} 2x`} alt='' className='w-[220px] h-[52px] object-cover' />
         <div className='mt-9 text-neutral-black'>
           <h2 className='text-[32px] font-medium'>Premium Account</h2>
           <div className='my-6 text-lg max-w-[300px]'>

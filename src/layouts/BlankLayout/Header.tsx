@@ -47,7 +47,7 @@ export default function Header({ headerOption }: { headerOption?: React.ReactNod
       ref={headerRef}
     >
       <Link to='/'>
-        <img src={Logo} alt='system_logo' className='w-[200px] h-[52px] object-cover flex-shrink-0' />
+        <img srcSet={`${Logo} 2x`} alt='system_logo' className='w-[200px] h-[52px] object-cover flex-shrink-0' />
       </Link>
       <div className='flex items-center gap-x-3 sm:gap-x-8'>
         {/* Extends */}
