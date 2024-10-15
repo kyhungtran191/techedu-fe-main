@@ -20,24 +20,26 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import Folder from '@/icons/CourseDetail/Folder'
-import FolderNLine from '@/icons/CourseDetail/FolderNLine'
-import Document from '@/icons/CourseDetail/Document'
-import Certificate from '@/icons/CourseDetail/Certificate'
-import { Link } from 'react-router-dom'
-import RatingStars from '@/components/RatingStars'
-import { Separator } from '@/components/ui/separator'
+
+import ShortDetail from './components/ShortDetail'
+import Reviewers from './components/Reviewers'
+import ThreeDots from '@/icons/ThreeDots'
+
+// Swiper
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation } from 'swiper/modules'
+import 'swiper/css'
 export default function CourseDetail() {
   const [playing, setPlaying] = useState(false)
-
   // Toggle Playing Button
   const togglePlaying = () => {
     setPlaying(!playing)
   }
 
   return (
-    <div className='relative z-0 grid h-full md:grid-cols-[1fr_363px] gap-x-5'>
+    <div className='relative z-0 grid h-full grid-cols-1 xl:grid-cols-[1fr_363px] gap-x-5'>
       <div className='w-full h-full overflow-y-auto bg-white rounded-xl no-scrollbar'>
-        <div className='relative w-full h-[560px]'>
+        <div className='relative w-full height-video-preview'>
           <ReactPlayer
             playing={playing}
             controls={true}
@@ -60,159 +62,162 @@ export default function CourseDetail() {
             </div>
           </div>
         </div>
-        <div className='px-3 py-2'>
-          <h3 className='mt-3 text-2xl font-medium text-neutral-black'>Instructor</h3>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-start my-[18px] flex-wrap'>
-              <img className='w-[50px] h-[50px] rounded-xl object-cover' src={Instructor} alt='instructor-avatar' />
-              <div className='max-w-[454px] ml-3'>
-                <h2 className='text-xl text-primary-1'>Rowan Kenelm</h2>
-                <span className='text-base text-neutral-black'>
-                  30-year UX + Design Veteran; Consultant, Author & Speaker
-                </span>
-              </div>
-            </div>
-            <Button variant={'outline'} className='px-6 py-4 border-neutral-black'>
-              Follow
-            </Button>
+        <div className='px-3 py-6 bg-primary-3 xl:bg-white'>
+          <div className='flex items-center justify-between my-4'>
+            <h4 className='text-lg font-medium ms:text-2xl'>Rapid prototyping in the Chrome Browser </h4>
+            <ThreeDots></ThreeDots>
           </div>
+          <div className='hidden ms:flex items-center gap-[10px]'>
+            {['UX Design', 'UI Design', 'Web Design', 'Mobile Design'].map((item) => (
+              <div className='p-2 text-lg bg-white rounded-lg shadow-custom-shadow w-fit text-primary-1'>{item}</div>
+            ))}
+          </div>
+          <div className='block ms:hidden'>
+            <Swiper
+              modules={[Navigation]}
+              breakpoints={{
+                0: {
+                  slidesPerView: 2.5,
+                  spaceBetween: 10
+                }
+              }}
+            >
+              {['UX Design', 'UI Design', 'Web Design', 'Mobile Design'].map((item) => (
+                <SwiperSlide className='py-2'>
+                  <div className='w-full p-2 text-sm text-center bg-white rounded-lg shadow-custom-shadow text-primary-1'>
+                    {item}
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+
+          <ShortDetail className='block mt-6 xl:hidden'></ShortDetail>
+        </div>
+        <div className='px-3 py-2'>
+          <div className=''>
+            <h3 className='mt-3 text-2xl font-medium text-neutral-black'>Instructor</h3>
+            <div className='flex items-start justify-between ms:items-center my-[18px]'>
+              <div className='flex items-start '>
+                <img
+                  className='w-[50px] h-[50px] rounded-xl object-cover flex-shrink-0'
+                  src={Instructor}
+                  alt='instructor-avatar'
+                />
+                <div className='ml-3'>
+                  <h2 className='text-lg ms:text-xl text-primary-1'>Rowan Kenelm</h2>
+                  <div className='text-sm text-neutral-black text-ellipsis ms:text-base'>
+                    30-year UX + Design Veteran; Consultant, Author & Speaker
+                  </div>
+                </div>
+              </div>
+              <Button variant={'outline'} className='px-3 py-1 ms:py-4 ms:px-6 border-neutral-black'>
+                Follow
+              </Button>
+            </div>
+          </div>
+
           {/* Short Desc */}
-          <Description lineclamp={2} wrapperClass='pb-4'></Description>
+          <Description lineclamp={3} wrapperClass='pb-4'></Description>
           {/* Description */}
           <div className='py-4'>
             <h3 className='mb-3 text-2xl font-medium text-neutral-black'>Description</h3>
             <Description lineclamp={3}></Description>
           </div>
           {/* Detail */}
-          <div className='grid grid-cols-4 gap-5'>
+          <div className='hidden grid-cols-4 gap-5 ms:grid'>
             <div className='px-5 py-3 bg-primary-3 rounded-xl'>
               <h4 className='text-primary-1 text-[18px]'>Level</h4>
               <div className='flex items-center mt-3'>
-                <Level></Level>
-                <span className='ml-3 text-neutral-black'>Beginner</span>
+                <Level className='flex-shrink-0'></Level>
+                <span className='ml-2 text-neutral-black'>Beginner</span>
               </div>
             </div>
             <div className='px-5 py-3 bg-primary-3 rounded-xl'>
               <h4 className='text-primary-1 text-[18px]'>Language</h4>
               <div className='flex items-center mt-3'>
-                <Language></Language>
-                <span className='ml-3 text-neutral-black'>English</span>
+                <Language className='flex-shrink-0'></Language>
+                <span className='ml-2 text-neutral-black'>English</span>
               </div>
             </div>
             <div className='px-5 py-3 bg-primary-3 rounded-xl'>
               <h4 className='text-primary-1 text-[18px]'>Enrolled</h4>
               <div className='flex items-center mt-3'>
-                <Student></Student>
-                <span className='ml-3 text-neutral-black'>Enrolled</span>
+                <Student className='flex-shrink-0'></Student>
+                <span className='ml-2 text-neutral-black'>Enrolled</span>
               </div>
             </div>
             <div className='px-5 py-3 bg-primary-3 rounded-xl'>
               <h4 className='text-primary-1 text-[18px]'>Rating</h4>
               <div className='flex items-center mt-3'>
-                <Star></Star>
-                <span className='ml-3 text-neutral-black'>4.8</span>
+                <Star className='flex-shrink-0'></Star>
+                <span className='ml-2 text-neutral-black'>4.8</span>
               </div>
             </div>
+          </div>
+          <div className='block ms:hidden'>
+            <Swiper
+              // install Swiper modules
+              modules={[Navigation]}
+              breakpoints={{
+                0: {
+                  slidesPerView: 2,
+                  spaceBetween: 12
+                }
+              }}
+            >
+              <SwiperSlide>
+                <div className='px-5 py-3 bg-primary-3 rounded-xl'>
+                  <h4 className='text-primary-1 text-[18px]'>Level</h4>
+                  <div className='flex items-center mt-3'>
+                    <Level></Level>
+                    <span className='ml-3 text-neutral-black'>Beginner</span>
+                  </div>
+                </div>
+              </SwiperSlide>
+              <SwiperSlide>
+                <div className='px-5 py-3 bg-primary-3 rounded-xl'>
+                  <h4 className='text-primary-1 text-[18px]'>Language</h4>
+                  <div className='flex items-center mt-3'>
+                    <Language></Language>
+                    <span className='ml-3 text-neutral-black'>English</span>
+                  </div>
+                </div>
+              </SwiperSlide>
+              <SwiperSlide>
+                <div className='px-5 py-3 bg-primary-3 rounded-xl'>
+                  <h4 className='text-primary-1 text-[18px]'>Rating</h4>
+                  <div className='flex items-center mt-3'>
+                    <Star></Star>
+                    <span className='ml-3 text-neutral-black'>4.8</span>
+                  </div>
+                </div>
+              </SwiperSlide>
+              <SwiperSlide>
+                <div className='px-5 py-3 bg-primary-3 rounded-xl'>
+                  <h4 className='text-primary-1 text-[18px]'>Enrolled</h4>
+                  <div className='flex items-center mt-3'>
+                    <Student></Student>
+                    <span className='ml-3 text-neutral-black'>Enrolled</span>
+                  </div>
+                </div>
+              </SwiperSlide>
+            </Swiper>
           </div>
           {/* Content */}
           <div>
             <h3 className='my-4 text-2xl font-medium text-neutral-black'>Content</h3>
-            <Accordion type='single' collapsible className='mb-4'>
+            <Accordion type='single' collapsible className='mb-[18px] ms:mb-4'>
               <AccordionItem value='section-1' className='!border-b-0'>
-                <AccordionTrigger className='px-3 py-6 text-xl font-medium bg-primary-3 text-neutral-black hover:no-underline'>
+                <AccordionTrigger className='px-3 py-6 text-xl font-medium bg-primary-3 text-neutral-black hover:no-underline [data-state=open]:text-primary-1'>
                   Title 1
                 </AccordionTrigger>
                 <AccordionContent className='px-3'>
                   <div className='py-6'>
-                    <div className='flex items-center justify-between'>
+                    <div className='flex items-start justify-between ms:items-center'>
                       <h3 className='text-xl font-medium text-neutral-black'>Lession 1</h3>
-                      <div className='flex items-center'>
-                        <span className='mr-6 text-xl text-primary-1'>Preview</span>
-                        <div className='flex items-center text-neutral-silver-3'>
-                          <Clock></Clock>
-                          <span className='ml-3'>1:20:20</span>
-                        </div>
-                      </div>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className='flex items-center justify-center p-3 mt-5 ml-auto text-white rounded-xl bg-primary-1'>
-                        <Folder></Folder>
-                        <span className='ml-5'>Resources</span>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Billing</DropdownMenuItem>
-                        <DropdownMenuItem>Team</DropdownMenuItem>
-                        <DropdownMenuItem>Subscription</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                  <div className='py-6'>
-                    <div className='flex items-center justify-between'>
-                      <h3 className='text-xl font-medium text-neutral-black'>Lession 1</h3>
-                      <div className='flex items-center'>
-                        <span className='mr-6 text-xl text-primary-1'>Preview</span>
-                        <div className='flex items-center text-neutral-silver-3'>
-                          <Clock></Clock>
-                          <span className='ml-3'>1:20:20</span>
-                        </div>
-                      </div>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className='flex items-center justify-center p-3 mt-5 ml-auto text-white rounded-xl bg-primary-1'>
-                        <Folder></Folder>
-                        <span className='ml-5'>Resources</span>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Billing</DropdownMenuItem>
-                        <DropdownMenuItem>Team</DropdownMenuItem>
-                        <DropdownMenuItem>Subscription</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-            <Accordion type='single' collapsible className=''>
-              <AccordionItem value='section-1' className='!border-b-0'>
-                <AccordionTrigger className='px-3 py-6 text-xl font-medium bg-primary-3 text-neutral-black hover:no-underline'>
-                  Title 2
-                </AccordionTrigger>
-                <AccordionContent className='px-3'>
-                  <div className='py-6'>
-                    <div className='flex items-center justify-between'>
-                      <h3 className='text-xl font-medium text-neutral-black'>Lession 1</h3>
-                      <div className='flex items-center'>
-                        <span className='mr-6 text-xl text-primary-1'>Preview</span>
-                        <div className='flex items-center text-neutral-silver-3'>
-                          <Clock></Clock>
-                          <span className='ml-3'>1:20:20</span>
-                        </div>
-                      </div>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className='flex items-center justify-center p-3 mt-5 ml-auto text-white rounded-xl bg-primary-1'>
-                        <Folder></Folder>
-                        <span className='ml-5'>Resources</span>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Billing</DropdownMenuItem>
-                        <DropdownMenuItem>Team</DropdownMenuItem>
-                        <DropdownMenuItem>Subscription</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                  <div className='py-6'>
-                    <div className='flex items-center justify-between'>
-                      <h3 className='text-xl font-medium text-neutral-black'>Lession 1</h3>
-                      <div className='flex items-center'>
-                        <span className='mr-6 text-xl text-primary-1'>Preview</span>
+                      <div className='flex flex-col items-end ms:items-center ms:flex-row'>
+                        <span className='mb-6 text-xl ms:mr-6 text-primary-1 ms:mb-0'>Preview</span>
                         <div className='flex items-center text-neutral-silver-3'>
                           <Clock></Clock>
                           <span className='ml-3'>1:20:20</span>
@@ -238,78 +243,13 @@ export default function CourseDetail() {
               </AccordionItem>
             </Accordion>
           </div>
+          <Reviewers className='mt-6 xl:hidden'></Reviewers>
         </div>
       </div>
-      <div className='flex flex-col w-full h-full overflow-hidden'>
-        <div className='px-3 py-6 rounded-xl bg-primary-3 text-neutral-black'>
-          <h3 className='mb-3 text-2xl font-medium'>Course Include</h3>
-          <div>
-            <div className='flex items-center mb-6'>
-              <Clock className='text-neutral-black'></Clock>
-              <span className='ml-[10px] font-medium'>58 hours on-demand video</span>
-            </div>
-            <div className='flex items-center mb-6'>
-              <Document className='text-neutral-black'></Document>
-              <span className='ml-[10px] font-medium'>80 lessons</span>
-            </div>
-            <div className='flex items-center mb-6'>
-              <FolderNLine className='text-neutral-black'></FolderNLine>
-              <span className='ml-[10px] font-medium'>519 downloadable resources</span>
-            </div>
-            <div className='flex items-center mb-6'>
-              <Certificate className='text-neutral-black'></Certificate>
-              <span className='ml-[10px] font-medium'>Completion certificate</span>
-            </div>
-          </div>
-          <div className='flex items-center gap-x-3'>
-            <span className='text-2xl line-through text-neutral-silver-3'>$12</span>
-            <span className='text-[32px]'>$10</span>
-            <div className='p-2 rounded-md bg-[#F30000] text-center text-white uppercase'>20% OFF</div>
-          </div>
-          <div className='flex items-center gap-x-[18px] my-[18px]'>
-            <Button className='flex-1 px-4 !py-7 text-xl text-white bg-primary-1'>Add To Cart</Button>
-            <div className=' flex items-center justify-center w-[60px] h-[60px] rounded-xl bg-white shadow-md cursor-pointer'>
-              <Heart className=' text-primary-1'></Heart>
-            </div>
-          </div>
-          <span className='text-sm underline'>Refund policy within 14 days</span>
-        </div>
+      <div className='flex-col hidden w-full h-full overflow-hidden xl:flex'>
+        <ShortDetail className='px-3 py-6 rounded-xl bg-primary-3 text-neutral-black'></ShortDetail>
         <div className='flex-1 px-3 py-6 mt-4 overflow-y-auto bg-white rounded-xl no-scrollbar'>
-          <div className='flex items-center justify-between mb-[18px]'>
-            <h3 className='mb-3 text-2xl font-medium'>Feedback</h3>
-            <Link to='' className='text-xl text-primary-1'>
-              View all
-            </Link>
-          </div>
-          {/* Reviewers */}
-          <div>
-            <div className='flex items-start justify-between'>
-              <div className='flex flex-wrap items-start'>
-                <img className='w-[50px] h-[50px] rounded-xl object-cover' src={Instructor} alt='instructor-avatar' />
-                <div className='ml-3 '>
-                  <h2 className='text-xl font-medium text-neutral-black'>Rowan Kenelm</h2>
-                  <RatingStars count={5} wrapperClass='!gap-x-1'></RatingStars>
-                </div>
-              </div>
-              <span className='text-sm text-neutral-silver-3'>4 months ago</span>
-            </div>
-            <Description lineclamp={2} height='50px' wrapperClass='mt-3'></Description>
-            <Separator className='my-4'></Separator>
-          </div>
-          <div>
-            <div className='flex items-start justify-between'>
-              <div className='flex flex-wrap items-start'>
-                <img className='w-[50px] h-[50px] rounded-xl object-cover' src={Instructor} alt='instructor-avatar' />
-                <div className='ml-3 '>
-                  <h2 className='text-xl font-medium text-neutral-black'>Rowan Kenelm</h2>
-                  <RatingStars count={5} wrapperClass='!gap-x-1'></RatingStars>
-                </div>
-              </div>
-              <span className='text-sm text-neutral-silver-3'>4 months ago</span>
-            </div>
-            <Description lineclamp={2} height='50px' wrapperClass='mt-3'></Description>
-            <Separator className='my-4'></Separator>
-          </div>
+          <Reviewers></Reviewers>
         </div>
       </div>
     </div>
