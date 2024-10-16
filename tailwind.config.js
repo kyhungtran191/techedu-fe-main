@@ -112,6 +112,7 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "progress-infinite": 'progress 2s linear infinite',
+        "spin-slow": 'spin 10s linear infinite'
       },
       fontFamily: {
         main: ["Inter", "sans-serif"],

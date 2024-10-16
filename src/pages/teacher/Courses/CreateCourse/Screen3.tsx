@@ -12,7 +12,7 @@ export default function Screen3() {
   const [file, setFile] = useState<File | null>(null)
   const [previewURL, setPreviewURL] = useState<string | null>(null)
   const [checkedOption, setCheckedOption] = useState<number>(1)
-  const { isHavingValues, step, setStep, setCourseData, setLocalStorageData, courseData } = useCourseSetUp()
+  const { setStep, setCourseData, setLocalStorageData, courseData } = useCourseSetUp()
 
   useEffect(() => {
     if (checkedOption == 2) {
@@ -126,7 +126,7 @@ export default function Screen3() {
       {/* Footer */}
       <div className='z-10 flex items-center justify-between w-full py-8 mt-auto bg-white p container-fluid'>
         <div
-          className='py-2 px-3 rounded-lg flex items-center cursor-pointer border'
+          className='flex items-center px-3 py-2 border rounded-lg cursor-pointer'
           onClick={() => setStep((prev) => prev - 1)}
         >
           <Navigate />
