@@ -17,7 +17,6 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation()
   const { pathname } = location
-  const sidebar = useRef<any>(null)
 
   // Save local storage
 
