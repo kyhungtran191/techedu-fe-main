@@ -63,7 +63,6 @@ export default function LandingPage() {
       .required('Course description is required')
       .max(180, 'Course subtitle limit 180 characters'),
     video: yup.mixed().test('fileSize', 'Video size must be less than 4GB', (value) => {
-      console.log()
       if (!value) return false
       return (value as File).size <= MAX_VIDEO_SIZE
     })

@@ -27,6 +27,8 @@ import EnrolledCourses from './pages/student/enrolled-courses'
 import LearningSpaceHeader from './layouts/LearningSpaceLayout/LearningSpaceHeader'
 import { CourseSetUpContextProvider } from './context/CourseSetUpContext'
 import Role from './pages/admin/role'
+import SetupProfileLayout from './layouts/TeacherLayout/SetupProfileLayout'
+import SetupProfile from './pages/teacher/SetupProfile'
 
 function App() {
   const isAuth = true
@@ -118,6 +120,15 @@ function App() {
           </CreateCourseLayout>
         }
       />
+
+      <Route
+        path='/teacher/setup-account'
+        element={
+          <SetupProfileLayout>
+            <SetupProfile></SetupProfile>
+          </SetupProfileLayout>
+        }
+      ></Route>
 
       {/* Manage Course Routes */}
       <Route

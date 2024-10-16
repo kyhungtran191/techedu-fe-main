@@ -6,9 +6,10 @@ import Upload from '@/icons/Upload'
 interface ImageDropUploadProps {
   onUpload?: () => void
   onSetFile: Dispatch<SetStateAction<File | null>>
+  className?: string
 }
 
-const ImageDropUpload: React.FC<ImageDropUploadProps> = ({ onUpload, onSetFile }) => {
+const ImageDropUpload: React.FC<ImageDropUploadProps> = ({ onUpload, onSetFile, className }) => {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
@@ -30,7 +31,7 @@ const ImageDropUpload: React.FC<ImageDropUploadProps> = ({ onUpload, onSetFile }
   })
 
   return (
-    <div>
+    <div className={className}>
       <div
         {...getRootProps({ className: 'dropzone' })}
         className={`w-full transition-all duration-300 ease-in-out  h-[180px] opacity-100 border-dashed border rounded-lg bg-white border-neutral-silver-3 flex flex-col items-center justify-center text-neutral-silver-3`}

@@ -5,7 +5,6 @@ import { Controller, useForm } from 'react-hook-form'
 
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect } from 'react'
 import useCourseSetUp from '@/hooks/useCourseSetUp'
 import Tiptap from '@/components/TipTap'
 import Navigate from '@/icons/Navigate'
