@@ -15,16 +15,15 @@ import { useNavigate } from 'react-router-dom'
 
 type FormData = {
   title: string
-  description: string
+  description?: string
 }
 
 export default function Screen1() {
-  const { isHavingValues, handleExit, courseData, setCourseData, setStep, step, setLocalStorageData } = useCourseSetUp()
-  const navigate = useNavigate()
+  const { handleExit, courseData, setCourseData, setStep, step, setLocalStorageData } = useCourseSetUp()
 
   const schema = yup.object().shape({
     title: yup.string().required('Course title is require').max(180, 'Course title limit 180 characters'),
-    description: yup.string().required('Course title is require').max(180, 'Course subtitle limit 180 characters')
+    description: yup.string().max(180, 'Course subtitle limit 180 characters')
   })
 
   const {
@@ -73,7 +72,8 @@ export default function Screen1() {
                 name='title'
                 render={({ field }) => (
                   <Input
-                    className='px-0 py-0 text-xl border-none focus:outline-none text-neutral-black pr-[30px]'
+                    placeholder='Ex: Visual Design for UX '
+                    className='px-0 py-0 text-xl border-none focus:outline-none text-neutral-black pr-[30px] placeholder:text-neutral-silver-3'
                     {...field}
                   />
                 )}
@@ -92,10 +92,9 @@ export default function Screen1() {
               name='description'
               render={({ field }) => (
                 <Tiptap
-                  className='min-h-[206px] w-full text-xl rounded-lg border border-primary-1 py-[18px] px-3 outline-none'
-                  description={
-                    courseData.description || 'Briefly summarize the knowledge you want to convey through the course'
-                  }
+                  placeholder='Briefly summarize the knowledge you want to convey through the course'
+                  className='min-h-[206px] w-full text-xl rounded-lg border border-primary-1 py-[18px] px-3 outline-none placeholder:text-neutral-silver-3'
+                  description={courseData.description}
                   {...field}
                   onChange={field.onChange}
                 />

@@ -2,18 +2,25 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import ToolBar from './Toolbar'
 import { Separator } from '../ui/separator'
-
+import Placeholder from '@tiptap/extension-placeholder'
 function Tiptap({
   description,
   onChange,
+  placeholder,
   className
 }: {
   description: string
+  placeholder?: string
   onChange: (richText: string) => void
   className?: string
 }) {
   const editor = useEditor({
-    extensions: [StarterKit.configure({})],
+    extensions: [
+      StarterKit.configure({}),
+      Placeholder.configure({
+        placeholder: placeholder
+      })
+    ],
     content: description,
     editorProps: {
       attributes: {
