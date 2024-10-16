@@ -129,7 +129,7 @@ function App() {
         }
       >
         <Route path='curriculum' element={<Curriculum />} />
-        <Route path='course-overview' element={<Overview />} />
+        <Route path='overview' element={<Overview />} />
         <Route path='landing-page' element={<LandingPage />} />
         <Route path='course-messages' element={<CourseMessage />} />
         <Route path='price' element={<Price />} />
