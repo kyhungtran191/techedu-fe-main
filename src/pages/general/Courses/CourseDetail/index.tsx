@@ -29,6 +29,7 @@ import ThreeDots from '@/icons/ThreeDots'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css'
+import CourseCard from '@/components/Courses/CourseCard'
 export default function CourseDetail() {
   const [playing, setPlaying] = useState(false)
   // Toggle Playing Button
@@ -244,6 +245,14 @@ export default function CourseDetail() {
             </Accordion>
           </div>
           <Reviewers className='mt-6 xl:hidden'></Reviewers>
+          <div className='py-4'>
+            <h3 className='mb-3 text-2xl font-medium text-neutral-black '>Similar courses </h3>
+            {Array(4)
+              .fill(0)
+              .map((item) => (
+                <CourseCard vertical={false} wrapperClass='mb-[18px]'></CourseCard>
+              ))}
+          </div>
         </div>
       </div>
       <div className='flex-col hidden w-full h-full overflow-hidden xl:flex'>

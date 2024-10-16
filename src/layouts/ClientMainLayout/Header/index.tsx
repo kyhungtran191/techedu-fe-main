@@ -1,5 +1,5 @@
-import { useLocation } from 'react-router-dom'
-import { AlignJustify, Search } from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
+import { AlignJustify, ArrowBigLeft, Navigation, Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import Cart from '@/icons/Cart'
 import { Separator } from '@/components/ui/separator'
@@ -12,6 +12,7 @@ import CategoriesMenu from '../Menu'
 import AvatarPopover from '@/components/AvatarPopover'
 import BecomeTeacherBtn from '@/components/BlankOptions/BecomeTeacherBtn'
 import { Button } from '@/components/ui/button'
+import Navigate from '@/icons/Navigate'
 const Header = ({
   setSidebarOpen,
   sidebarOpen
@@ -30,18 +31,24 @@ const Header = ({
     }
   }, [location.pathname])
 
+  const { pathname } = location
+  const isCourseDetail = /\/courses\/\d+/.test(pathname)
   return (
     <header className='z-30 flex w-full px-3 py-6 bg-white drop-shadow-1'>
       <div className='flex items-center justify-between flex-grow shadow-2 h-[48px] relative flex-wrap'>
-        <div className='flex items-center gap-x-1 sm:gap-x-3'>
+        <div className='flex items-center gap-x-2 sm:gap-x-3'>
           <Button
             onClick={(e) => {
               setSidebarOpen(true)
             }}
-            className='z-30 block rounded-sm focus:bg-white focus:text-black bg-white text-black p-1.5 shadow-sm  xl:hidden'
+            className={`${isCourseDetail ? 'hidden' : 'block'} z-30  rounded-sm focus:bg-white focus:text-black bg-white text-black p-1.5 shadow-sm  xl:hidden`}
           >
             <AlignJustify />
           </Button>
+          <Link to='/courses' className={`${isCourseDetail ? 'flex' : 'hidden'}  items-center xl:hidden mr-2`}>
+            <Navigate></Navigate>
+            <span className='ml-1 text-sm font-medium'>Back</span>
+          </Link>
           <div ref={titleRef} className='text-[18px] sm:text-[32px] font-medium tb:w-full capitalize'>
             Course
           </div>
