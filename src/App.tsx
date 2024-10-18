@@ -31,6 +31,7 @@ import SetupProfileLayout from './layouts/TeacherLayout/SetupProfileLayout'
 import SetupProfile from './pages/teacher/SetupProfile'
 import TeacherMainLayout from './layouts/TeacherLayout/TeacherMainLayout'
 import CourseManage from './pages/teacher/main/courses-manage'
+import CoursesAdmin from './pages/admin/courses/CoursesAdmin'
 
 function App() {
   const isAuth = true
@@ -188,7 +189,7 @@ function App() {
         }
       >
         <Route path='dashboard' element={<Dashboard />} />
-        <Route path='courses' element={<div>Tasks</div>} />
+        <Route path='courses' element={<CoursesAdmin></CoursesAdmin>} />
         <Route path='role' element={<Role></Role>}></Route>
       </Route>
     </Routes>
