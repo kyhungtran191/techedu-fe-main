@@ -17,7 +17,7 @@ interface IProps {
   totalPage: number
   className?: string
 }
-export default function PaginationCustom({ path, queryConfig, totalPage, className, buttonTheme }: IProps) {
+export default function PaginationCustom({ path, queryConfig, totalPage, className }: IProps) {
   // Number(queryConfig?.pageindex as number)
   const page = 1
   let dotAfter = false
