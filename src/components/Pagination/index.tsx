@@ -26,7 +26,10 @@ export default function PaginationCustom({ path, queryConfig, totalPage, classNa
     if (!dotAfter) {
       dotAfter = true
       return (
-        <span key={index} className='px-2 py-1 mx-1 bg-white border rounded shadow-sm cursor-pointer sm:mx-2 sm:px-3 sm:py-2'>
+        <span
+          key={index}
+          className='px-2 py-1 mx-1 bg-white border rounded shadow-sm cursor-pointer sm:mx-2 sm:px-3 sm:py-2'
+        >
           ...
         </span>
       )

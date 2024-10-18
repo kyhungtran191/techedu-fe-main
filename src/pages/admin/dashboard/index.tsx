@@ -1,7 +1,6 @@
 import { Layout } from '@/components/custom/layout'
 import { Search } from '@/components/custom/search'
 import ThemeSwitch from '@/components/custom/theme-switch'
-import { TopNav } from '@/components/custom/top-nav'
 import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
