@@ -29,6 +29,8 @@ import { CourseSetUpContextProvider } from './context/CourseSetUpContext'
 import Role from './pages/admin/role'
 import SetupProfileLayout from './layouts/TeacherLayout/SetupProfileLayout'
 import SetupProfile from './pages/teacher/SetupProfile'
+import TeacherMainLayout from './layouts/TeacherLayout/TeacherMainLayout'
+import CourseManage from './pages/teacher/main/courses-manage'
 
 function App() {
   const isAuth = true
@@ -129,6 +131,17 @@ function App() {
           </SetupProfileLayout>
         }
       ></Route>
+
+      <Route
+        path='/teacher/'
+        element={
+          <TeacherMainLayout>
+            <Outlet></Outlet>
+          </TeacherMainLayout>
+        }
+      >
+        <Route path='courses' element={<CourseManage />} />
+      </Route>
 
       {/* Manage Course Routes */}
       <Route

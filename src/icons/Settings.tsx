@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function Settings(props: JSX.IntrinsicElements['svg']) {
   return (
     <svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28' fill='currentColor' {...props}>
