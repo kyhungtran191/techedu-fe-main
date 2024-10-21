@@ -25,7 +25,6 @@ import Checkout from './pages/general/Checkout'
 import Profile from './pages/general/profile'
 import EnrolledCourses from './pages/student/enrolled-courses'
 import LearningSpaceHeader from './layouts/LearningSpaceLayout/LearningSpaceHeader'
-import { CourseSetUpContextProvider } from './context/CourseSetUpContext'
 import Role from './pages/admin/role'
 import SetupProfileLayout from './layouts/TeacherLayout/SetupProfileLayout'
 import SetupProfile from './pages/teacher/SetupProfile'
@@ -37,6 +36,7 @@ import Instructors from './pages/admin/users/instructors'
 import Accounts from './pages/admin/users/accounts'
 import Category from './pages/admin/category'
 import PrivateUserManage from './pages/admin/private-users'
+import CourseDetailAdmin from './pages/admin/courses/CourseDetailAdmin'
 
 function App() {
   const isAuth = true
@@ -195,6 +195,7 @@ function App() {
       >
         <Route path='dashboard' index element={<Dashboard />} />
         <Route path='courses' element={<CoursesAdmin></CoursesAdmin>} />
+        <Route path='courses/:id' element={<CourseDetailAdmin></CourseDetailAdmin>} />
         <Route path='students' element={<Students></Students>} />
         <Route path='categories' element={<Category></Category>} />
         <Route path='private-users' element={<PrivateUserManage></PrivateUserManage>} />

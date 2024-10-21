@@ -1,7 +1,6 @@
 import { Layout } from '@/components/custom/layout'
 import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
-import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
@@ -19,6 +18,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import ThreeDots from '@/icons/ThreeDots'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import PaginationCustom from '@/components/Pagination'
+import { Link, useNavigate } from 'react-router-dom'
 type ITypeCourseTable = {
   _id: string
   thumbnail: string
@@ -73,126 +73,133 @@ const mockData: ITypeCourseTable[] = [
   }
 ]
 
-const columns = [
-  {
-    id: 'thumbnail',
-    header: () => <p className=''>Thumbnail</p>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <img
-          src={row.original.thumbnail}
-          alt={row.original.name}
-          className='font-semibold w-[100px] h-[70px] object-cover mx-auto'
-        />
-      )
-    },
-    enableSorting: false,
-    enableHiding: false
-  },
-
-  {
-    id: 'courseName',
-    header: () => <p className=''>Course Name</p>,
-    cell: ({ row }: { row: any }) => {
-      return <p className='font-medium'>{row.original.courseName}</p>
-    },
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    id: 'instructor',
-    header: () => <p className=''>Instructor</p>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <div className='flex items-center justify-center'>
-          <img
-            src={row.original.instructorAvatar}
-            alt={''}
-            className='flex-shrink-0 object-cover w-10 h-10 mr-1 rounded-full'
-          />
-          <div className='w-[120px]'>{row.original.instructorName}</div>
-        </div>
-      )
-    },
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    id: 'created_date',
-    header: () => <p className=''>Created date</p>,
-    cell: ({ row }: { row: any }) => {
-      return <p className='font-medium'>{row.original.createdAt}</p>
-    },
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    id: 'type',
-    header: () => <p className=''>Level</p>,
-    cell: ({ row }: { row: any }) => {
-      return <p className='font-medium '>{row.original.level}</p>
-    },
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    id: 'status',
-    header: () => <p className=''>Status</p>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <p
-          className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == 0 ? 'bg-transparent text-neutral-black' : row.original.status == 1 ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-black'}`}
-        >
-          {row.original.status == 0 ? (
-            <div className='flex items-center gap-x-2'>
-              <Button variant={'custom'}>Approve</Button>
-              <Button className='text-white bg-red-500 hover:bg-red-600'>Reject</Button>
-            </div>
-          ) : row.original.status == 1 ? (
-            'Published'
-          ) : (
-            'Pending'
-          )}
-        </p>
-      )
-    },
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    id: 'action',
-    header: () => <p className=''>Action</p>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <div className='flex items-center justify-center font-base'>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className='[state=open]:bg-primary-1 text- neutral-black'
-              onClick={(e) => e.preventDefault()}
-            >
-              <ThreeDots></ThreeDots>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end' className='rounded-xl min-w-[160px] py-2'>
-              <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                Preview course as Student
-              </DropdownMenuItem>
-              <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                View course detail
-              </DropdownMenuItem>
-              <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                Disable
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )
-    },
-    enableSorting: false,
-    enableHiding: false
-  }
-]
-
 export default function CoursesAdmin() {
+  const navigate = useNavigate()
+
+  const columns = [
+    {
+      id: 'thumbnail',
+      header: () => <p className=''>Thumbnail</p>,
+      cell: ({ row }: { row: any }) => {
+        return (
+          <img
+            src={row.original.thumbnail}
+            alt={row.original.name}
+            className='font-semibold w-[100px] h-[70px] object-cover mx-auto'
+          />
+        )
+      },
+      enableSorting: false,
+      enableHiding: false
+    },
+
+    {
+      id: 'courseName',
+      header: () => <p className=''>Course Name</p>,
+      cell: ({ row }: { row: any }) => {
+        return <p className='font-medium'>{row.original.courseName}</p>
+      },
+      enableSorting: false,
+      enableHiding: false
+    },
+    {
+      id: 'instructor',
+      header: () => <p className=''>Instructor</p>,
+      cell: ({ row }: { row: any }) => {
+        return (
+          <div className='flex items-center justify-center'>
+            <img
+              src={row.original.instructorAvatar}
+              alt={''}
+              className='flex-shrink-0 object-cover w-10 h-10 mr-1 rounded-full'
+            />
+            <div className='w-[120px]'>{row.original.instructorName}</div>
+          </div>
+        )
+      },
+      enableSorting: false,
+      enableHiding: false
+    },
+    {
+      id: 'created_date',
+      header: () => <p className=''>Created date</p>,
+      cell: ({ row }: { row: any }) => {
+        return <p className='font-medium'>{row.original.createdAt}</p>
+      },
+      enableSorting: false,
+      enableHiding: false
+    },
+    {
+      id: 'type',
+      header: () => <p className=''>Level</p>,
+      cell: ({ row }: { row: any }) => {
+        return <p className='font-medium '>{row.original.level}</p>
+      },
+      enableSorting: false,
+      enableHiding: false
+    },
+    {
+      id: 'status',
+      header: () => <p className=''>Status</p>,
+      cell: ({ row }: { row: any }) => {
+        return (
+          <p
+            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == 0 ? 'bg-transparent text-neutral-black' : row.original.status == 1 ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-black'}`}
+          >
+            {row.original.status == 0 ? (
+              <div className='flex items-center gap-x-2'>
+                <Button variant={'custom'}>Approve</Button>
+                <Button className='text-white bg-red-500 hover:bg-red-600'>Reject</Button>
+              </div>
+            ) : row.original.status == 1 ? (
+              'Published'
+            ) : (
+              'Pending'
+            )}
+          </p>
+        )
+      },
+      enableSorting: false,
+      enableHiding: false
+    },
+    {
+      id: 'action',
+      header: () => <p className=''>Action</p>,
+      cell: ({ row }: { row: any }) => {
+        return (
+          <div className='flex items-center justify-center font-base'>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className='[state=open]:bg-primary-1 text- neutral-black'
+                onClick={(e) => e.preventDefault()}
+              >
+                <ThreeDots></ThreeDots>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end' className='rounded-xl min-w-[160px] py-2'>
+                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
+                  Preview course as Student
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                  onClick={() => {
+                    navigate('/admin/courses/1')
+                  }}
+                >
+                  View course detail
+                </DropdownMenuItem>
+                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
+                  Disable
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )
+      },
+      enableSorting: false,
+      enableHiding: false
+    }
+  ]
+
   const courseTable = useReactTable({
     data: mockData,
     columns,
