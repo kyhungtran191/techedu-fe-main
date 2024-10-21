@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { ChevronDown } from 'lucide-react'
 
 interface NavProps extends React.HTMLAttributes<HTMLDivElement> {
   isCollapsed: boolean
@@ -98,7 +99,7 @@ function NavLinkDropdown({ title, icon, label, sub, closeNav }: NavLinkProps) {
           <div className='ml-2 rounded-lg bg-primary px-1 text-[0.625rem] text-primary-foreground'>{label}</div>
         )}
         <span className={cn('ml-auto transition-all group-data-[state="open"]:-rotate-180')}>
-          {/* <IconChevronDown stroke={1} /> */}
+          <ChevronDown></ChevronDown>
         </span>
       </CollapsibleTrigger>
       <CollapsibleContent className='collapsibleDropdown' asChild>

@@ -32,6 +32,11 @@ import SetupProfile from './pages/teacher/SetupProfile'
 import TeacherMainLayout from './layouts/TeacherLayout/TeacherMainLayout'
 import CourseManage from './pages/teacher/main/courses-manage'
 import CoursesAdmin from './pages/admin/courses/CoursesAdmin'
+import Students from './pages/admin/users/students'
+import Instructors from './pages/admin/users/instructors'
+import Accounts from './pages/admin/users/accounts'
+import Category from './pages/admin/category'
+import PrivateUserManage from './pages/admin/private-users'
 
 function App() {
   const isAuth = true
@@ -188,8 +193,13 @@ function App() {
           </ThemeProvider>
         }
       >
-        <Route path='dashboard' element={<Dashboard />} />
+        <Route path='dashboard' index element={<Dashboard />} />
         <Route path='courses' element={<CoursesAdmin></CoursesAdmin>} />
+        <Route path='students' element={<Students></Students>} />
+        <Route path='categories' element={<Category></Category>} />
+        <Route path='private-users' element={<PrivateUserManage></PrivateUserManage>} />
+        <Route path='instructors' element={<Instructors></Instructors>} />
+        <Route path='accounts' element={<Accounts></Accounts>} />
         <Route path='role' element={<Role></Role>}></Route>
       </Route>
     </Routes>
