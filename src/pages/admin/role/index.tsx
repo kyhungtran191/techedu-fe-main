@@ -32,6 +32,7 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import ThreeDots from '@/icons/ThreeDots'
 import { Pen } from 'lucide-react'
 import PermissionDialog from './components/PermissionDialog'
+import { UserNav } from '@/components/custom/user-nav'
 
 interface IRole {
   _id: number
@@ -152,6 +153,7 @@ export default function Role() {
     <Layout>
       <Layout.Header>
         <h2 className='text-4xl font-bold text-primary'>Role Management</h2>
+        <UserNav></UserNav>
       </Layout.Header>
       <Layout.Body>
         <Table className='border'>

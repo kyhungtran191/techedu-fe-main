@@ -19,6 +19,7 @@ import ThreeDots from '@/icons/ThreeDots'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import PaginationCustom from '@/components/Pagination'
 import { Link, useNavigate } from 'react-router-dom'
+
 type ITypeCourseTable = {
   _id: string
   thumbnail: string
