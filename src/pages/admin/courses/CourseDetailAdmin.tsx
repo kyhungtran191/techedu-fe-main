@@ -2,26 +2,8 @@ import { Layout } from '@/components/custom/layout'
 import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Blocks, Gauge, Languages, Search } from 'lucide-react'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import ThreeDots from '@/icons/ThreeDots'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import PaginationCustom from '@/components/Pagination'
-import { useParams } from 'react-router-dom'
 
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import Instructor from '@/assets/instructor.jfif'
 import Certificate from '@/icons/CourseDetail/Certificate'
@@ -33,6 +15,8 @@ import Star from '@/icons/CourseDetail/Star'
 import StudentsTable from './components/StudentsTable'
 import { ChartConfig, ChartContainer } from '@/components/ui/chart'
 import { Bar, BarChart, CartesianGrid } from 'recharts'
+import { useParams } from 'react-router-dom'
+import PaginationCustom from '@/components/Pagination'
 export default function CourseDetailAdmin() {
   // Get Param
   const { id } = useParams()
