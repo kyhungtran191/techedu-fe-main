@@ -15,17 +15,9 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import ThreeDots from '@/icons/ThreeDots'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import PaginationCustom from '@/components/Pagination'
 type ITypeCourseTable = {
   _id: string
@@ -84,7 +76,7 @@ const mockData: ITypeCourseTable[] = [
 const columns = [
   {
     id: 'thumbnail',
-    header: () => <p className=' text-primary-1'>Thumbnail</p>,
+    header: () => <p className=''>Thumbnail</p>,
     cell: ({ row }: { row: any }) => {
       return (
         <img

@@ -1,4 +1,16 @@
-import { BookA, KeyRound, LayoutDashboard, MessageCircle, Settings, UserCog, UserRound, UsersRound } from 'lucide-react'
+import {
+  BookA,
+  ChartBarStacked,
+  Contact,
+  KeyRound,
+  LayoutDashboard,
+  MessageCircle,
+  Settings,
+  UserCog,
+  UserRound,
+  UserRoundCheck,
+  UsersRound
+} from 'lucide-react'
 
 export interface NavLink {
   title: string
@@ -19,43 +31,55 @@ export const sidelinks: SideLink[] = [
     icon: <LayoutDashboard />
   },
   {
+    title: 'Courses',
+    href: '/admin/courses',
+    icon: <BookA />
+  },
+  {
+    title: 'Category',
+    href: '/admin/categories',
+    icon: <ChartBarStacked></ChartBarStacked>
+  },
+  {
     title: 'Role',
-    label: '3',
     href: '/admin/role',
     icon: <KeyRound />
   },
   {
-    title: 'Courses',
-    label: '3',
-    href: '/admin/courses',
-    icon: <BookA />
+    title: 'Private Users',
+    href: '/admin/private-users',
+    icon: <Contact />
+  },
+  {
+    title: 'Accounts',
+    href: '/admin/accounts',
+    icon: <UserRoundCheck />
+  },
+  {
+    title: 'Clients',
+    label: '',
+    href: '',
+    icon: <UserCog />,
+    sub: [
+      {
+        title: 'Instructors',
+        label: '',
+        href: '/admin/instructors',
+        icon: <UserRound />
+      },
+      {
+        title: 'Students',
+        label: '',
+        href: '/admin/students',
+        icon: <UsersRound />
+      }
+    ]
   },
   {
     title: 'Chats',
     label: '9',
     href: '/admin/chats',
     icon: <MessageCircle />
-  },
-
-  {
-    title: 'Users',
-    label: '',
-    href: '/users',
-    icon: <UserCog />,
-    sub: [
-      {
-        title: 'Teacher',
-        label: '',
-        href: '/teacher',
-        icon: <UserRound />
-      },
-      {
-        title: 'Students',
-        label: '',
-        href: '/students',
-        icon: <UsersRound />
-      }
-    ]
   },
   {
     title: 'Settings',
