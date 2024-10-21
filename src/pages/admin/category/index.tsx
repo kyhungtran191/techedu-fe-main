@@ -19,15 +19,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import ThreeDots from '@/icons/ThreeDots'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import PaginationCustom from '@/components/Pagination'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog'
+
 import AddNewDialog from './components/AddNewDialog'
 
 type ITypeCategoryTable = {
@@ -51,7 +43,7 @@ const mockData: ITypeCategoryTable[] = [
     _id: '2',
     name: 'Business',
     parentCategory: undefined,
-    status: 0,
+    status: 1,
     slug: 'business',
     createdAt: new Date().toLocaleDateString('vi-VN')
   },
@@ -293,7 +285,7 @@ export default function Category() {
         </div>
         <div className='mt-5 w-full overflow-auto h-[500px] rounded-lg no-scrollbar'>
           <Table className='w-full h-full overflow-auto'>
-            <TableHeader className='sticky z-20 py-4 bg-white border-b -top-3'>
+            <TableHeader className='sticky z-20 py-4 bg-white border-b sm:top-0 tb:-top-3'>
               {categoryTable.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {

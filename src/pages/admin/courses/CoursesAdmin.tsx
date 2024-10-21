@@ -141,9 +141,18 @@ const columns = [
     cell: ({ row }: { row: any }) => {
       return (
         <p
-          className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == 0 ? 'bg-neutral-silver-1 text-neutral-black' : row.original.status == 1 ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-black'}`}
+          className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == 0 ? 'bg-transparent text-neutral-black' : row.original.status == 1 ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-black'}`}
         >
-          {row.original.status == 0 ? 'Draft' : row.original.status == 1 ? 'Published' : 'Pending'}
+          {row.original.status == 0 ? (
+            <div className='flex items-center gap-x-2'>
+              <Button variant={'custom'}>Approve</Button>
+              <Button className='text-white bg-red-500 hover:bg-red-600'>Reject</Button>
+            </div>
+          ) : row.original.status == 1 ? (
+            'Published'
+          ) : (
+            'Pending'
+          )}
         </p>
       )
     },
@@ -168,13 +177,10 @@ const columns = [
                 Preview course as Student
               </DropdownMenuItem>
               <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                View course Detail
+                View course detail
               </DropdownMenuItem>
               <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                Approve
-              </DropdownMenuItem>
-              <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                Reject
+                Disable
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -200,7 +206,7 @@ export default function CoursesAdmin() {
         </div>
       </Layout.Header>
       {/* ===== Main ===== */}
-      <Layout.Body className=''>
+      <Layout.Body>
         <div className='flex items-center justify-between space-y-2'>
           <h1 className='text-2xl font-bold tracking-tight'>Courses</h1>
           <div className='flex items-center space-x-2'>
@@ -330,7 +336,7 @@ export default function CoursesAdmin() {
         </div>
         <div className='mt-5 w-full overflow-auto h-[500px] rounded-lg no-scrollbar'>
           <Table className='w-full h-full overflow-auto'>
-            <TableHeader className='sticky z-20 py-4 bg-white border-b -top-3'>
+            <TableHeader className='sticky top-0 z-20 py-4 bg-white border-b tb:-top-3'>
               {courseTable.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
