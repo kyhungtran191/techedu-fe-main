@@ -11,6 +11,7 @@ import { ThemeProvider } from './components/custom/theme-provider'
 import LearningSpaceHeader from './layouts/LearningSpaceLayout/LearningSpaceHeader'
 import SetupProfileLayout from './layouts/TeacherLayout/SetupProfileLayout'
 import TeacherMainLayout from './layouts/TeacherLayout/TeacherMainLayout'
+import Loading from '@/components/Loading'
 
 // Lazy loading for components
 const SignUp = lazy(() => import('./pages/general/SignUp'))
@@ -51,7 +52,7 @@ function App() {
   }
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Loading></Loading>}>
       <Routes>
         {/* Main */}
         <Route

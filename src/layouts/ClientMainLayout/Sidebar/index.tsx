@@ -149,7 +149,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         onClick={() => setSidebarOpen(false)}
       ></div>
       <aside
-        className={`absolute left-0 top-0 z-[9999] flex h-screen w-[264px] py-6 px-3 flex-col overflow-y-hidden bg-white duration-300 ease-linear xl:static -translate-x-full xl:translate-x-0  text-black ${
+        className={`absolute left-0 top-0 z-[99] flex h-screen w-[264px] py-6 px-3 flex-col overflow-y-hidden bg-white duration-300 ease-linear xl:static -translate-x-full xl:translate-x-0  text-black ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

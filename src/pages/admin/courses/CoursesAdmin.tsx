@@ -206,6 +206,7 @@ export default function CoursesAdmin() {
     columns,
     getCoreRowModel: getCoreRowModel()
   })
+  
   return (
     <Layout>
       <Layout.Header>
