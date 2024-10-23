@@ -7,6 +7,6 @@ export default function AdminGuard() {
   return isAuthenticated && profile?.roles && !profile?.roles?.includes('Clients') ? (
     <Outlet></Outlet>
   ) : (
-    <Navigate to='/'></Navigate>
+    <Navigate to='*'></Navigate>
   )
 }

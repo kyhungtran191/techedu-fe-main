@@ -1,0 +1,68 @@
+type Permissions = {
+  VIEW?: string
+  CREATE?: string
+  UPDATE?: string
+  DELETE?: string
+}
+
+type APPPermissionsType = {
+  ADMIN: string
+  DASHBOARD: Permissions
+  COURSES: Permissions
+  STUDENT: Permissions
+  PRIVATE_USER: Permissions
+  INSTRUCTORS: Permissions
+  ACCOUNTS: Permissions
+  ROLE: Permissions
+  CATEGORY: Permissions
+}
+
+// Define your permissions object with proper typing
+export const APP_PERMISSIONS: APPPermissionsType = {
+  ADMIN: 'ADMIN_APP',
+  DASHBOARD: {
+    VIEW: 'DASHBOARD.VIEW'
+  },
+  STUDENT: {
+    CREATE: 'STUDENT.CREATE',
+    UPDATE: 'STUDENT.UPDATE',
+    VIEW: 'STUDENT.VIEW',
+    DELETE: 'STUDENT.DELETE'
+  },
+  PRIVATE_USER: {
+    CREATE: 'PRIVATE_USER.CREATE',
+    UPDATE: 'PRIVATE_USER.UPDATE',
+    VIEW: 'PRIVATE_USER.VIEW',
+    DELETE: 'PRIVATE_USER.DELETE'
+  },
+  ROLE: {
+    CREATE: 'ROLE.CREATE',
+    UPDATE: 'ROLE.UPDATE',
+    VIEW: 'ROLE.VIEW',
+    DELETE: 'ROLE.DELETE'
+  },
+  ACCOUNTS: {
+    CREATE: 'ACCOUNTS.CREATE',
+    UPDATE: 'ACCOUNTS.UPDATE',
+    VIEW: 'ACCOUNTS.VIEW',
+    DELETE: 'ACCOUNTS.DELETE'
+  },
+  INSTRUCTORS: {
+    CREATE: 'INSTRUCTORS.CREATE',
+    UPDATE: 'INSTRUCTORS.UPDATE',
+    VIEW: 'INSTRUCTORS.VIEW',
+    DELETE: 'INSTRUCTORS.DELETE'
+  },
+  COURSES: {
+    VIEW: 'COURSE.VIEW',
+    CREATE: 'COURSE.CREATE',
+    UPDATE: 'COURSE.UPDATE',
+    DELETE: 'COURSE.DELETE'
+  },
+  CATEGORY: {
+    VIEW: 'CATEGORY.VIEW',
+    CREATE: 'CATEGORY.CREATE',
+    UPDATE: 'CATEGORY.UPDATE',
+    DELETE: 'CATEGORY.DELETE'
+  }
+}

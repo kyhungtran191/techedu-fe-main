@@ -19,6 +19,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import PaginationCustom from '@/components/Pagination'
 
 import AddNewDialog from './components/AddNewDialog'
+import { usePermission } from '@/hooks/usePermissions'
 
 type ITypeCategoryTable = {
   _id: string
@@ -111,100 +112,105 @@ const mockData: ITypeCategoryTable[] = [
   }
 ]
 
-const columns = [
-  {
-    id: 'name',
-    header: () => <p className=''>Category Name</p>,
-    cell: ({ row }: { row: any }) => {
-      return <p className='font-medium'>{row.original.name}</p>
-    },
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    id: 'instructor',
-    header: () => <p className=''>Slug</p>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <div className='text-center'>
-          <div className=''>{row.original.slug}</div>
-        </div>
-      )
-    },
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    id: 'parentCategory',
-    header: () => <p className=''>Parent Category</p>,
-    cell: ({ row }: { row: any }) => {
-      return <p className='font-medium'>{row.original.parentCategory || 'Is Parent'}</p>
-    },
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    id: 'status',
-    header: () => <p className=''>Status</p>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <p
-          className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == 0 ? 'bg-neutral-silver-1 text-neutral-black' : row.original.status == 1 ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-black'}`}
-        >
-          {row.original.status == 0 ? 'Inactive' : 'Active'}
-        </p>
-      )
-    },
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    id: 'created_at',
-    header: () => <p className=''>Created Date</p>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <div className='text-center'>
-          <div className=''>{row.original.createdAt}</div>
-        </div>
-      )
-    },
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    id: 'action',
-    header: () => <p className=''>Action</p>,
-    cell: ({ row }: { row: any }) => {
-      return (
-        <div className='flex items-center justify-center font-base'>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className='[state=open]:bg-primary-1 text- neutral-black'
-              onClick={(e) => e.preventDefault()}
-            >
-              <ThreeDots></ThreeDots>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end' className='rounded-xl min-w-[160px] py-2'>
-              <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                Disabled
-              </DropdownMenuItem>
-              <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                Activity logs
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )
-    },
-    enableSorting: false,
-    enableHiding: false
-  }
-]
-
 export default function Category() {
+  const { CREATE, DELETE, UPDATE, VIEW } = usePermission('CATEGORY', ['VIEW'])
+
+  console.log('CREATE - DELETE - UPDATE - VIEW', CREATE, DELETE, UPDATE, VIEW)
+
+  const columns = [
+    {
+      id: 'name',
+      header: () => <p className=''>Category Name</p>,
+      cell: ({ row }: { row: any }) => {
+        return <p className='font-medium'>{row.original.name}</p>
+      },
+      enableSorting: false,
+      enableHiding: false
+    },
+    {
+      id: 'instructor',
+      header: () => <p className=''>Slug</p>,
+      cell: ({ row }: { row: any }) => {
+        return (
+          <div className='text-center'>
+            <div className=''>{row.original.slug}</div>
+          </div>
+        )
+      },
+      enableSorting: false,
+      enableHiding: false
+    },
+    {
+      id: 'parentCategory',
+      header: () => <p className=''>Parent Category</p>,
+      cell: ({ row }: { row: any }) => {
+        return <p className='font-medium'>{row.original.parentCategory || 'Is Parent'}</p>
+      },
+      enableSorting: false,
+      enableHiding: false
+    },
+    {
+      id: 'status',
+      header: () => <p className=''>Status</p>,
+      cell: ({ row }: { row: any }) => {
+        return (
+          <p
+            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == 0 ? 'bg-neutral-silver-1 text-neutral-black' : row.original.status == 1 ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-black'}`}
+          >
+            {row.original.status == 0 ? 'Inactive' : 'Active'}
+          </p>
+        )
+      },
+      enableSorting: false,
+      enableHiding: false
+    },
+    {
+      id: 'created_at',
+      header: () => <p className=''>Created Date</p>,
+      cell: ({ row }: { row: any }) => {
+        return (
+          <div className='text-center'>
+            <div className=''>{row.original.createdAt}</div>
+          </div>
+        )
+      },
+      enableSorting: false,
+      enableHiding: false
+    },
+    {
+      id: 'action',
+      header: () => <p className=''>Action</p>,
+      cell: ({ row }: { row: any }) => {
+        return (
+          <div className='flex items-center justify-center font-base'>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className='[state=open]:bg-primary-1 text- neutral-black'
+                onClick={(e) => e.preventDefault()}
+              >
+                <ThreeDots></ThreeDots>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end' className='rounded-xl min-w-[160px] py-2'>
+                {UPDATE && (
+                  <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
+                    Edit
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
+                  Disabled
+                </DropdownMenuItem>
+                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
+                  Activity logs
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )
+      },
+      enableSorting: false,
+      enableHiding: false
+    }
+  ]
   const categoryTable = useReactTable({
     data: mockData,
     columns,
@@ -279,7 +285,7 @@ export default function Category() {
               </SelectContent>
             </Select>
           </div>
-          <AddNewDialog></AddNewDialog>
+          {CREATE && <AddNewDialog></AddNewDialog>}
         </div>
         <div className='mt-5 w-full overflow-auto h-[500px] rounded-lg no-scrollbar'>
           <Table className='w-full h-full overflow-auto'>
