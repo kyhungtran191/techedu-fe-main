@@ -1,7 +1,7 @@
 import { Layout } from '@/components/custom/layout'
 import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 import {
@@ -18,7 +18,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import ThreeDots from '@/icons/ThreeDots'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import PaginationCustom from '@/components/Pagination'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 type ITypeCourseTable = {
   _id: string
@@ -206,7 +206,7 @@ export default function CoursesAdmin() {
     columns,
     getCoreRowModel: getCoreRowModel()
   })
-  
+
   return (
     <Layout>
       <Layout.Header>

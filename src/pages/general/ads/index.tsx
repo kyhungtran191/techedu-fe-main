@@ -1,8 +1,6 @@
 import Counter from '@/components/Counter'
-import ScrollText from '@/components/Counter'
 import { Button } from '@/components/ui/button'
 import VerticalSlider from '@/components/VerticelSlider'
-import React from 'react'
 import Frame1 from '@/assets/frame-1.jpg'
 import Frame2 from '@/assets/frame-2.jpg'
 import Navigate from '@/icons/Navigate'
@@ -10,10 +8,8 @@ import Service1 from '@/assets/service-1.png'
 import Service2 from '@/assets/service-2.png'
 import Service3 from '@/assets/service-3.png'
 import { Link } from 'react-router-dom'
-import TeacherCard from './TeacherSlide/TeacherCard'
 import TeacherSlide from './TeacherSlide'
-import Start from '@/assets/welcome-back.png'
-import { motion } from 'framer-motion'
+
 interface ITutorial {
   image: string
   title: string

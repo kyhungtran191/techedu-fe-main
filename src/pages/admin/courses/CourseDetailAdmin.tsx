@@ -1,8 +1,8 @@
 import { Layout } from '@/components/custom/layout'
 import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Blocks, Gauge, Languages, Search } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Blocks, Languages } from 'lucide-react'
 
 import 'swiper/css'
 import Instructor from '@/assets/instructor.jfif'

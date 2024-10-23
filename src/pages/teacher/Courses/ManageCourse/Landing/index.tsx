@@ -41,8 +41,8 @@ export default function LandingPage() {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       const message = 'You have not save data, you wanna save it ?'
 
-      event.returnValue = message // Trình duyệt sẽ hiển thị cảnh báo này
-      return message // Một số trình duyệt yêu cầu trả về giá trị
+      event.returnValue = message
+      return message
     }
     window.addEventListener('beforeunload', handleBeforeUnload)
     return () => {

@@ -1,4 +1,3 @@
-import React from 'react'
 import SystemNotification from '../components/SystemNotification'
 import CourseTitle from '@/components/CourseTittle'
 import AIButton from '@/components/AIButton'
