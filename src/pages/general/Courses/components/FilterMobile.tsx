@@ -9,21 +9,16 @@ import RatingStars from '@/components/RatingStars'
 import Filter from '@/icons/Filter'
 import Close from '@/icons/Close'
 import { Button } from '@/components/ui/button'
+import { QueryConfig } from '@/@types/course.type'
 
 interface IProps {
   className?: string
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  queryConfig: QueryConfig
 }
 export default function FilterBar(props: IProps) {
-  const { isOpen, setIsOpen, className } = props
-
-  useEffect(() => {
-    console.log('Mounted Components')
-    return () => {
-      console.log('Component unmount')
-    }
-  }, [])
+  const { isOpen, setIsOpen, className, queryConfig } = props
 
   return createPortal(
     <div className={`${className}`}>

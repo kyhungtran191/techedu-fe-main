@@ -22,3 +22,21 @@ export type TSection = {
   name: string
   lessons: TLesson[]
 }
+
+export interface CourseListConfig {
+  page?: number | string
+  limit?: number | string
+  order?: 'desc' | 'asc'
+  sort_by?: 'createdAt' | 'view' | 'sold' | 'price'
+  category?: number | string
+  ratings?: number | string
+  price_max?: number | string
+  price_min?: number | string
+  search?: string
+  duration?: string | number
+  level?: string
+}
+
+export type QueryConfig = {
+  [key in keyof CourseListConfig]: string
+}
