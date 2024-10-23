@@ -15,6 +15,10 @@ import Loading from '@/components/Loading'
 import AdminGuard from './guards/AdminGuard'
 import AuthGuard from './guards/AuthGuard'
 import GuestGuard from './guards/GuestGuard'
+import PermissionsGuard from './guards/PermissionsGuard'
+import { APP_PERMISSIONS } from './constants/permissions'
+import NotFound from './pages/errors/NotFound'
+import Unauthorized from './pages/errors/Unauthorized'
 
 // Lazy loading for components
 const SignUp = lazy(() => import('./pages/general/SignUp'))
@@ -181,27 +185,39 @@ function App() {
         </Route>
         {/* End */}
         {/* Admin */}
-        <Route element={<AdminGuard />}>
+        {/* <Route element={<AdminGuard />}> */}
+        <Route
+          path='/admin/'
+          element={
+            <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
+              <AdminLayout />
+            </ThemeProvider>
+          }
+        >
           <Route
-            path='/admin/'
+            path='dashboard'
+            index
             element={
-              <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
-                <AdminLayout />
-              </ThemeProvider>
+              <PermissionsGuard permissions={[APP_PERMISSIONS.DASHBOARD.VIEW as string]}>
+                <Dashboard />
+              </PermissionsGuard>
             }
-          >
-            <Route path='dashboard' index element={<Dashboard />} />
-            <Route path='courses' element={<CoursesAdmin />} />
-            <Route path='courses/:id' element={<CourseDetailAdmin />} />
-            <Route path='students' element={<Students />} />
-            <Route path='categories' element={<Category />} />
-            <Route path='private-users' element={<PrivateUserManage />} />
-            <Route path='instructors' element={<Instructors />} />
-            <Route path='instructors/:id' element={<InstructorDetail />} />
-            <Route path='accounts' element={<Accounts />} />
-            <Route path='role' element={<Role />} />
-          </Route>
+          />
+
+          <Route path='courses' element={<CoursesAdmin />} />
+          <Route path='courses/:id' element={<CourseDetailAdmin />} />
+          <Route path='students' element={<Students />} />
+          <Route path='categories' element={<Category />} />
+          <Route path='private-users' element={<PrivateUserManage />} />
+          <Route path='instructors' element={<Instructors />} />
+          <Route path='instructors/:id' element={<InstructorDetail />} />
+          <Route path='accounts' element={<Accounts />} />
+          <Route path='role' element={<Role />} />
         </Route>
+        {/* </Route> */}
+        {/* Error Route */}
+        <Route path='/501' element={<Unauthorized></Unauthorized>}></Route>
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </Suspense>
   )

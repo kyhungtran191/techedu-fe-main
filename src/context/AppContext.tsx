@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAccessTokenFromLS, getPermissions, getUserFromLS } from '@/utils/auth'
 import { Profile } from '@/@types/user.type'
+import { APP_PERMISSIONS } from '@/constants/permissions'
 
 // Api call get me
 // import { Auth } from '@/services/client'
@@ -20,7 +21,16 @@ const initialAppContext: TInitialState = {
   setIsAuthenticated: () => {},
   profile: getUserFromLS() || undefined,
   setProfile: () => {},
-  permissions: getPermissions() || undefined,
+  permissions: getPermissions() || [
+    APP_PERMISSIONS.DASHBOARD.VIEW,
+    APP_PERMISSIONS.CATEGORY.VIEW,
+    APP_PERMISSIONS.COURSES.VIEW,
+    APP_PERMISSIONS.ACCOUNTS.VIEW,
+    APP_PERMISSIONS.INSTRUCTORS.VIEW,
+    APP_PERMISSIONS.PRIVATE_USER.VIEW,
+    APP_PERMISSIONS.ROLE.VIEW,
+    APP_PERMISSIONS.STUDENT.VIEW
+  ],
   setPermissions: () => {}
 }
 

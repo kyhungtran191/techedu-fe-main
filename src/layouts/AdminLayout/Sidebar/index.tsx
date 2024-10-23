@@ -6,14 +6,47 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft, Menu, X } from 'lucide-react'
 import Nav from '../Navbar'
 import { sidelinks } from '@/data/sidelinks'
+import { APP_PERMISSIONS } from '@/constants/permissions'
+import { useAppContext } from '@/hooks/useAppContext'
 
 interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
   isCollapsed: boolean
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>
 }
 
+function filterMenuByPermissions(menu: any, userPermissions: string[]) {
+  // Check if user has 'Admin.Granted' permission
+  if (userPermissions.includes(APP_PERMISSIONS.ADMIN)) {
+    return menu.map((item: any) => ({ ...item, isHidden: false }))
+  }
+
+  return menu.map((item: any) => {
+    // Check có children hay k
+    if (item?.children?.length > 0) {
+      // Check user có permission đó k, hoặc là children đó có cần permission ko
+      const visibleChildren = item.children.filter((child: any) => {
+        return !child.permission || userPermissions.includes(child.permission)
+      })
+
+      item.isHidden = visibleChildren.length === 0
+
+      // Return the item with the filtered children
+      return {
+        ...item,
+        children: visibleChildren
+      }
+    } else {
+      // Ko có children thì check có permission ko nếu có thì check user có permission đó ko
+      item.isHidden = item.permission && !userPermissions.includes(item.permission)
+      return item
+    }
+  })
+}
+
 export default function Sidebar({ className, isCollapsed, setIsCollapsed }: SidebarProps) {
   const [navOpened, setNavOpened] = useState(false)
+
+  // Get user permissions
 
   /* Make body not scrollable when navBar is opened */
   useEffect(() => {
@@ -23,6 +56,11 @@ export default function Sidebar({ className, isCollapsed, setIsCollapsed }: Side
       document.body.classList.remove('overflow-hidden')
     }
   }, [navOpened])
+
+  // Get user permissions
+  const { permissions } = useAppContext()
+  // const userPermissions = permissions
+  const mappedArrMenu = filterMenuByPermissions(sidelinks, permissions as string[])
 
   return (
     <aside
@@ -97,7 +135,7 @@ export default function Sidebar({ className, isCollapsed, setIsCollapsed }: Side
           className={`z-40 h-full flex-1 overflow-auto ${navOpened ? 'max-h-screen' : 'max-h-0 py-0 md:max-h-screen md:py-2'}`}
           closeNav={() => setNavOpened(false)}
           isCollapsed={isCollapsed}
-          links={sidelinks}
+          links={mappedArrMenu}
         />
 
         {/* Scrollbar width toggle button */}
