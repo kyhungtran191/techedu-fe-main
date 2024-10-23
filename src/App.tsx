@@ -12,6 +12,9 @@ import LearningSpaceHeader from './layouts/LearningSpaceLayout/LearningSpaceHead
 import SetupProfileLayout from './layouts/TeacherLayout/SetupProfileLayout'
 import TeacherMainLayout from './layouts/TeacherLayout/TeacherMainLayout'
 import Loading from '@/components/Loading'
+import AdminGuard from './guards/AdminGuard'
+import AuthGuard from './guards/AuthGuard'
+import GuestGuard from './guards/GuestGuard'
 
 // Lazy loading for components
 const SignUp = lazy(() => import('./pages/general/SignUp'))
@@ -44,13 +47,6 @@ const CourseDetailAdmin = lazy(() => import('./pages/admin/courses/CourseDetailA
 const InstructorDetail = lazy(() => import('./pages/admin/users/instructors/InstructorDetail'))
 
 function App() {
-  const isAuth = true
-  const navigate = useNavigate()
-
-  function AuthGuard() {
-    return isAuth ? <Outlet /> : navigate('/')
-  }
-
   return (
     <Suspense fallback={<Loading></Loading>}>
       <Routes>
@@ -64,7 +60,7 @@ function App() {
           }
         />
 
-        {/* Grouped Courses Routes */}
+        {/* Dont need to Gurad Route */}
         <Route
           path='/courses'
           element={
@@ -77,133 +73,134 @@ function App() {
           <Route path=':id' element={<CourseDetail />} />
         </Route>
 
-        <Route
-          path='/courses/:slug/learn/:lecture'
-          element={
-            <ClientMainLayout HeaderCustom={LearningSpaceHeader}>
-              <CourseLearningSpace />
-            </ClientMainLayout>
-          }
-        />
-
-        {/* General */}
-        <Route
-          path='/signup'
-          element={
-            <BlankLayout headerOption={<OurPlan />}>
-              <SignUp />
-            </BlankLayout>
-          }
-        />
-        <Route
-          path='/login'
-          element={
-            <BlankLayout>
-              <Login />
-            </BlankLayout>
-          }
-        />
-        <Route
-          path='/ads'
-          element={
-            <BlankLayout headerOption={<OurPlan />} isFooter>
-              <Ads />
-            </BlankLayout>
-          }
-        />
-        <Route
-          path='/my-cart'
-          element={
-            <ClientMainLayout isSideBar={false} HeaderCustom={Header}>
-              <Cart />
-            </ClientMainLayout>
-          }
-        />
-
-        {/* Teacher Routes */}
-        <Route
-          path='/teacher/create-course'
-          element={
-            <CreateCourseLayout>
-              <CreateCourse />
-            </CreateCourseLayout>
-          }
-        />
-
-        <Route
-          path='/teacher/setup-account'
-          element={
-            <SetupProfileLayout>
-              <SetupProfile />
-            </SetupProfileLayout>
-          }
-        />
-
-        <Route
-          path='/teacher/'
-          element={
-            <TeacherMainLayout>
-              <Outlet />
-            </TeacherMainLayout>
-          }
-        >
-          <Route path='courses' element={<CourseManage />} />
+        {/* End */}
+        {/* Guest Guard */}
+        <Route element={<GuestGuard></GuestGuard>}>
+          <Route
+            path='/signup'
+            element={
+              <BlankLayout headerOption={<OurPlan />}>
+                <SignUp />
+              </BlankLayout>
+            }
+          />
+          <Route
+            path='/login'
+            element={
+              <BlankLayout>
+                <Login />
+              </BlankLayout>
+            }
+          />
         </Route>
+        {/* End */}
 
-        {/* Manage Course Routes */}
-        <Route
-          path='/teacher/course/:id/manage'
-          element={
-            <ManageCourseLayout>
-              <Outlet />
-            </ManageCourseLayout>
-          }
-        >
-          <Route path='curriculum' element={<Curriculum />} />
-          <Route path='overview' element={<Overview />} />
-          <Route path='landing-page' element={<LandingPage />} />
-          <Route path='course-messages' element={<CourseMessage />} />
-          <Route path='price' element={<Price />} />
+        {/* AuthGuard Page */}
+        <Route element={<AuthGuard />}>
+          {/* Manage Course Routes */}
+          <Route
+            path='/teacher/course/:id/manage'
+            element={
+              <ManageCourseLayout>
+                <Outlet />
+              </ManageCourseLayout>
+            }
+          >
+            <Route path='curriculum' element={<Curriculum />} />
+            <Route path='overview' element={<Overview />} />
+            <Route path='landing-page' element={<LandingPage />} />
+            <Route path='course-messages' element={<CourseMessage />} />
+            <Route path='price' element={<Price />} />
+          </Route>
+          {/* Teacher Routes */}
+          <Route
+            path='/teacher/create-course'
+            element={
+              <CreateCourseLayout>
+                <CreateCourse />
+              </CreateCourseLayout>
+            }
+          />
+
+          <Route
+            path='/teacher/setup-account'
+            element={
+              <SetupProfileLayout>
+                <SetupProfile />
+              </SetupProfileLayout>
+            }
+          />
+
+          <Route
+            path='/teacher/'
+            element={
+              <TeacherMainLayout>
+                <Outlet />
+              </TeacherMainLayout>
+            }
+          >
+            <Route path='courses' element={<CourseManage />} />
+          </Route>
+
+          {/* Learning Space */}
+          <Route
+            path='/courses/:slug/learn/:lecture'
+            element={
+              <ClientMainLayout HeaderCustom={LearningSpaceHeader}>
+                <CourseLearningSpace />
+              </ClientMainLayout>
+            }
+          />
+          {/* Miscellaneous */}
+          <Route
+            path='/my-cart'
+            element={
+              <ClientMainLayout isSideBar={false} HeaderCustom={Header}>
+                <Cart />
+              </ClientMainLayout>
+            }
+          />
+          <Route path='/checkout' element={<Checkout />} />
+          <Route
+            path='/profile'
+            element={
+              <ClientMainLayout>
+                <Profile />
+              </ClientMainLayout>
+            }
+          />
+
+          <Route
+            path='/enrolled-courses'
+            element={
+              <ClientMainLayout>
+                <EnrolledCourses />
+              </ClientMainLayout>
+            }
+          />
         </Route>
-
-        {/* Miscellaneous */}
-        <Route path='/checkout' element={<Checkout />} />
-        <Route
-          path='/profile'
-          element={
-            <ClientMainLayout>
-              <Profile />
-            </ClientMainLayout>
-          }
-        />
-        <Route
-          path='/enrolled-courses'
-          element={
-            <ClientMainLayout>
-              <EnrolledCourses />
-            </ClientMainLayout>
-          }
-        />
-
+        {/* End */}
         {/* Admin */}
-        <Route
-          path='/admin/'
-          element={
-            <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
-              <AdminLayout />
-            </ThemeProvider>
-          }
-        >
-          <Route path='dashboard' index element={<Dashboard />} />
-          <Route path='courses' element={<CoursesAdmin />} />
-          <Route path='courses/:id' element={<CourseDetailAdmin />} />
-          <Route path='students' element={<Students />} />
-          <Route path='categories' element={<Category />} />
-          <Route path='private-users' element={<PrivateUserManage />} />
-          <Route path='instructors' element={<Instructors />} />
-          <Route path='instructors/:id' element={<InstructorDetail />} />
-          <Route path='accounts' element={<Accounts />} />
-          <Route path='role' element={<Role />} />
+        <Route element={<AdminGuard />}>
+          <Route
+            path='/admin/'
+            element={
+              <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
+                <AdminLayout />
+              </ThemeProvider>
+            }
+          >
+            <Route path='dashboard' index element={<Dashboard />} />
+            <Route path='courses' element={<CoursesAdmin />} />
+            <Route path='courses/:id' element={<CourseDetailAdmin />} />
+            <Route path='students' element={<Students />} />
+            <Route path='categories' element={<Category />} />
+            <Route path='private-users' element={<PrivateUserManage />} />
+            <Route path='instructors' element={<Instructors />} />
+            <Route path='instructors/:id' element={<InstructorDetail />} />
+            <Route path='accounts' element={<Accounts />} />
+            <Route path='role' element={<Role />} />
+          </Route>
         </Route>
       </Routes>
     </Suspense>

@@ -16,7 +16,7 @@ type TInitialState = {
 }
 
 const initialAppContext: TInitialState = {
-  isAuthenticated: Boolean(getAccessTokenFromLS()),
+  isAuthenticated: true,
   setIsAuthenticated: () => {},
   profile: getUserFromLS() || undefined,
   setProfile: () => {},
