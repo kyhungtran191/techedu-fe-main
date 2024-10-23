@@ -17,6 +17,8 @@ import FilterBar from './components/FilterMobile'
 import CourseSection from './components/CourseSection'
 import FilterMain from './components/FilterMain'
 import PaginationCustom from '@/components/Pagination'
+import CourseListSkeleton from './components/CourseListSkeleton'
+import SectionLoading from '@/components/Loading/SectionLoading'
 
 export default function Courses() {
   const [isFilter, setIsFilter] = useState<boolean>(false)
@@ -28,6 +30,7 @@ export default function Courses() {
         <div className='px-3 text-neutral-black'>
           {/* Popular Section */}
           <CourseSection></CourseSection>
+          <CourseListSkeleton></CourseListSkeleton>
           <div className='my-6'>
             <div className='flex flex-wrap items-center justify-between'>
               <h4 className='text-2xl  mb-[18px] font-bold'>Explore</h4>
