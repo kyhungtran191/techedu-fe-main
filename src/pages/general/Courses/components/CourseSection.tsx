@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react'
+import React, { lazy, Suspense, useRef, useState } from 'react'
 import { Swiper as SwiperType } from 'swiper'
 import NavigationButton from './NavigationButton'
-import CourseList from './CourseList'
+import CourseListSkeleton from './CourseListSkeleton'
+const CourseList = lazy(() => import('./CourseList'))
 export default function CourseSection({ children }: { children?: React.ReactNode }) {
   const [isAtStart, setIsAtStart] = useState(true)
   const [isAtEnd, setIsAtEnd] = useState(false)
@@ -12,7 +13,9 @@ export default function CourseSection({ children }: { children?: React.ReactNode
         {<div className='text-2xl font-bold text-neutral-black'>For you</div>}
         <NavigationButton swiperRef={swiperRef} isAtStart={isAtStart} isAtEnd={isAtEnd} />
       </div>
-      <CourseList courses={[]} swiperRef={swiperRef} setIsAtStart={setIsAtStart} setIsAtEnd={setIsAtEnd} />
+      <Suspense fallback={<CourseListSkeleton></CourseListSkeleton>}>
+        <CourseList courses={[]} swiperRef={swiperRef} setIsAtStart={setIsAtStart} setIsAtEnd={setIsAtEnd} />
+      </Suspense>
     </div>
   )
 }
