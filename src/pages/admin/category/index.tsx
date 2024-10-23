@@ -1,10 +1,8 @@
 import { Layout } from '@/components/custom/layout'
 import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
-import React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Plus, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import {
   Select,
   SelectContent,

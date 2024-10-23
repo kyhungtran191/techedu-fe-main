@@ -1,4 +1,3 @@
-import React from 'react'
 import SampleImage5 from '@/assets/slider-5.png'
 import SampleImage1 from '@/assets/slider-1.png'
 import SampleImage2 from '@/assets/slider-2.png'

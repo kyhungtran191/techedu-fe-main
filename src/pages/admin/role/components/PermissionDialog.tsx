@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import Drag from '@/icons/Drag'
 import { KeySquare } from 'lucide-react'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
 
 export type TPermission = {
