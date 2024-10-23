@@ -1,4 +1,4 @@
- import CardImage from '@/assets/course-img2.png'
+import CardImage from '@/assets/course-img2.png'
 import StartIcon from '@/assets/star.png'
 import PeopleIcon from '@/assets/people_alt.png'
 import { Button } from '../ui/button'
@@ -17,7 +17,7 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
       <div
         className={` ${vertical ? 'h-[200px] w-full' : 'w-[30%] h-[30%] sm:w-[250px] tb:w-[300px] sm:h-[200px]'} relative `}
       >
-        <img src={CardImage} alt='course-thumb' className={`h-full w-full object-cover rounded-xl`} />
+        <img loading='lazy' src={CardImage} alt='course-thumb' className={`h-full w-full object-cover rounded-xl`} />
         <div className='absolute  hidden sm:flex items-center justify-center w-[38px] h-[38px] rounded-full bg-white shadow-md cursor-pointer right-[14px] top-4'>
           <Heart className=' text-primary-1'></Heart>
         </div>

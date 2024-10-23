@@ -9,17 +9,18 @@ import {
   PaginationPrevious
 } from '../ui/pagination'
 import Navigate from '@/icons/Navigate'
+import { QueryConfig } from '@/@types/course.type'
 
 const RANGE = 2
 interface IProps {
   path?: string
-  queryConfig?: unknown
+  queryConfig?: any
   totalPage: number
   className?: string
 }
 export default function PaginationCustom({ path, queryConfig, totalPage, className }: IProps) {
-  // Number(queryConfig?.pageindex as number)
-  const page = 1
+  //
+  const page = Number(queryConfig?.page as number)
   let dotAfter = false
   let dotBefore = false
   function renderDotAfter(index: number) {
@@ -49,14 +50,13 @@ export default function PaginationCustom({ path, queryConfig, totalPage, classNa
     <Pagination className={`${className}`}>
       <PaginationContent>
         <Link
-          to='/'
-          // to={{
-          //   pathname: path,
-          //   search: createSearchParams({
-          //     ...queryConfig,
-          //     pageindex: page - 1
-          //   }).toString()
-          // }}
+          to={{
+            pathname: path,
+            search: createSearchParams({
+              ...queryConfig,
+              page: page - 1
+            }).toString()
+          }}
           className={`mr-2 block ${page === 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer text-primary-1'}`}
         >
           <PaginationItem>
@@ -81,14 +81,13 @@ export default function PaginationCustom({ path, queryConfig, totalPage, classNa
 
             return (
               <Link
-                // to={{
-                //   pathname: path,
-                //   search: createSearchParams({
-                //     ...queryConfig,
-                //     pageindex: pageNumber
-                //   }).toString()
-                // }}
-                to='/'
+                to={{
+                  pathname: path,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    page: pageNumber
+                  }).toString()
+                }}
                 key={index}
               >
                 <PaginationItem>
@@ -100,14 +99,13 @@ export default function PaginationCustom({ path, queryConfig, totalPage, classNa
             )
           })}
         <Link
-          // to={{
-          //   pathname: path,
-          //   search: createSearchParams({
-          //     ...queryConfig,
-          //     pageindex: page + 1
-          //   }).toString()
-          // }}
-          to='/'
+          to={{
+            pathname: path,
+            search: createSearchParams({
+              ...queryConfig,
+              page: page + 1
+            }).toString()
+          }}
           className={`block ${page === totalPage ? 'opacity-50 pointer-events-none' : 'cursor-pointer text-primary-1'}`}
         >
           <PaginationItem>
