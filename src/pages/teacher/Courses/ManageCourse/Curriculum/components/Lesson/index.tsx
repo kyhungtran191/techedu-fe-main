@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useState } from 'react'
 import Navigate from '@/icons/Navigate'
 import Drag from '@/icons/Drag'
@@ -15,6 +16,13 @@ import { TLesson } from '@/@types/course.type'
 import VideoUpload from '../VideoUpload'
 import axios, { CancelTokenSource } from 'axios'
 import UploadStatus from '../VideoUpload/UploadStatus'
+import { Switch } from '@/components/ui/switch'
+import Tiptap from '@/components/TipTap'
+
+import * as yup from 'yup'
+import { Controller, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import FileDropUpload from '@/components/FileUploads'
 export default function Lesson(props: TLesson) {
   const [isAddNewContent, setIsAddNewContent] = useState(false)
   const [isAddFromLibrary, setIsAddFromLibrary] = useState(false)
@@ -23,7 +31,26 @@ export default function Lesson(props: TLesson) {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [uploading, setUploading] = useState(false)
   const [file, setFile] = useState<File | null>(null)
+  const [uploadSource, setUploadSource] = useState<File | null>(null)
+  const [uploadResource, setUploadResource] = useState<boolean>(false)
   const [cancelToken, setCancelToken] = useState<CancelTokenSource | null>(null)
+  const [isAddDescription, setIsAddDescription] = useState(false)
+
+  // Yup validate
+  const schema = yup.object().shape({
+    description: yup.string().required('Required_field')
+  })
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors, isValid },
+    reset,
+    getValues
+  } = useForm({
+    mode: 'onChange',
+    resolver: yupResolver(schema)
+  })
 
   // Handle Upload
   const handleUpload = async () => {
@@ -59,10 +86,24 @@ export default function Lesson(props: TLesson) {
     }
   }
 
+  const handleSubmitDataDescription = () => {}
+
   useEffect(() => {
     if (!file) return
     handleUpload()
   }, [file])
+
+  const handleCancelDescription = () => {
+    reset({
+      description: ''
+    })
+    setIsAddDescription(false)
+  }
+
+  const handleCancelResource = () => {
+    setUploadSource(null)
+    setUploadResource(false)
+  }
 
   const handleCancel = useCallback(() => {
     if (cancelToken) {
@@ -77,7 +118,6 @@ export default function Lesson(props: TLesson) {
    *  - resources
    *  -
    */
-  console.log('rerender')
   return (
     <div className='pb-6 border-b border-neutral-black'>
       <div className='flex items-center justify-between mt-6'>
@@ -217,7 +257,7 @@ export default function Lesson(props: TLesson) {
           </div>
         )}
         {/* After uploading */}
-        {/* <div>
+        <div>
           <div className='flex items-center mt-6'>
             <div className='flex items-center flex-1'>
               <img
@@ -229,24 +269,71 @@ export default function Lesson(props: TLesson) {
             </div>
             <div className='flex items-center justify-between flex-1'>
               <p className='text-[18px]'>05/08/2024</p>
-              <div className='flex items-center text-[18px] mx-8'>
-                <p>Downloadable</p>
-                <Switch className='ml-5'></Switch>
-              </div>
-              <div className='cursor-pointer text-primary-1'>Edit</div>
+              <div className='text-lg font-medium cursor-pointer text-primary-1'>Edit</div>
             </div>
           </div>
           <div className=''>
-            <Button className='flex items-center justify-center mt-3 border rounded-lg text-neutral-black border-neutral-black hover:bg-inherit hover:text-inherit'>
-              <Plus className='mr-[10px]'></Plus>
-              <span>Description</span>
-            </Button>
-            <Button className='flex items-center justify-center mt-3 border rounded-lg text-neutral-black border-neutral-black hover:bg-inherit hover:text-inherit'>
+            <div>
+              <Button
+                className={`${!isAddDescription ? 'flex' : 'hidden'} items-center justify-center mt-3 border rounded-lg text-neutral-black border-neutral-black hover:bg-inherit hover:text-inherit `}
+                variant={'ghost'}
+                onClick={() => setIsAddDescription(true)}
+              >
+                <Plus className='mr-[10px]'></Plus>
+                <span>Description</span>
+              </Button>
+              <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${isAddDescription ? 'h-auto py-6' : 'h-0 p-0 '}`}
+              >
+                <h2 className='text-lg font-semibold'>Description</h2>
+                <Controller
+                  control={control}
+                  name='description'
+                  render={({ field }) => (
+                    <Tiptap
+                      className='my-3 min-h-[206px] w-full text-xl rounded-lg  py-[18px] px-3 outline-none placeholder:text-neutral-silver-3 bg-white cursor-text'
+                      placeholder='Add a description that outlines what students will be able to do after finishing the '
+                      description={''}
+                      {...field}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                <div className='flex items-center justify-end gap-x-3'>
+                  <Button onClick={handleCancelDescription} variant={'ghost'}>
+                    Cancel
+                  </Button>
+                  <Button className='w-fit' disabled={!isValid} variant={'custom'}>
+                    Apply
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <Button
+              className={`${uploadResource ? 'hidden' : 'flex'} items-center justify-center mt-3 border rounded-lg text-neutral-black border-neutral-black hover:bg-inherit hover:text-inherit`}
+              variant={'ghost'}
+              onClick={() => setUploadResource(true)}
+            >
               <Plus className='mr-[10px]'></Plus>
               <span>Resources</span>
             </Button>
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${uploadResource ? 'h-auto py-6' : 'h-0 p-0 '}`}
+            >
+              <h2 className='text-lg font-semibold'>Resources</h2>
+
+              <FileDropUpload onSetFile={setUploadSource} className='my-3'></FileDropUpload>
+              <div className='flex items-center justify-end gap-x-3'>
+                <Button onClick={handleCancelResource} variant={'ghost'}>
+                  Cancel
+                </Button>
+                <Button className='w-fit' disabled={!isValid} variant={'custom'}>
+                  Apply
+                </Button>
+              </div>
+            </div>
           </div>
-        </div> */}
+        </div>
         {/* End */}
       </div>
     </div>

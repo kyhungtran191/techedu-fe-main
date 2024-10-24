@@ -39,8 +39,6 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
     return () => document.removeEventListener('keydown', keyHandler)
   })
 
-  // Save local storage
-
   type GroupOption = {
     link: string
     title: string
@@ -136,7 +134,7 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
           <div className='px-3 py-2 rounded-lg bg-neutral-silver-1'>Draft</div>
         </div>
         <h2 className='mt-2 mb-1 text-xl font-bold bg-white text-neutral-black'>UI animation for UX/UI Designers</h2>
-        <div className='flex flex-col h-full py-5 overflow-y-scroll duration-300 ease-linear no-scrollbar'>
+        <div className='flex flex-col h-full overflow-y-scroll duration-300 ease-linear no-scrollbar'>
           {/* <!-- Sidebar Menu --> */}
           <nav className='mt-5'>
             {sidebarOptions.map((item: sideBarOption, index) => (
@@ -154,7 +152,7 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
                             pathname === option?.link && 'bg-primary-3'
                           }`}
                         >
-                          <Checkbox className='w-6 h-6 border-2 rounded-full'></Checkbox>
+                          <Checkbox className='w-6 h-6 border-2 rounded-full' checked={true}></Checkbox>
                           <div className=' xl:block'> {option?.title}</div>
                         </NavLink>
                       </li>
@@ -165,7 +163,9 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
 
             {/* <!-- Others Group --> */}
           </nav>
-          <Button className='py-6 !rounded-lg px-[18px] text-base bg-neutral-silver-3'>Submit for review</Button>
+          <Button className='py-6 !rounded-lg px-[18px] text-base bg-neutral-silver-3' variant={'custom'} disabled>
+            Submit for review
+          </Button>
           {/* <!-- Sidebar Menu --> */}
         </div>
       </aside>

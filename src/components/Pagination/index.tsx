@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link, createSearchParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import {
   Pagination,
   PaginationContent,
@@ -9,7 +9,6 @@ import {
   PaginationPrevious
 } from '../ui/pagination'
 import Navigate from '@/icons/Navigate'
-import { QueryConfig } from '@/@types/course.type'
 
 const RANGE = 2
 interface IProps {
@@ -18,11 +17,14 @@ interface IProps {
   totalPage: number
   className?: string
 }
+
 export default function PaginationCustom({ path, queryConfig, totalPage, className }: IProps) {
-  //
-  const page = Number(queryConfig?.page as number)
+  const navigate = useNavigate()
+  const page = Number(queryConfig?.page) || 1
+
   let dotAfter = false
   let dotBefore = false
+
   function renderDotAfter(index: number) {
     if (!dotAfter) {
       dotAfter = true
@@ -36,6 +38,7 @@ export default function PaginationCustom({ path, queryConfig, totalPage, classNa
       )
     }
   }
+
   function renderDotBefore(index: number) {
     if (!dotBefore) {
       dotBefore = true
@@ -46,27 +49,39 @@ export default function PaginationCustom({ path, queryConfig, totalPage, classNa
       )
     }
   }
+
+  // Add smooth scroll to top after page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [page])
+
+  const handlePageChange = (newPage: number) => {
+    navigate({
+      pathname: path,
+      search: createSearchParams({
+        ...queryConfig,
+        page: newPage.toString() // Ensure page is a string
+      }).toString()
+    })
+  }
+
   return (
     <Pagination className={`${className}`}>
       <PaginationContent>
-        <Link
-          to={{
-            pathname: path,
-            search: createSearchParams({
-              ...queryConfig,
-              page: page - 1
-            }).toString()
-          }}
-          className={`mr-2 block ${page === 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer text-primary-1'}`}
+        <button
+          onClick={() => handlePageChange(page - 1)}
+          className={`mr-2 block ${page === 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer text-primary-1 transition-all duration-300'}`}
         >
           <PaginationItem>
-            <Navigate></Navigate>
+            <Navigate />
           </PaginationItem>
-        </Link>
+        </button>
+
         {Array(totalPage)
           .fill(0)
           .map((_, index) => {
             const pageNumber = index + 1
+
             if (page <= RANGE * 2 + 1 && pageNumber > page + RANGE && pageNumber <= totalPage - RANGE) {
               return renderDotAfter(index)
             } else if (page > RANGE * 2 + 1 && page < totalPage - RANGE * 2) {
@@ -80,38 +95,26 @@ export default function PaginationCustom({ path, queryConfig, totalPage, classNa
             }
 
             return (
-              <Link
-                to={{
-                  pathname: path,
-                  search: createSearchParams({
-                    ...queryConfig,
-                    page: pageNumber
-                  }).toString()
-                }}
+              <button
+                onClick={() => handlePageChange(pageNumber)}
                 key={index}
+                className='transition-all duration-300 ease-in-out transform hover:scale-105 focus:scale-95'
               >
                 <PaginationItem>
-                  <PaginationLink href='#' isActive={Number(pageNumber) == page}>
-                    {pageNumber}
-                  </PaginationLink>
+                  <PaginationLink isActive={Number(pageNumber) === page}>{pageNumber}</PaginationLink>
                 </PaginationItem>
-              </Link>
+              </button>
             )
           })}
-        <Link
-          to={{
-            pathname: path,
-            search: createSearchParams({
-              ...queryConfig,
-              page: page + 1
-            }).toString()
-          }}
-          className={`block ${page === totalPage ? 'opacity-50 pointer-events-none' : 'cursor-pointer text-primary-1'}`}
+
+        <button
+          onClick={() => handlePageChange(page + 1)}
+          className={`block ${page === totalPage ? 'opacity-50 pointer-events-none' : 'cursor-pointer text-primary-1 transition-all duration-300'}`}
         >
           <PaginationItem>
-            <Navigate className='rotate-180'></Navigate>
+            <Navigate className='rotate-180' />
           </PaginationItem>
-        </Link>
+        </button>
       </PaginationContent>
     </Pagination>
   )

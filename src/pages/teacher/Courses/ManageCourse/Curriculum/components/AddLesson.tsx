@@ -23,20 +23,13 @@ export default function AddLesson() {
   const {
     handleSubmit,
     control,
-    trigger,
-    formState: { errors },
+    formState: { errors, isValid },
     reset,
-    setError,
     getValues
   } = useForm({
     mode: 'onChange',
     resolver: yupResolver(schema)
   })
-
-  // Trigger first validate
-  useEffect(() => {
-    trigger()
-  }, [trigger])
 
   const handleCancelCreateLesson = () => {
     reset({
@@ -59,6 +52,7 @@ export default function AddLesson() {
     <div className='mt-8'>
       <Button
         className={`${isAddLesson ? 'hidden' : 'flex'} items-center px-6 py-6 bg-white shadow-md text-neutral-black`}
+        variant={'secondary'}
         onClick={() => setIsAddLesson(true)}
       >
         <Plus></Plus>
@@ -84,13 +78,14 @@ export default function AddLesson() {
         <div className='flex items-center'>
           <div
             className='py-3 px-[18px] cursor-pointer border border-neutral-black mr-3 rounded-lg'
-            onClick={() => setIsAddLesson(false)}
+            onClick={handleCancelCreateLesson}
           >
             Cancel
           </div>
           <Button
-            disabled={Boolean(errors?.lesson_name?.message)}
+            disabled={!isValid}
             className={` text-white p-6 ${errors?.lesson_name?.message ? 'bg-neutral-black' : 'bg-primary-1'}`}
+            variant={'custom'}
           >
             Apply
           </Button>
