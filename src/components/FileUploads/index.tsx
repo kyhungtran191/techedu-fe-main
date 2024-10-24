@@ -3,15 +3,16 @@ import { useDropzone } from 'react-dropzone'
 import { Input } from '@/components/ui/input'
 import Upload from '@/icons/Upload'
 
-interface ImageDropUploadProps {
+interface FileDropUploadProps {
   onUpload?: () => void
   onSetFile: Dispatch<SetStateAction<File | null>>
   className?: string
 }
 
-const ImageDropUpload: React.FC<ImageDropUploadProps> = ({ onUpload, onSetFile, className }) => {
+const FileDropUpload: React.FC<FileDropUploadProps> = ({ onUpload, onSetFile, className }) => {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
+      console.log(acceptedFiles)
       if (acceptedFiles.length > 0) {
         onSetFile(acceptedFiles[0])
       }
@@ -19,13 +20,13 @@ const ImageDropUpload: React.FC<ImageDropUploadProps> = ({ onUpload, onSetFile, 
     [onSetFile]
   )
 
-  // Configure the dropzone to accept only image files
+  // Configure the dropzone to accept .zip files or general files
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/jpeg': [], // Accept JPEG images
-      'image/png': [], // Accept PNG images
-      'image/webp': [] // Accept WEBP images
+      'application/zip': [], // Accept .zip files
+      'application/x-zip-compressed': [], // Another MIME type for zip files
+      '*/*': [] // Accept all file types if desired (optional)
     }
   })
 
@@ -37,13 +38,13 @@ const ImageDropUpload: React.FC<ImageDropUploadProps> = ({ onUpload, onSetFile, 
       >
         <Input {...getInputProps()} className='hidden' />
         <Upload className='w-12 h-12 mb-5' />
-        <div className='mt-5 mb-3 text-xl font-medium'>Upload your image</div>
+        <div className='mt-5 mb-3 text-xl font-medium'>Upload your file</div>
         <div className='text-[18px]'>
           {isDragActive ? (
-            <p>Drop your image here...</p> // Message when dragging an image
+            <p>Drop your file here...</p> // Message when dragging a file
           ) : (
             <p>
-              Drag and drop your image here or <span className='font-light text-primary-1'>choose files</span>
+              Drag and drop your file here or <span className='font-light text-primary-1'>choose files</span>
             </p>
           )}
         </div>
@@ -52,4 +53,4 @@ const ImageDropUpload: React.FC<ImageDropUploadProps> = ({ onUpload, onSetFile, 
   )
 }
 
-export default ImageDropUpload
+export default FileDropUpload
