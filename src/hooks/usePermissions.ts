@@ -5,7 +5,7 @@ import { APP_PERMISSIONS } from '@/constants/permissions'
 type TActions = 'CREATE' | 'VIEW' | 'UPDATE' | 'DELETE'
 
 export const usePermission = (key: string, actions: TActions[]) => {
-  const { profile, permissions } = useAppContext()
+  const { profile, permissions: userPermission } = useAppContext()
 
   const defaultValues = {
     VIEW: false,
@@ -16,14 +16,11 @@ export const usePermission = (key: string, actions: TActions[]) => {
 
   const getObjectValue = (obj: any, key: string) => {
     const keys = key?.split('.')
-    console.log(keys)
     let result = obj
-    if (keys && !!key.length) {
+    if (keys && key.length > 0) {
       for (const k of keys) {
-        console.log(k, k in result)
         if (k in result) {
           result = result[k]
-          console.log('result', result)
         } else {
           return undefined
         }
@@ -32,27 +29,24 @@ export const usePermission = (key: string, actions: TActions[]) => {
     return result
   }
 
-  const userPermission = permissions
-
   const [permission, setPermission] = useState(defaultValues)
 
   useEffect(() => {
     const mapPermission = getObjectValue(APP_PERMISSIONS, key)
-
-    console.log(mapPermission)
+    const updatedPermissions = { ...defaultValues }
 
     actions.forEach((mode) => {
-      if (userPermission?.includes(APP_PERMISSIONS?.ADMIN)) {
-        defaultValues[mode] = true
-      } else if (userPermission?.includes(mapPermission[mode])) {
-        defaultValues[mode] = true
+      if (userPermission?.includes(APP_PERMISSIONS.ADMIN)) {
+        updatedPermissions[mode] = true
+      } else if (mapPermission && userPermission?.includes(mapPermission[mode])) {
+        updatedPermissions[mode] = true
       } else {
-        defaultValues[mode] = false
+        updatedPermissions[mode] = false
       }
     })
-    setPermission(defaultValues)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [permissions])
+
+    setPermission(updatedPermissions)
+  }, [userPermission])
 
   return permission
 }

@@ -113,7 +113,7 @@ const mockData: ITypeCategoryTable[] = [
 ]
 
 export default function Category() {
-  const { CREATE, DELETE, UPDATE, VIEW } = usePermission('CATEGORY', ['VIEW'])
+  const { CREATE, DELETE, UPDATE, VIEW } = usePermission('CATEGORY', ['VIEW', 'CREATE'])
 
   console.log('CREATE - DELETE - UPDATE - VIEW', CREATE, DELETE, UPDATE, VIEW)
 
@@ -227,9 +227,7 @@ export default function Category() {
       <Layout.Body className=''>
         <div className='flex items-center justify-between space-y-2'>
           <h1 className='text-2xl font-bold tracking-tight'>Categories</h1>
-          <div className='flex items-center space-x-2'>
-            <Button>Export to CSV</Button>
-          </div>
+          <div className='flex items-center space-x-2'>{VIEW && <Button>Export to CSV</Button>}</div>
         </div>
         <div className='grid gap-2 mt-4 xl:grid-cols-2'>
           <div className='py-1 px-2 bg-white rounded-xl flex items-center gap-x-[10px] flex-1 max-w[50vw] border '>
