@@ -228,16 +228,14 @@ export default function PrivateUserManage() {
             {/* 2 */}
             <FilterStatus path='/admin/private-users' queryConfig={queryConfig}></FilterStatus>
           </div>
-          {CREATE && (
-            <EditAddUserDialog
-              CREATE_PERMISSION={CREATE}
-              open={openDialog}
-              setOpenDialog={setOpenDialog}
-              idUser={editUser}
-              setEditUser={setEditUser}
-              wrapperClass='w-fit ml-auto'
-            ></EditAddUserDialog>
-          )}
+          <EditAddUserDialog
+            CREATE_PERMISSION={CREATE}
+            open={openDialog}
+            setOpenDialog={setOpenDialog}
+            idUser={editUser}
+            setEditUser={setEditUser}
+            wrapperClass='w-fit ml-auto'
+          ></EditAddUserDialog>
         </div>
         <div className='mt-5 w-full overflow-auto h-[500px] rounded-lg no-scrollbar'>
           <Table className='w-full h-full overflow-auto'>
