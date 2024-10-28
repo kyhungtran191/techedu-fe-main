@@ -7,7 +7,6 @@ import { Button } from '../ui/button'
 import { Badge } from '../ui/badge'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command'
 
-
 export type OptionType = {
   label: string
   value: string | number
@@ -76,8 +75,8 @@ function MultiSelect({ options, selected, onChange, className, name, classNameWr
           <ChevronsUpDown className='w-3 h-3 opacity-50 shrink-0' />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className='w-full p-0'>
-        <Command className={className}>
+      <PopoverContent className={`${className} p-0`}>
+        <Command>
           <CommandInput placeholder='Search ...' />
           <CommandEmpty>No item found.</CommandEmpty>
           <CommandList className='overflow-auto max-h-64'>

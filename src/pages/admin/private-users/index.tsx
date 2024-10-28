@@ -1,22 +1,21 @@
 import { Layout } from '@/components/custom/layout'
 import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Search } from 'lucide-react'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
+
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import ThreeDots from '@/icons/ThreeDots'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import PaginationCustom from '@/components/Pagination'
+import { useState } from 'react'
+import EditAddUserDialog from './components/EditAddDialog'
+import { usePermission } from '@/hooks/usePermissions'
+import { isUndefined, omitBy } from 'lodash'
+import { useNavigate } from 'react-router-dom'
+import useParamsVariables from '@/hooks/useParamsVariable'
+import SearchInput from '../components/Search'
+import FilterRole from '../components/FilterRoles'
+import FilterStatus from '../components/FilterStatus'
 
 type ITypePrivateUserTable = {
   _id: string
@@ -70,7 +69,37 @@ const mockData: ITypePrivateUserTable[] = [
   }
 ]
 
+type QueryParams = {
+  page?: string
+  limit?: string
+  search?: string
+  roles?: string
+  status?: string
+}
+
+export type QueryConfig = {
+  [key in keyof QueryParams]: string
+}
+
 export default function PrivateUserManage() {
+  const queryParams: QueryParams = useParamsVariables()
+  const queryConfig: QueryConfig = omitBy(
+    {
+      page: queryParams.page || '1',
+      limit: queryParams.limit || '8',
+      roles: queryParams.roles,
+      status: queryParams.status,
+      search: queryParams.search
+    },
+    isUndefined
+  )
+
+  // check user permission
+  const { CREATE, DELETE, UPDATE, VIEW } = usePermission('PRIVATE_USER', ['VIEW', 'CREATE', 'DELETE', 'UPDATE'])
+
+  const [openDialog, setOpenDialog] = useState<boolean>(false)
+  const [editUser, setEditUser] = useState<undefined | string>(undefined)
+
   const columns = [
     {
       id: 'fullName',
@@ -137,12 +166,22 @@ export default function PrivateUserManage() {
                 <ThreeDots></ThreeDots>
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end' className='rounded-xl min-w-[160px] py-2'>
-                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                  Update Member
-                </DropdownMenuItem>
-                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                  {row.original.status == 0 ? 'Activated Member' : 'Inactivate Member'}
-                </DropdownMenuItem>
+                {UPDATE && (
+                  <>
+                    <DropdownMenuItem
+                      className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                      onSelect={() => {
+                        setEditUser(row.original._id)
+                        setOpenDialog(true)
+                      }}
+                    >
+                      Update Member
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
+                      {row.original.status == 0 ? 'Activated Member' : 'Inactivate Member'}
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
                   Activity logs
                 </DropdownMenuItem>
@@ -177,60 +216,28 @@ export default function PrivateUserManage() {
           </div>
         </div>
         <div className='grid gap-2 mt-4 xl:grid-cols-2'>
-          <div className='py-1 px-2 bg-white rounded-xl flex items-center gap-x-[10px] flex-1 max-w[50vw] border '>
-            <Search className='flex-shrink-0 w-4 h-4 '></Search>
-            <Input
-              className='px-0 py-0 text-sm bg-transparent border-none outline-none md:text-base '
-              placeholder='Search your courses'
-            ></Input>
-          </div>
+          <SearchInput
+            queryConfig={queryConfig}
+            path='/admin/private-users'
+            placeholder='Search in private users'
+          ></SearchInput>
         </div>
         <div className='grid grid-cols-2 mt-5'>
           <div className='grid items-center grid-cols-2 gap-2 md:grid-cols-3'>
-            <Select>
-              <SelectTrigger className='font-medium rounded-lg text-neutral-black'>
-                <SelectValue placeholder='Sort by' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup className='text-base'>
-                  <SelectLabel></SelectLabel>
-                  <SelectItem value='popular'>Popular</SelectItem>
-                  <SelectItem value='highest-rated'>Highest rated</SelectItem>
-                  <SelectItem value='newest'>Newest</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-
+            <FilterRole queryConfig={queryConfig} className='col-span-2' path={'/admin/private-users'}></FilterRole>
             {/* 2 */}
-            <Select>
-              <SelectTrigger className='font-medium rounded-lg text-neutral-black'>
-                <SelectValue placeholder='Sort by' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup className='text-base'>
-                  <SelectLabel></SelectLabel>
-                  <SelectItem value='popular'>Popular</SelectItem>
-                  <SelectItem value='highest-rated'>Highest rated</SelectItem>
-                  <SelectItem value='newest'>Newest</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-
-            <Select>
-              <SelectTrigger className='font-medium rounded-lg text-neutral-black'>
-                <SelectValue placeholder='Sort by' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup className='text-base'>
-                  <SelectLabel></SelectLabel>
-                  <SelectItem value='popular'>Popular</SelectItem>
-                  <SelectItem value='highest-rated'>Highest rated</SelectItem>
-                  <SelectItem value='newest'>Newest</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <FilterStatus path='/admin/private-users' queryConfig={queryConfig}></FilterStatus>
           </div>
-          <Button className='ml-auto w-fit'>Add new member</Button>
+          {CREATE && (
+            <EditAddUserDialog
+              CREATE_PERMISSION={CREATE}
+              open={openDialog}
+              setOpenDialog={setOpenDialog}
+              idUser={editUser}
+              setEditUser={setEditUser}
+              wrapperClass='w-fit ml-auto'
+            ></EditAddUserDialog>
+          )}
         </div>
         <div className='mt-5 w-full overflow-auto h-[500px] rounded-lg no-scrollbar'>
           <Table className='w-full h-full overflow-auto'>
@@ -274,7 +281,7 @@ export default function PrivateUserManage() {
             </TableBody>
           </Table>
         </div>
-        <PaginationCustom totalPage={10} className='mt-3'></PaginationCustom>
+        <PaginationCustom totalPage={10} className='mt-3' queryConfig={queryConfig}></PaginationCustom>
       </Layout.Body>
     </Layout>
   )

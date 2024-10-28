@@ -91,8 +91,8 @@ export default function AuthCarousel({ className }: { className?: string }) {
     >
       {arrayReviewers.map((item, index) => (
         <SwiperSlide key={item.by + index}>
-          <img src={item?.image} alt='' className='object-cover w-full h-full rounded-[20px] relative' />
-          <div className="absolute inset-0 bg-black/20"></div>
+          <img loading='lazy' src={item?.image} alt='' className='object-cover w-full h-full rounded-[20px] relative' />
+          <div className='absolute inset-0 bg-black/20'></div>
           <div className='absolute bottom-0 p-4 text-white'>
             <img src={Quote} alt='' className='w-[58px] h-[58px]' />
             <p className=''>{item?.desc}</p>

@@ -1,5 +1,6 @@
 import { Outlet, Route, Routes, useNavigate } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
+// Partial - Layout
 import BlankLayout from './layouts/BlankLayout'
 import ClientMainLayout from './layouts/ClientMainLayout'
 import OurPlan from './components/BlankOptions/OurPlan'
@@ -11,14 +12,21 @@ import { ThemeProvider } from './components/custom/theme-provider'
 import LearningSpaceHeader from './layouts/LearningSpaceLayout/LearningSpaceHeader'
 import SetupProfileLayout from './layouts/TeacherLayout/SetupProfileLayout'
 import TeacherMainLayout from './layouts/TeacherLayout/TeacherMainLayout'
+
+// Partial - Loading
 import Loading from '@/components/Loading'
+
+// Guard Custom
 import AdminGuard from './guards/AdminGuard'
 import AuthGuard from './guards/AuthGuard'
 import GuestGuard from './guards/GuestGuard'
 import PermissionsGuard from './guards/PermissionsGuard'
+// Constant permissions
 import { APP_PERMISSIONS } from './constants/permissions'
 import NotFound from './pages/errors/NotFound'
 import Unauthorized from './pages/errors/Unauthorized'
+import ConfirmPassword from './pages/general/confirm-password'
+import ForgotPassword from './pages/general/forgot-password'
 
 // Lazy loading for components
 const SignUp = lazy(() => import('./pages/general/SignUp'))
@@ -76,7 +84,6 @@ function App() {
           <Route index element={<Courses />} />
           <Route path=':id' element={<CourseDetail />} />
         </Route>
-
         {/* End */}
         {/* Guest Guard */}
         <Route element={<GuestGuard></GuestGuard>}>
@@ -96,6 +103,22 @@ function App() {
               </BlankLayout>
             }
           />
+          <Route
+            path='/confirm-password/:userId/token/:token'
+            element={
+              <BlankLayout>
+                <ConfirmPassword></ConfirmPassword>
+              </BlankLayout>
+            }
+          ></Route>
+          <Route
+            path='/forgot-password'
+            element={
+              <BlankLayout>
+                <ForgotPassword></ForgotPassword>
+              </BlankLayout>
+            }
+          ></Route>
         </Route>
         {/* End */}
 

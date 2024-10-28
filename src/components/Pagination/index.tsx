@@ -19,6 +19,7 @@ interface IProps {
 }
 
 export default function PaginationCustom({ path, queryConfig, totalPage, className }: IProps) {
+  
   const navigate = useNavigate()
   const page = Number(queryConfig?.page) || 1
 

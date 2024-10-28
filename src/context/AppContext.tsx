@@ -17,17 +17,20 @@ type TInitialState = {
 }
 
 const initialAppContext: TInitialState = {
-  isAuthenticated: true,
+  isAuthenticated: false,
   setIsAuthenticated: () => {},
   profile: getUserFromLS() || undefined,
   setProfile: () => {},
   permissions: getPermissions() || [
     APP_PERMISSIONS.DASHBOARD.VIEW,
     APP_PERMISSIONS.CATEGORY.VIEW,
+    APP_PERMISSIONS.CATEGORY.CREATE,
     APP_PERMISSIONS.COURSES.VIEW,
     APP_PERMISSIONS.ACCOUNTS.VIEW,
     APP_PERMISSIONS.INSTRUCTORS.VIEW,
     APP_PERMISSIONS.PRIVATE_USER.VIEW,
+    APP_PERMISSIONS.PRIVATE_USER.CREATE,
+    APP_PERMISSIONS.PRIVATE_USER.UPDATE,
     APP_PERMISSIONS.ROLE.VIEW,
     APP_PERMISSIONS.STUDENT.VIEW
   ],
