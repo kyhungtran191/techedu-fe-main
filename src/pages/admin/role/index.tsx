@@ -30,9 +30,11 @@ import { Separator } from '@/components/ui/separator'
 
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import ThreeDots from '@/icons/ThreeDots'
-import { Pen } from 'lucide-react'
+import { Edit, Pen } from 'lucide-react'
 import PermissionDialog from './components/PermissionDialog'
 import { UserNav } from '@/components/custom/user-nav'
+import EditAddRoleDialog from './components/EditAddRoleDialog'
+import { usePermission } from '@/hooks/usePermissions'
 
 interface IRole {
   _id: number
@@ -43,35 +45,36 @@ interface IRole {
 }
 // Permission table type
 // Type Permission
-
+const roleData: IRole[] = [
+  {
+    _id: 1,
+    name: 'Student',
+    slug: 'student',
+    created_date: new Date().toLocaleDateString('vi-VN'),
+    permissions: []
+  },
+  {
+    _id: 2,
+    name: 'Instructor',
+    slug: 'instructor',
+    created_date: new Date().toLocaleDateString('vi-VN'),
+    permissions: []
+  },
+  {
+    _id: 3,
+    name: 'Admin',
+    slug: 'admin',
+    created_date: new Date().toLocaleDateString('vi-VN'),
+    permissions: []
+  }
+]
 export default function Role() {
+  const [openDialog, setOpenDialog] = useState<boolean>(false)
+  const [editRole, setEditRole] = useState<undefined | string>(undefined)
+
   // Filter is not checked list
   // Filter is checked list
-
-  const roleData: IRole[] = [
-    {
-      _id: 1,
-      name: 'Student',
-      slug: 'student',
-      created_date: new Date().toLocaleDateString('vi-VN'),
-      permissions: []
-    },
-    {
-      _id: 2,
-      name: 'Instructor',
-      slug: 'instructor',
-      created_date: new Date().toLocaleDateString('vi-VN'),
-      permissions: []
-    },
-    {
-      _id: 3,
-      name: 'Admin',
-      slug: 'admin',
-      created_date: new Date().toLocaleDateString('vi-VN'),
-      permissions: []
-    }
-  ]
-
+  console.log(1)
   // Table Columns
   const columns = [
     {
@@ -113,23 +116,18 @@ export default function Role() {
                 <ThreeDots></ThreeDots>
               </DropdownMenuTrigger>
               <DropdownMenuContent className='rounded-xl min-w-[160px]'>
-                <Dialog>
-                  <DialogTrigger className='flex items-center  text-sm rounded-lg  gap-x-[19px] w-full cursor-pointer hover:bg-neutral-silver mb-2 font-medium py-2 px-2 focus:outline-none'>
-                    <Pen className='w-5 h-5'></Pen>
-                    Edit
-                  </DialogTrigger>
-                  <DialogContent className='sm:max-w-[425px]'>
-                    <DialogHeader>
-                      <DialogTitle>Edit Role Information</DialogTitle>
-                    </DialogHeader>
-                    <div className='py-4'></div>
-                    <DialogFooter>
-                      <Button type='submit' variant={'custom'} disabled>
-                        Update
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                {UPDATE && (
+                  <DropdownMenuItem
+                    className='flex items-center w-full p-3 mb-2 text-sm text-center rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none gap-x-[18px]'
+                    onSelect={() => {
+                      setEditRole(row.original._id)
+                      setOpenDialog(true)
+                    }}
+                  >
+                    <Edit className='w-5 h-5'></Edit>
+                    Update role
+                  </DropdownMenuItem>
+                )}
                 <Separator className='mb-2'></Separator>
                 <PermissionDialog authorizeAuthId={row.original._id}></PermissionDialog>
               </DropdownMenuContent>
@@ -148,14 +146,26 @@ export default function Role() {
     columns,
     getCoreRowModel: getCoreRowModel()
   })
+
+  const { CREATE, VIEW, UPDATE, DELETE } = usePermission('ROLE', ['CREATE', 'VIEW', 'UPDATE', 'DELETE'])
   /* end init role table */
   return (
     <Layout>
-      <Layout.Header>
+      <Layout.Header className='flex items-center justify-between'>
         <h2 className='text-4xl font-bold text-primary'>Role Management</h2>
         <UserNav></UserNav>
       </Layout.Header>
       <Layout.Body>
+        <div className='flex justify-end my-5'>
+          <EditAddRoleDialog
+            open={openDialog}
+            setOpenDialog={setOpenDialog}
+            idRole={editRole}
+            setEditRole={setEditRole}
+            CREATE_PERMISSION={CREATE}
+          ></EditAddRoleDialog>
+        </div>
+
         <Table className='border'>
           <TableHeader>
             {roleTable.getHeaderGroups().map((headerGroup) => (
