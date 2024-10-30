@@ -31,7 +31,7 @@ const PermissionsGuard = (props: AclGuardProps) => {
   //     : user?.role?.permissions
   //   : []
 
-  if (isAuthenticated && !ability) {
+  if (isAuthenticated && !ability && userPermissions) {
     ability = buildAbilityFor(userPermissions, permissions)
   }
 

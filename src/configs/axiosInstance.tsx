@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppContext } from '@/hooks/useAppContext'
 import { useQueryClient } from '@tanstack/react-query'
 import { URL } from '@/apis/index'
-import { refreshTokenAPI } from '@/apis/auth.api'
+import { AUTH_API } from '@/apis/auth.api'
 
 const instanceAxios = axios.create({
   baseURL: URL
@@ -28,26 +28,30 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
   const queryClient = useQueryClient()
   instanceAxios.interceptors.request.use(async function (config) {
     const accessToken = getAccessTokenFromLS()
-    const refreshToken = getRefreshToken()
+    const { refreshToken, expiryTime } = getRefreshToken()
     if (accessToken) {
       const decoded = jwtDecode(accessToken)
       if ((decoded.exp as number) > Date.now() / 1000) {
         config.headers.authorization = ` Bearer ${accessToken}`
         return config
       } else {
-        if (refreshToken) {
+        if (refreshToken && expiryTime > Date.now() / 1000) {
           if (!isRefreshing) {
             isRefreshing = true
             await axios
-              .post(refreshTokenAPI, { accessToken, refreshToken })
+              .post(AUTH_API.REFRESH_TOKEN, { accessToken, refreshToken })
               .then((res) => {
                 if (res && res?.data?.responseData) {
                   const responseData = res?.data?.responseData
                   if (responseData) {
-                    const { accessToken: newAccessToken, refreshToken: newRefreshToken } = responseData
+                    const {
+                      accessToken: newAccessToken,
+                      refreshToken: newRefreshToken,
+                      refreshTokenExpiryTime
+                    } = responseData
 
                     if (newRefreshToken) {
-                      saveRefreshTokenToLS(newRefreshToken)
+                      saveRefreshTokenToLS(newRefreshToken, refreshTokenExpiryTime)
                     }
 
                     if (newAccessToken) {

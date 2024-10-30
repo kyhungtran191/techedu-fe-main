@@ -5,36 +5,132 @@ import { Separator } from '@/components/ui/separator'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
-
 import AuthCarousel from '@/components/AuthCarousel'
+import * as yup from 'yup'
+import { EMAIL_REG, PASSWORD_REG } from '@/constants/validate-rules'
+import { Controller, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useMutation } from '@tanstack/react-query'
+import { TRegister } from '@/@types/auth.type'
+import { register } from '@/services/auth.services'
+import { toast } from 'react-toastify'
+
+type TDefaultValue = {
+  email: string
+  password: string
+  confirmPassword: string
+}
+
+const schema = yup.object().shape({
+  email: yup.string().required('Email is required').matches(EMAIL_REG, 'Email Format Error'),
+  password: yup
+    .string()
+    .required('Password is required')
+    .matches(PASSWORD_REG, 'Invalid password. Please ensure the password meets all required criteria.'),
+  confirmPassword: yup
+    .string()
+    .required('Confirm Password is required')
+    .matches(PASSWORD_REG, 'Invalid password. Please ensure the password meets all required criteria.')
+    .oneOf([yup.ref('password'), ''], 'Confirm password is not match')
+})
 
 export default function SignUp() {
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    setError
+  } = useForm({
+    mode: 'onBlur',
+    resolver: yupResolver(schema),
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: ''
+    }
+  })
+  
+  const registerMutation = useMutation({
+    mutationFn: (data: TRegister) => register(data)
+  })
+
+  const onSubmit = (data: TRegister) => {
+    registerMutation.mutate(data, {
+      onSuccess(data) {
+        if (data.data.isSuccess) {
+          toast.success('Please check your email to active your account')
+        }
+      },
+      onError(err: any) {
+        console.log(err)
+      }
+    })
+  }
+
   return (
-    <div className=' h-[80vh] max-h-[80vh] lg:h-[90.5vh] lg:max-h-[90.5vh] container-fluid'>
-      <div className='grid w-full h-full grid-cols-1 lg:grid-cols-2'>
+    <div className='flex flex-col items-center justify-center h-screen py-5 overflow-hidden '>
+      <div className='grid w-full h-[full] grid-cols-1 lg:grid-cols-2'>
         <AuthCarousel></AuthCarousel>
         <div className='bg-primary-3 rounded-[20px] flex-col h-full flex p-5 sm:p-[40px] xl:p-[70px] justify-center sm:justify-normal'>
           <div className='flex justify-center'>
             <h1 className='text-2xl sm:text-[32px] font-medium'>Create your account</h1>
           </div>
-          <form action=''>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className='mt-3 sm:mt-6'>
-              <Label className='text-lg sm:text-xl text-neutral-black'>Your email</Label>
-              <Input
-                className='h-[50px] sm:h-[65px] bg-transparent !p-4 !outline-none !focus:outline-none mt-[18px] text-lg sm:text-xl text-neutral-silver-3'
-                placeholder='Enter your email'
-              ></Input>
+              <Label className='text-lg sm:text-xl text-neutral-black'>Email</Label>
+              <Controller
+                control={control}
+                name='email'
+                render={({ field }) => (
+                  <Input
+                    className='h-[50px] sm:h-[65px] bg-transparent !p-4 !outline-none !focus:outline-none mt-[18px] text-lg sm:text-xl placeholder:text-neutral-silver-3'
+                    placeholder='Enter your email'
+                    {...field}
+                  ></Input>
+                )}
+              />
+              <div className='h-3 mt-2 text-sm font-medium text-red-500'>{errors?.email && errors?.email?.message}</div>
             </div>
             <div className='mt-3 sm:mt-6'>
-              <Label className='text-lg sm:text-xl text-neutral-black'>Your password</Label>
-              <Input
-                type='password'
-                className='h-[50px] sm:h-[65px] bg-transparent !p-4 !outline-none !focus:outline-none mt-[18px] text-lg sm:text-xl text-neutral-silver-3'
-                placeholder='Enter your password'
-              ></Input>
+              <Label className='text-lg sm:text-xl text-neutral-black'>Password</Label>
+
+              <Controller
+                control={control}
+                name='password'
+                render={({ field }) => (
+                  <Input
+                    type='password'
+                    className='h-[50px] sm:h-[65px] bg-transparent !p-4 !outline-none !focus:outline-none mt-[18px] text-lg sm:text-xl placeholder:text-neutral-silver-3'
+                    placeholder='Enter your password'
+                    {...field}
+                  ></Input>
+                )}
+              />
+              <div className='h-3 mt-2 text-sm font-medium text-red-500'>
+                {errors?.password && errors?.password?.message}
+              </div>
             </div>
-            <Separator className='my-3 sm:my-12'></Separator>
-            <div className='flex items-start space-x-2'>
+
+            <div className='mt-3 sm:mt-6'>
+              <Label className='text-lg sm:text-xl text-neutral-black'>Confirm password</Label>
+              <Controller
+                control={control}
+                name='password'
+                render={({ field }) => (
+                  <Input
+                    type='password'
+                    className='h-[50px] sm:h-[65px] bg-transparent !p-4 !outline-none !focus:outline-none mt-[18px] text-lg sm:text-xl placeholder:text-neutral-silver-3'
+                    placeholder='Enter your confirm password'
+                    {...field}
+                  ></Input>
+                )}
+              />
+              <div className='h-3 mt-2 text-sm font-medium text-red-500'>
+                {errors?.confirmPassword && errors?.confirmPassword?.message}
+              </div>
+            </div>
+            <Separator className='my-3 sm:my-4'></Separator>
+            <div className='flex items-end space-x-2'>
               <Checkbox id='terms' className='w-8 h-8 mr-5' />
               <Label
                 htmlFor='terms'
@@ -43,7 +139,10 @@ export default function SignUp() {
                 I don’t want to receive news and coupons by email.
               </Label>
             </div>
-            <Button className='w-full !px-6 !py-4 text-white bg-primary-1 text-lg sm:text-xl h-[50px] sm:h-[60px] sm:mt-6 mt-3'>
+            <Button
+              className='w-full !px-6 !py-4 text-white bg-primary-1 text-lg sm:text-xl h-[50px] sm:h-[60px] sm:mt-6 mt-3'
+              variant={'custom'}
+            >
               Continue
             </Button>
             <p className='mt-3 text-sm sm:mt-6 text-neutral-silver-3'>

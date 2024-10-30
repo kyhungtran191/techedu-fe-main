@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { getAccessTokenFromLS, getPermissions, getUserFromLS } from '@/utils/auth'
 import { Profile } from '@/@types/user.type'
 import { APP_PERMISSIONS } from '@/constants/permissions'
+import { User } from '@/@types/auth.type'
 
 // Api call get me
 // import { Auth } from '@/services/client'
@@ -10,10 +11,10 @@ import { APP_PERMISSIONS } from '@/constants/permissions'
 type TInitialState = {
   isAuthenticated: boolean
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
-  profile: undefined | Profile
-  setProfile: React.Dispatch<React.SetStateAction<Profile | undefined>>
-  permissions: string[]
-  setPermissions: React.Dispatch<React.SetStateAction<string[]>>
+  profile: undefined | User
+  setProfile: React.Dispatch<React.SetStateAction<User | undefined>>
+  permissions: string[] | undefined
+  setPermissions: React.Dispatch<React.SetStateAction<string[] | undefined>>
 }
 
 const initialAppContext: TInitialState = {
@@ -44,7 +45,7 @@ export const AppContext = React.createContext<TInitialState>(initialAppContext)
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(initialAppContext.isAuthenticated)
   const [profile, setProfile] = useState(initialAppContext.profile)
-  const [permissions, setPermissions] = useState(initialAppContext.permissions)
+  const [permissions, setPermissions] = useState(initialAppContext.permissions || undefined)
 
   // const { isLoading, data } = useQuery({
   //   queryKey: ['profile'],
