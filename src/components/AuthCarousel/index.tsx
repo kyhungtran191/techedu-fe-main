@@ -74,7 +74,7 @@ export default function AuthCarousel({ className }: { className?: string }) {
   const [activeIndex, setActiveIndex] = useState(0)
   return (
     <Swiper
-      className={`w-full h-full flex-shrink-0 rounded-[20px] relative !hidden lg:!block`}
+      className={`w-full h-full flex-shrink-0 relative !hidden lg:!block`}
       // install Swiper modules
       modules={[Autoplay]}
       spaceBetween={10}

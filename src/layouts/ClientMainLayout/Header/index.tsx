@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AlignJustify, ArrowBigLeft, Navigation, Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import Cart from '@/icons/Cart'
@@ -13,6 +13,7 @@ import AvatarPopover from '@/components/AvatarPopover'
 import BecomeTeacherBtn from '@/components/BlankOptions/BecomeTeacherBtn'
 import { Button } from '@/components/ui/button'
 import Navigate from '@/icons/Navigate'
+import { useAppContext } from '@/hooks/useAppContext'
 const Header = ({
   setSidebarOpen,
   sidebarOpen
@@ -33,6 +34,11 @@ const Header = ({
 
   const { pathname } = location
   const isCourseDetail = /\/courses\/\d+/.test(pathname)
+
+  const { isAuthenticated, setProfile, setIsAuthenticated, profile, setPermissions } = useAppContext()
+
+  const navigate = useNavigate()
+
   return (
     <header className='z-30 flex w-full px-3 py-6 bg-white drop-shadow-1'>
       <div className='flex items-center justify-between flex-grow shadow-2 h-[48px] relative flex-wrap'>
@@ -75,18 +81,22 @@ const Header = ({
           </Popover>
           <Separator orientation='vertical' className='h-[24px]'></Separator>
           {/* Login */}
-          <AvatarPopover></AvatarPopover>
-          {/* Unauthorized */}
-          {/* <Link className='inline-block text-lg text-primary-1' to='/login'>
-            Login
-          </Link>
-          <Button
-            variant={'outline'}
-            className='border-neutral-black text-neutral-black'
-            onClick={() => navigate('/signup')}
-          >
-            Sign up
-          </Button> */}
+          {isAuthenticated ? (
+            <AvatarPopover></AvatarPopover>
+          ) : (
+            <>
+              <Link className='inline-block text-lg text-primary-1' to='/login'>
+                Login
+              </Link>
+              <Button
+                variant={'outline'}
+                className='border-neutral-black text-neutral-black'
+                onClick={() => navigate('/signup')}
+              >
+                Sign up
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

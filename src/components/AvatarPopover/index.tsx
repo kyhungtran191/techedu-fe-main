@@ -5,7 +5,19 @@ import { Link } from 'react-router-dom'
 import { Separator } from '../ui/separator'
 import Language from '@/icons/CourseDetail/Language'
 import { Switch } from '../ui/switch'
+import { useAppContext } from '@/hooks/useAppContext'
+import { clearLS } from '@/utils/auth'
 export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?: boolean }) {
+  const { isAuthenticated, setProfile, setIsAuthenticated, profile, setPermissions } = useAppContext()
+
+  // Logout function
+  const handleLogout = () => {
+    clearLS()
+    setIsAuthenticated(false), setProfile(undefined)
+    setProfile(undefined)
+    setPermissions(undefined)
+  }
+
   return (
     <Popover>
       <PopoverTrigger>
@@ -61,9 +73,9 @@ export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?:
           <Link to='' className=''>
             Support Center
           </Link>
-          <Link to='' className='text-secondary-2'>
+          <div className='cursor-pointer text-secondary-2' onClick={handleLogout}>
             Log out
-          </Link>
+          </div>
         </div>
         <Separator className='my-6 bg-neutral-silver-3'></Separator>
         <div>

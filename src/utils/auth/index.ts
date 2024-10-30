@@ -1,3 +1,4 @@
+import { User } from '@/@types/auth.type'
 import { Profile } from '@/@types/user.type'
 
 export const LocalStorageEventTarget = new EventTarget()
@@ -12,15 +13,19 @@ export const saveAccessTokenToLS = (accessToken: string) => {
   }
 }
 
-export const saveRefreshTokenToLS = (refresh_token: string) => {
+export const saveRefreshTokenToLS = (refreshToken: string, refreshTokenExpiryTime: number) => {
   try {
-    localStorage.setItem('refresh_token', refresh_token)
+    const data = {
+      refreshToken,
+      refreshTokenExpiryTime
+    }
+    localStorage.setItem('refresh_token', JSON.stringify(data))
   } catch (err) {
     console.log('Error when saving refresh token to LS', err)
   }
 }
 
-export const saveUserToLS = (user: Profile) => {
+export const saveUserToLS = (user: User) => {
   try {
     localStorage.setItem('user', JSON.stringify(user))
   } catch (err) {
@@ -101,7 +106,7 @@ export const getAccessTokenFromLS = () => {
 
 export const getRefreshToken = () => {
   try {
-    return localStorage.getItem('refresh_token') || ''
+    return JSON.parse(localStorage.getItem('refresh_token') || '')
   } catch (err) {
     console.log('error when get refresh token from LS', err)
   }

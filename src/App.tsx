@@ -87,22 +87,18 @@ function App() {
         {/* End */}
         {/* Guest Guard */}
         <Route element={<GuestGuard></GuestGuard>}>
+          <Route path='/signup' element={<SignUp />} />
+          <Route path='/login' element={<Login />} />
+
           <Route
-            path='/signup'
-            element={
-              <BlankLayout headerOption={<OurPlan />}>
-                <SignUp />
-              </BlankLayout>
-            }
-          />
-          <Route
-            path='/login'
+            path='/confirm-email/:userId/token/:token'
             element={
               <BlankLayout>
-                <Login />
+                <div>Confirm email user</div>
               </BlankLayout>
             }
-          />
+          ></Route>
+
           <Route
             path='/confirm-password/:userId/token/:token'
             element={
