@@ -32,7 +32,6 @@ export default function Screen4() {
 
   const handleSubmitData = () => {
     // Clone Deep
-    const courseData = console.log('Submit')
   }
 
   return (

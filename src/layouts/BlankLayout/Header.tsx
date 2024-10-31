@@ -26,8 +26,6 @@ export default function Header({ headerOption }: { headerOption?: React.ReactNod
 
   useEffect(() => {
     const handleScroll = () => {
-      console.log('is Scroll')
-      console.log(window.scrollY)
       if (window.scrollY > 100) {
         headerRef?.current?.classList.add('fixed', 'top-0', 'bg-white', 'shadow-lg', 'left-0', 'right-0', 'z-50')
       } else {

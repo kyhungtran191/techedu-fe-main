@@ -1,5 +1,4 @@
 import { Layout } from '@/components/custom/layout'
-import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
@@ -20,6 +19,7 @@ import PaginationCustom from '@/components/Pagination'
 
 import AddNewDialog from './components/AddNewDialog'
 import { usePermission } from '@/hooks/usePermissions'
+import AvatarPopover from '@/components/AvatarPopover'
 
 type ITypeCategoryTable = {
   _id: string
@@ -115,7 +115,6 @@ const mockData: ITypeCategoryTable[] = [
 export default function Category() {
   const { CREATE, DELETE, UPDATE, VIEW } = usePermission('CATEGORY', ['VIEW', 'CREATE'])
 
-  console.log('CREATE - DELETE - UPDATE - VIEW', CREATE, DELETE, UPDATE, VIEW)
 
   const columns = [
     {
@@ -221,7 +220,7 @@ export default function Category() {
     <Layout>
       <Layout.Header>
         <div className='flex items-center ml-auto space-x-4'>
-          <UserNav />
+          <AvatarPopover></AvatarPopover>
         </div>
       </Layout.Header>
       <Layout.Body className=''>

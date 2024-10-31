@@ -1,19 +1,8 @@
 import React, { useState } from 'react'
 import { Layout } from '@/components/custom/layout'
-import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Search } from 'lucide-react'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
+
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import ThreeDots from '@/icons/ThreeDots'
@@ -25,6 +14,7 @@ import { isUndefined, omitBy } from 'lodash'
 import useParamsVariables from '@/hooks/useParamsVariable'
 import FilterRole from '../../components/FilterRoles'
 import FilterStatus from '../../components/FilterStatus'
+import AvatarPopover from '@/components/AvatarPopover'
 
 type QueryParams = {
   page?: string
@@ -242,7 +232,7 @@ export default function Accounts() {
       {' '}
       <Layout.Header>
         <div className='flex items-center ml-auto space-x-4'>
-          <UserNav />
+          <AvatarPopover />
         </div>
       </Layout.Header>
       <Layout.Body>

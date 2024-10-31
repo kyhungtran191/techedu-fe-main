@@ -8,15 +8,16 @@ import Nav from '../Navbar'
 import { sidelinks } from '@/data/sidelinks'
 import { APP_PERMISSIONS } from '@/constants/permissions'
 import { useAppContext } from '@/hooks/useAppContext'
+import { BASIC_ROLE } from '@/constants/role'
 
 interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
   isCollapsed: boolean
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function filterMenuByPermissions(menu: any, userPermissions: string[]) {
+function filterMenuByPermissions(menu: any, userPermissions: string[], isAdmin: boolean = false) {
   // Check if user has 'Admin.Granted' permission
-  if (userPermissions.includes(APP_PERMISSIONS.ADMIN)) {
+  if (isAdmin) {
     return menu.map((item: any) => ({ ...item, isHidden: false }))
   }
 
@@ -58,10 +59,12 @@ export default function Sidebar({ className, isCollapsed, setIsCollapsed }: Side
   }, [navOpened])
 
   // Get user permissions
-  const { permissions } = useAppContext()
+  const { permissions, profile } = useAppContext()
   // const userPermissions = permissions
-  const mappedArrMenu = filterMenuByPermissions(sidelinks, permissions as string[])
+  const isDirector = profile && profile?.roles?.includes(BASIC_ROLE.DIRECTOR) ? true : false
+  const mappedArrMenu = filterMenuByPermissions(sidelinks, permissions ? (permissions as string[]) : [], isDirector)
 
+  console.log(isCollapsed)
   return (
     <aside
       className={cn(

@@ -14,12 +14,15 @@ import { useMutation } from '@tanstack/react-query'
 import { TRegister } from '@/@types/auth.type'
 import { register } from '@/services/auth.services'
 import { toast } from 'react-toastify'
+import SectionLoading from '@/components/Loading/SectionLoading'
 
 type TDefaultValue = {
   email: string
   password: string
   confirmPassword: string
 }
+
+const defaultValue = { email: '', password: '', confirmPassword: '' }
 
 const schema = yup.object().shape({
   email: yup.string().required('Email is required').matches(EMAIL_REG, 'Email Format Error'),
@@ -39,30 +42,30 @@ export default function SignUp() {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
     setError
   } = useForm({
     mode: 'onBlur',
     resolver: yupResolver(schema),
-    defaultValues: {
-      email: '',
-      password: '',
-      confirmPassword: ''
-    }
+
+    defaultValues: defaultValue
   })
-  
-  const registerMutation = useMutation({
+
+  const { mutate, isLoading, isError } = useMutation({
     mutationFn: (data: TRegister) => register(data)
   })
 
   const onSubmit = (data: TRegister) => {
-    registerMutation.mutate(data, {
+    mutate(data, {
       onSuccess(data) {
         if (data.data.isSuccess) {
-          toast.success('Please check your email to active your account')
+          toast.success('Register Successfully, please check your email to active your account!')
+          reset(defaultValue)
         }
       },
       onError(err: any) {
-        console.log(err)
+        const errMessage = err?.response?.data?.Error?.Message || 'Something was wrong'
+        toast.error(errMessage)
       }
     })
   }
@@ -75,7 +78,8 @@ export default function SignUp() {
           <div className='flex justify-center'>
             <h1 className='text-2xl sm:text-[32px] font-medium'>Create your account</h1>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} className='relative'>
+            {isLoading && <SectionLoading></SectionLoading>}
             <div className='mt-3 sm:mt-6'>
               <Label className='text-lg sm:text-xl text-neutral-black'>Email</Label>
               <Controller
@@ -110,12 +114,11 @@ export default function SignUp() {
                 {errors?.password && errors?.password?.message}
               </div>
             </div>
-
             <div className='mt-3 sm:mt-6'>
               <Label className='text-lg sm:text-xl text-neutral-black'>Confirm password</Label>
               <Controller
                 control={control}
-                name='password'
+                name='confirmPassword'
                 render={({ field }) => (
                   <Input
                     type='password'

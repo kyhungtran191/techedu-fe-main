@@ -1,5 +1,4 @@
 import { Layout } from '@/components/custom/layout'
-import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Blocks, Languages } from 'lucide-react'
@@ -17,6 +16,7 @@ import { ChartConfig, ChartContainer } from '@/components/ui/chart'
 import { Bar, BarChart, CartesianGrid } from 'recharts'
 import { useParams } from 'react-router-dom'
 import PaginationCustom from '@/components/Pagination'
+import AvatarPopover from '@/components/AvatarPopover'
 export default function CourseDetailAdmin() {
   // Get Param
   const { id } = useParams()
@@ -46,7 +46,7 @@ export default function CourseDetailAdmin() {
     <Layout>
       <Layout.Header>
         <div className='flex items-center ml-auto space-x-4'>
-          <UserNav />
+          <AvatarPopover />
         </div>
       </Layout.Header>
       <Layout.Body>

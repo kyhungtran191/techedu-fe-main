@@ -12,7 +12,6 @@ interface FileDropUploadProps {
 const FileDropUpload: React.FC<FileDropUploadProps> = ({ onUpload, onSetFile, className }) => {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      console.log(acceptedFiles)
       if (acceptedFiles.length > 0) {
         onSetFile(acceptedFiles[0])
       }

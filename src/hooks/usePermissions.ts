@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAppContext } from './useAppContext'
 import { APP_PERMISSIONS } from '@/constants/permissions'
+import { BASIC_ROLE } from '@/constants/role'
 
 type TActions = 'CREATE' | 'VIEW' | 'UPDATE' | 'DELETE'
 
@@ -36,7 +37,7 @@ export const usePermission = (key: string, actions: TActions[]) => {
     const updatedPermissions = { ...defaultValues }
 
     actions.forEach((mode) => {
-      if (userPermission?.includes(APP_PERMISSIONS.ADMIN)) {
+      if (profile?.email.includes(BASIC_ROLE.DIRECTOR)) {
         updatedPermissions[mode] = true
       } else if (mapPermission && userPermission?.includes(mapPermission[mode])) {
         updatedPermissions[mode] = true

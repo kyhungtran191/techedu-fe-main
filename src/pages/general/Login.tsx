@@ -57,7 +57,7 @@ export default function Login() {
 
   const { setIsAuthenticated, setPermissions, setProfile } = useAppContext()
 
-  const { isPending, mutate } = useMutation({
+  const { isLoading, mutate } = useMutation({
     mutationFn: (body: TLogin) => login(body)
   })
 
@@ -66,6 +66,8 @@ export default function Login() {
       onSuccess(info) {
         const accessToken = data && (info?.data?.value?.accessToken as string)
         const refreshToken = data && (info?.data?.value?.refreshToken as string)
+        console.log('accessToken login', accessToken)
+        console.log('refreshToken login', refreshToken)
         const refreshTokenExpiryTime = data && (info?.data?.value?.refreshTokenExpiryTime as string)
         const exp = Math.floor(new Date(refreshTokenExpiryTime as string).getTime() / 1000)
         const dataDetail = jwtDecode(accessToken as string)
@@ -79,6 +81,7 @@ export default function Login() {
         setPermissions(permissionData)
         setProfile({ email, fullname, id, phoneNumber, roles: roleData })
         setIsAuthenticated(true)
+        toast.success('Login successfully!')
       }
     })
   }
@@ -92,48 +95,46 @@ export default function Login() {
             <h1 className='text-2xl sm:text-[32px] font-medium'>Welcome back</h1>
             <img src={StarIcon} alt='' className='w-[36px] h-[36px] sm:w-[48px] sm:h-[48px] ml-2 sm:ml-6' />
           </div>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            {isPending ? (
-              <SectionLoading></SectionLoading>
-            ) : (
-              <>
-                <div className='mt-3 sm:mt-6'>
-                  <Label className='text-lg sm:text-xl text-neutral-black'>Email</Label>
-                  <Controller
-                    control={control}
-                    name='email'
-                    render={({ field }) => (
-                      <Input
-                        className='h-[50px] sm:h-[65px] bg-transparent !p-4 !outline-none !focus:outline-none mt-[18px] text-lg sm:text-xl placeholder:text-neutral-silver-3'
-                        placeholder='Enter your email'
-                        {...field}
-                      ></Input>
-                    )}
-                  />
-                  <div className='h-3 mt-2 text-sm font-medium text-red-500'>
-                    {errors?.email && errors?.email?.message}
-                  </div>
+          <form onSubmit={handleSubmit(onSubmit)} className='relative'>
+            {isLoading && <SectionLoading></SectionLoading>}
+            <>
+              <div className='mt-3 sm:mt-6'>
+                <Label className='text-lg sm:text-xl text-neutral-black'>Email</Label>
+                <Controller
+                  control={control}
+                  name='email'
+                  render={({ field }) => (
+                    <Input
+                      className='h-[50px] sm:h-[65px] bg-transparent !p-4 !outline-none !focus:outline-none mt-[18px] text-lg sm:text-xl placeholder:text-neutral-silver-3'
+                      placeholder='Enter your email'
+                      {...field}
+                    ></Input>
+                  )}
+                />
+                <div className='h-3 mt-2 text-sm font-medium text-red-500'>
+                  {errors?.email && errors?.email?.message}
                 </div>
-                <div className='mt-3 sm:mt-6'>
-                  <Label className='text-lg sm:text-xl text-neutral-black'>Password</Label>
+              </div>
+              <div className='mt-3 sm:mt-6'>
+                <Label className='text-lg sm:text-xl text-neutral-black'>Password</Label>
 
-                  <Controller
-                    control={control}
-                    name='password'
-                    render={({ field }) => (
-                      <Input
-                        type='password'
-                        className='h-[50px] sm:h-[65px] bg-transparent !p-4 !outline-none !focus:outline-none mt-[18px] text-lg sm:text-xl placeholder:text-neutral-silver-3'
-                        placeholder='Enter your password'
-                        {...field}
-                      ></Input>
-                    )}
-                  />
-                  <div className='h-3 mt-2 text-sm font-medium text-red-500'>
-                    {errors?.password && errors?.password?.message}
-                  </div>
+                <Controller
+                  control={control}
+                  name='password'
+                  render={({ field }) => (
+                    <Input
+                      type='password'
+                      className='h-[50px] sm:h-[65px] bg-transparent !p-4 !outline-none !focus:outline-none mt-[18px] text-lg sm:text-xl placeholder:text-neutral-silver-3'
+                      placeholder='Enter your password'
+                      {...field}
+                    ></Input>
+                  )}
+                />
+                <div className='h-3 mt-2 text-sm font-medium text-red-500'>
+                  {errors?.password && errors?.password?.message}
                 </div>
-                {/* <div className='flex items-center space-x-2'>
+              </div>
+              {/* <div className='flex items-center space-x-2'>
               <Checkbox id='terms' className='mr-2 sm:mr-5 sm:h-8 sm:w-8' />
               <Label
                 htmlFor='terms'
@@ -142,14 +143,13 @@ export default function Login() {
                 Remember this account
               </Label>
             </div> */}
-                <Button
-                  className='w-full !px-6 !py-4 text-white bg-primary-1 text-lg sm:text-xl h-[50px] sm:h-[60px] mt-3 sm:mt-6'
-                  variant={'custom'}
-                >
-                  Log in
-                </Button>
-              </>
-            )}
+              <Button
+                className='w-full !px-6 !py-4 text-white bg-primary-1 text-lg sm:text-xl h-[50px] sm:h-[60px] mt-3 sm:mt-6'
+                variant={'custom'}
+              >
+                Log in
+              </Button>
+            </>
           </form>
           <Link to='/forgot-password' className='inline-block mt-6 underline text-primary-1'>
             Forgot password?

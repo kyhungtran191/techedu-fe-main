@@ -1,13 +1,6 @@
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
-import {
-  clearLS,
-  getAccessTokenFromLS,
-  getRefreshToken,
-  saveAccessTokenToLS,
-  saveRefreshTokenToLS,
-  clearPermissions
-} from '@/utils/auth'
+import { clearLS, getAccessTokenFromLS, getRefreshToken, saveAccessTokenToLS, saveRefreshTokenToLS } from '@/utils/auth'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { useAppContext } from '@/hooks/useAppContext'
@@ -26,23 +19,34 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate()
   const { setProfile, setIsAuthenticated } = useAppContext()
   const queryClient = useQueryClient()
+
   instanceAxios.interceptors.request.use(async function (config) {
     const accessToken = getAccessTokenFromLS()
-    const { refreshToken, expiryTime } = getRefreshToken()
+    console.log(accessToken)
+    const { refreshToken, refreshTokenExpiryTime } = getRefreshToken()
     if (accessToken) {
       const decoded = jwtDecode(accessToken)
       if ((decoded.exp as number) > Date.now() / 1000) {
         config.headers.authorization = ` Bearer ${accessToken}`
         return config
       } else {
-        if (refreshToken && expiryTime > Date.now() / 1000) {
+        if (refreshToken && refreshTokenExpiryTime > Date.now() / 1000) {
           if (!isRefreshing) {
             isRefreshing = true
             await axios
-              .post(AUTH_API.REFRESH_TOKEN, { accessToken, refreshToken })
+              .post(
+                AUTH_API.REFRESH_TOKEN,
+                { AccessToken: accessToken, RefreshToken: refreshToken },
+                {
+                  headers: {
+                    Authorization: 'Bearer ' + accessToken
+                  }
+                }
+              )
               .then((res) => {
-                if (res && res?.data?.responseData) {
-                  const responseData = res?.data?.responseData
+                console.log('call new refresh api success')
+                if (res && res?.data?.value) {
+                  const responseData = res?.data?.value
                   if (responseData) {
                     const {
                       accessToken: newAccessToken,
@@ -50,8 +54,14 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
                       refreshTokenExpiryTime
                     } = responseData
 
-                    if (newRefreshToken) {
-                      saveRefreshTokenToLS(newRefreshToken, refreshTokenExpiryTime)
+                    console.log('new Access token', newAccessToken)
+                    console.log('new Refresh token', newRefreshToken)
+
+                    if (newRefreshToken && refreshTokenExpiryTime) {
+                      const newRefreshTokenExpiryTime = Math.floor(
+                        new Date(refreshTokenExpiryTime as string).getTime() / 1000
+                      )
+                      saveRefreshTokenToLS(newRefreshToken, newRefreshTokenExpiryTime)
                     }
 
                     if (newAccessToken) {
@@ -68,12 +78,15 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
                 return config
               })
               .catch((error) => {
-                toast.error('Refresh Token Timeout!')
-                clearLS()
-                setProfile(undefined)
-                setIsAuthenticated(false)
-                queryClient.clear()
-                return navigate('/login')
+                console.log('error when refresh token', error)
+                console.log('accessToken when call new refresh token', accessToken)
+                console.log('refreshToken when call new refresh token', refreshToken)
+                // clearLS()
+                // setProfile(undefined)
+                // setIsAuthenticated(false)
+                // queryClient.clear()
+                // toast.error('Refresh Token Timeout!')
+                // return navigate('/login')
               })
           } else {
             return new Promise<any>((resolve) => {
@@ -86,6 +99,7 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
             })
           }
         } else {
+          console.log('Expiry Token Time out')
           clearLS()
           setProfile(undefined)
           setIsAuthenticated(false)

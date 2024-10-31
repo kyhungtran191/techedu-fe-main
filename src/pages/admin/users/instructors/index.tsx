@@ -1,5 +1,4 @@
 import { Layout } from '@/components/custom/layout'
-import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -18,6 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import ThreeDots from '@/icons/ThreeDots'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import PaginationCustom from '@/components/Pagination'
+import AvatarPopover from '@/components/AvatarPopover'
 
 type ITypeInstructorTable = {
   _id: string
@@ -235,7 +235,7 @@ export default function Instructors() {
       {' '}
       <Layout.Header>
         <div className='flex items-center ml-auto space-x-4'>
-          <UserNav />
+          <AvatarPopover />
         </div>
       </Layout.Header>
       <Layout.Body>

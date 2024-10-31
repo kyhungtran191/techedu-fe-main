@@ -42,14 +42,11 @@ export default function Screen4() {
   })
 
   const onSubmit = (data: FormData) => {
-    console.log(data)
   }
 
   const paymentValue = watch('payment')
   const taxValue = watch('tax')
   const languageValue = watch('country')
-  console.log(paymentValue, taxValue, languageValue)
-  console.log(isValid)
 
   return (
     <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>

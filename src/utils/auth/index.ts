@@ -106,7 +106,8 @@ export const getAccessTokenFromLS = () => {
 
 export const getRefreshToken = () => {
   try {
-    return JSON.parse(localStorage.getItem('refresh_token') || '')
+    const refreshTokenJSON = localStorage.getItem('refresh_token')
+    return refreshTokenJSON ? JSON.parse(refreshTokenJSON) : {}
   } catch (err) {
     console.log('error when get refresh token from LS', err)
   }

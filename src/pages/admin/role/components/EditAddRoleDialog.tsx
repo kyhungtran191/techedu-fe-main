@@ -16,16 +16,24 @@ import { Controller, useForm } from 'react-hook-form'
 
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { AddNewRole, GetDetailRole, UpdateRole } from '@/services/admin/role.service'
+import { toast } from 'react-toastify'
+import SectionLoading from '@/components/Loading/SectionLoading'
+import { Textarea } from '@/components/ui/textarea'
+import { RoleParams, RoleUpdateParams } from '@/@types/admin/role.type'
 
 interface TCreateEditRole {
   open: boolean
   idRole?: string
   setOpenDialog: React.Dispatch<React.SetStateAction<boolean>>
   setEditRole: React.Dispatch<React.SetStateAction<string | undefined>>
-  refetch?: () => void
+  refetch: any
   wrapperClass?: string
   CREATE_PERMISSION: boolean
 }
+
+const defaultValues = {}
 
 export default function EditAddRoleDialog({
   wrapperClass,
@@ -33,18 +41,14 @@ export default function EditAddRoleDialog({
   setEditRole,
   open,
   setOpenDialog,
-  idRole
+  idRole,
+  refetch
 }: TCreateEditRole) {
   const schema = yup.object().shape({
-    role_name: yup.string().required('This field is required')
+    displayName: yup.string().required('Display name  is required'),
+    name: yup.string().required('Name is required'),
+    description: yup.string().required('Role description is required')
   })
-  // // Default use of usePermissions
-  // const { CREATE, DELETE, UPDATE, VIEW } = usePermission('PERMISSIONS.SYSTEM.ROLE', [
-  //   'CREATE',
-  //   'VIEW',
-  //   'UPDATE',
-  //   'DELETE'
-  // ])
 
   const {
     handleSubmit,
@@ -55,11 +59,58 @@ export default function EditAddRoleDialog({
     resolver: yupResolver(schema)
   })
 
-  const handleForm = ({ role_name }: { role_name: string }) => {
-    console.log(role_name)
+  const { isFetching } = useQuery({
+    queryKey: ['role-detail', idRole],
+    queryFn: () => GetDetailRole(idRole as string),
+    enabled: idRole !== undefined,
+    select: (data) => data?.data?.value,
+    onSuccess: (data) => {
+      reset({
+        displayName: data.displayName,
+        name: data.name,
+        description: data.description || 'Example'
+      })
+    }
+  })
+  console.log('rerender')
+  // Update Role
+  const updateRoleMutation = useMutation({
+    mutationFn: (roleData: RoleParams) => UpdateRole(roleData)
+  })
+  // Create Role
+  const createRoleMutation = useMutation({
+    mutationFn: (body: RoleParams) => AddNewRole(body)
+  })
+
+  const handleForm = (data: RoleParams) => {
+    if (idRole) {
+      updateRoleMutation.mutate(data, {
+        onSuccess: () => {
+          toast.success('Update successfully!')
+          refetch()
+          reset(defaultValues)
+          setEditRole(undefined)
+          setOpenDialog(false)
+        },
+        onError(data: any) {
+          toast.error(data.response.data.message)
+        }
+      })
+    } else {
+      createRoleMutation.mutate(data, {
+        onSuccess() {
+          toast.success('Add new role successfully!')
+          refetch()
+          reset(defaultValues)
+          setOpenDialog(false)
+        },
+        onError(data: any) {
+          toast.error(data.response.data.message)
+        }
+      })
+    }
   }
 
-  console.log(open)
   return (
     <div>
       <Dialog defaultOpen={open} open={open} onOpenChange={setOpenDialog}>
@@ -72,11 +123,13 @@ export default function EditAddRoleDialog({
           </DialogTrigger>
         )}
         <DialogContent
-          className=''
+          className='min-h-[270px]'
           onCloseAutoFocus={() => {
             setEditRole(undefined)
             setOpenDialog(false)
-            // reset(defaultValues)
+            reset({
+              displayName: ''
+            })
           }}
         >
           <DialogHeader>
@@ -85,26 +138,69 @@ export default function EditAddRoleDialog({
           {/* Loading component when fetching user data */}
           {/* {userDetailData.isLoading && idUser && <ComponentsLoading></ComponentsLoading>} */}
           {/* {(!userDetailData.isLoading || !idUser) && */}
-          <form className='grid gap-2 py-4' onSubmit={handleSubmit(handleForm)}>
-            <div>
-              <Label htmlFor='role_name'>Role Name</Label>
-              <Controller
-                control={control}
-                name='role_name'
-                render={({ field }) => (
-                  <Input className='px-4 py-6 mt-3 text-sm outline-none' placeholder='Role Name' {...field}></Input>
-                )}
-              />
-              <div className='text-sm font-medium text-red-500 '>{errors?.role_name && errors?.role_name?.message}</div>
-            </div>
+          {!isFetching && (
+            <form className='grid gap-2 py-4' onSubmit={handleSubmit(handleForm)}>
+              <div>
+                <Label htmlFor='role_name'>Display Name</Label>
+                <Controller
+                  control={control}
+                  name='displayName'
+                  render={({ field }) => (
+                    <Input
+                      className='px-4 py-6 mt-3 text-sm outline-none'
+                      placeholder='Role Display Name'
+                      {...field}
+                    ></Input>
+                  )}
+                />
+                <div className='text-sm font-medium text-red-500 '>
+                  {errors?.displayName && errors?.displayName?.message}
+                </div>
+              </div>
 
-            <DialogFooter>
-              <Button type='submit' className='w-full mt-4' disabled={!isValid} variant={'custom'}>
-                {idRole ? 'Update ' : 'Add'}
-              </Button>
-            </DialogFooter>
-          </form>
-          {/* )} */}
+              <div>
+                <Label htmlFor='role_name'>Role Name</Label>
+                <Controller
+                  control={control}
+                  name='name'
+                  render={({ field }) => (
+                    <Input
+                      className='px-4 py-6 mt-3 text-sm outline-none disabled:bg-neutral-200'
+                      disabled={!!idRole}
+                      placeholder='Role Name'
+                      {...field}
+                    ></Input>
+                  )}
+                />
+                <div className='text-sm font-medium text-red-500 '>{errors?.name && errors?.name?.message}</div>
+              </div>
+
+              <div>
+                <Label htmlFor='description'>Description</Label>
+                <Controller
+                  control={control}
+                  name='description'
+                  render={({ field }) => (
+                    <Textarea
+                      className='px-4 py-6 mt-3 text-sm outline-none focus-visible:ring-0'
+                      placeholder='Description...'
+                      {...field}
+                    ></Textarea>
+                  )}
+                />
+                <div className='text-sm font-medium text-red-500 '>
+                  {errors?.description && errors?.description?.message}
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button type='submit' className='w-full mt-4' disabled={!isValid} variant={'custom'}>
+                  {idRole ? 'Update ' : 'Add'}
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+          {isFetching && <SectionLoading className='h-full bg-none'></SectionLoading>}
         </DialogContent>
       </Dialog>
     </div>

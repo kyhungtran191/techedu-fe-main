@@ -20,9 +20,18 @@ export default function Nav({ links, isCollapsed, className, closeNav }: NavProp
     const key = `${rest.title}-${rest.href}`
     if (isHidden) return
     if (children)
-      return <NavLinkDropdown isHidden={isHidden} {...rest} children={children} key={key} closeNav={closeNav} />
+      return (
+        <NavLinkDropdown
+          isHidden={isHidden}
+          {...rest}
+          children={children}
+          key={key}
+          closeNav={closeNav}
+          isCollapsed={isCollapsed}
+        />
+      )
 
-    return <NavLink isHidden={isHidden} {...rest} key={key} closeNav={closeNav} />
+    return <NavLink isHidden={isHidden} {...rest} key={key} closeNav={closeNav} isCollapsed={isCollapsed} />
   }
 
   return (
@@ -45,9 +54,10 @@ export default function Nav({ links, isCollapsed, className, closeNav }: NavProp
 interface NavLinkProps extends SideLink {
   subLink?: boolean
   closeNav: () => void
+  isCollapsed: boolean
 }
 
-function NavLink({ isHidden, title, icon, label, href, closeNav, subLink = false }: NavLinkProps) {
+function NavLink({ isHidden, title, icon, label, href, closeNav, subLink = false, isCollapsed }: NavLinkProps) {
   const { checkActiveNav } = useCheckActiveNav()
   return (
     <Link
@@ -59,22 +69,23 @@ function NavLink({ isHidden, title, icon, label, href, closeNav, subLink = false
           size: 'sm'
         }),
         'h-12 justify-start text-wrap rounded-none px-6 ',
-        subLink && 'h-10 w-full border-l border-l-slate-500 px-2'
+        subLink && 'h-10 w-full border-l border-l-slate-500 px-2',
+        isCollapsed && 'justify-center'
       )}
       aria-current={checkActiveNav(href) ? 'page' : undefined}
     >
-      <div className='mr-2'>{icon}</div>
-      {title}
-      {label && <div className='ml-2 rounded-lg bg-primary px-1 text-[0.625rem] text-primary-foreground'>{label}</div>}
+      <div className={`${!isCollapsed && 'mr-2'}`}>{icon}</div>
+      {!isCollapsed && title}
+      {label && !isCollapsed && (
+        <div className='ml-2 rounded-lg bg-primary px-1 text-[0.625rem] text-primary-foreground'>{label}</div>
+      )}
     </Link>
   )
 }
 
-function NavLinkDropdown({ isHidden, title, icon, label, children, closeNav }: NavLinkProps) {
+function NavLinkDropdown({ isHidden, title, icon, label, children, closeNav, isCollapsed }: NavLinkProps) {
   const { checkActiveNav } = useCheckActiveNav()
 
-  /* Open collapsible by default
-   * if one of child element is active */
   const isChildActive = !!children?.find((s) => checkActiveNav(s.href))
 
   return (
@@ -82,12 +93,13 @@ function NavLinkDropdown({ isHidden, title, icon, label, children, closeNav }: N
       <CollapsibleTrigger
         className={cn(
           buttonVariants({ variant: 'ghost', size: 'sm' }),
-          'group h-12 w-full justify-start rounded-none px-6'
+          'group h-12 w-full justify-start rounded-none px-6',
+          isCollapsed && 'justify-center'
         )}
       >
-        <div className='mr-2'>{icon}</div>
-        {title}
-        {label && (
+        <div className={`${!isCollapsed && 'mr-2'}`}>{icon}</div>
+        {!isCollapsed && title}
+        {label && !isCollapsed && (
           <div className='ml-2 rounded-lg bg-primary px-1 text-[0.625rem] text-primary-foreground'>{label}</div>
         )}
         <span className={cn('ml-auto transition-all group-data-[state="open"]:-rotate-180')}>
@@ -99,8 +111,8 @@ function NavLinkDropdown({ isHidden, title, icon, label, children, closeNav }: N
           {children!.map((sublink) => {
             if (sublink.isHidden) return null
             return (
-              <li key={sublink.title} className='my-1 ml-8'>
-                <NavLink {...sublink} subLink closeNav={closeNav} />
+              <li key={sublink.title} className={`my-1 ${!isCollapsed ? 'ml-8' : 'ml-1'}`}>
+                <NavLink {...sublink} subLink closeNav={closeNav} isCollapsed={isCollapsed} />
               </li>
             )
           })}
