@@ -38,9 +38,7 @@ export default function Overview() {
     mode: 'onChange' // Enables validation as fields are changed
   })
 
-  const onSubmit = (data: TFormData) => {
-    console.log('Form Data:', data)
-  }
+  const onSubmit = (data: TFormData) => {}
 
   return (
     <div className='flex flex-col h-full'>

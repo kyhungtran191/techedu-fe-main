@@ -32,8 +32,6 @@ export default function Curriculum() {
   const [sections, setSections] = useState<TSection[]>(mockSection)
   // Get course id
   const params = useParams()
-  console.log(params)
-  console.log('section change', sections)
   
   const handleDragAndDrop = (results: DropResult) => {
     const { source, destination, type } = results

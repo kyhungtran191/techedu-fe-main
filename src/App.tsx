@@ -25,10 +25,11 @@ import PermissionsGuard from './guards/PermissionsGuard'
 import { APP_PERMISSIONS } from './constants/permissions'
 import NotFound from './pages/errors/NotFound'
 import Unauthorized from './pages/errors/Unauthorized'
-import ConfirmPassword from './pages/general/confirm-password'
-import ForgotPassword from './pages/general/forgot-password'
 
 // Lazy loading for components
+const ConfirmPassword = lazy(() => import('./pages/general/confirm-password'))
+const ConfirmEmail = lazy(() => import('./pages/general/confirm-email'))
+const ForgotPassword = lazy(() => import('./pages/general/forgot-password'))
 const SignUp = lazy(() => import('./pages/general/SignUp'))
 const Login = lazy(() => import('./pages/general/Login'))
 const Courses = lazy(() => import('./pages/general/Courses'))
@@ -90,14 +91,7 @@ function App() {
           <Route path='/signup' element={<SignUp />} />
           <Route path='/login' element={<Login />} />
 
-          <Route
-            path='/confirm-email/:userId/token/:token'
-            element={
-              <BlankLayout>
-                <div>Confirm email user</div>
-              </BlankLayout>
-            }
-          ></Route>
+          <Route path='/confirm-email/:userId/token/:token' element={<ConfirmEmail></ConfirmEmail>}></Route>
 
           <Route
             path='/confirm-password/:userId/token/:token'
@@ -204,36 +198,36 @@ function App() {
         </Route>
         {/* End */}
         {/* Admin */}
-        {/* <Route element={<AdminGuard />}> */}
-        <Route
-          path='/admin/'
-          element={
-            <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
-              <AdminLayout />
-            </ThemeProvider>
-          }
-        >
+        <Route element={<AdminGuard />}>
           <Route
-            path='dashboard'
-            index
+            path='/admin/'
             element={
-              <PermissionsGuard permissions={[APP_PERMISSIONS.DASHBOARD.VIEW as string]}>
-                <Dashboard />
-              </PermissionsGuard>
+              <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
+                <AdminLayout />
+              </ThemeProvider>
             }
-          />
+          >
+            <Route
+              path='dashboard'
+              index
+              element={
+                <PermissionsGuard permissions={[APP_PERMISSIONS.DASHBOARD.VIEW as string]}>
+                  <Dashboard />
+                </PermissionsGuard>
+              }
+            />
 
-          <Route path='courses' element={<CoursesAdmin />} />
-          <Route path='courses/:id' element={<CourseDetailAdmin />} />
-          <Route path='students' element={<Students />} />
-          <Route path='categories' element={<Category />} />
-          <Route path='private-users' element={<PrivateUserManage />} />
-          <Route path='instructors' element={<Instructors />} />
-          <Route path='instructors/:id' element={<InstructorDetail />} />
-          <Route path='accounts' element={<Accounts />} />
-          <Route path='role' element={<Role />} />
+            <Route path='courses' element={<CoursesAdmin />} />
+            <Route path='courses/:id' element={<CourseDetailAdmin />} />
+            <Route path='students' element={<Students />} />
+            <Route path='categories' element={<Category />} />
+            <Route path='private-users' element={<PrivateUserManage />} />
+            <Route path='instructors' element={<Instructors />} />
+            <Route path='instructors/:id' element={<InstructorDetail />} />
+            <Route path='accounts' element={<Accounts />} />
+            <Route path='role' element={<Role />} />
+          </Route>
         </Route>
-        {/* </Route> */}
         {/* Error Route */}
         <Route path='/501' element={<Unauthorized></Unauthorized>}></Route>
         <Route path='*' element={<NotFound />} />

@@ -1,5 +1,4 @@
 import { Layout } from '@/components/custom/layout'
-import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartConfig, ChartContainer } from '@/components/ui/chart'
@@ -7,10 +6,10 @@ import { Bar, BarChart, CartesianGrid } from 'recharts'
 import Instructor from '@/assets/instructor.jfif'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
-import Star from '@/icons/CourseDetail/Star'
 import RatingStars from '@/components/RatingStars'
 import { Users } from 'lucide-react'
 import CourseTable from './components/CourseTable'
+import AvatarPopover from '@/components/AvatarPopover'
 
 const chartData = [
   { month: 'January', desktop: 186, mobile: 80 },
@@ -37,7 +36,7 @@ export default function InstructorDetail() {
     <Layout>
       <Layout.Header>
         <div className='flex items-center ml-auto space-x-4'>
-          <UserNav />
+          <AvatarPopover />
         </div>
       </Layout.Header>
       <Layout.Body>

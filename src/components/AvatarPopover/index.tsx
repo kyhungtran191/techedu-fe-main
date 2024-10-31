@@ -7,6 +7,9 @@ import Language from '@/icons/CourseDetail/Language'
 import { Switch } from '../ui/switch'
 import { useAppContext } from '@/hooks/useAppContext'
 import { clearLS } from '@/utils/auth'
+import { BASIC_ROLE } from '@/constants/role'
+import { Lock } from 'lucide-react'
+import { toast } from 'react-toastify'
 export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?: boolean }) {
   const { isAuthenticated, setProfile, setIsAuthenticated, profile, setPermissions } = useAppContext()
 
@@ -16,6 +19,7 @@ export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?:
     setIsAuthenticated(false), setProfile(undefined)
     setProfile(undefined)
     setPermissions(undefined)
+    toast.success('Log out successfully !')
   }
 
   return (
@@ -40,21 +44,36 @@ export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?:
         </div>
       </PopoverTrigger>
       <PopoverContent className='py-[18px] px-3 text-neutral-black max-w-[242px]' align='end'>
-        <div className='flex flex-col gap-y-6'>
-          <Link to='' className=''>
-            My Course
-          </Link>
-          <Link to='' className='flex items-center justify-between'>
-            Wishlist
-            <div className='w-[22px] h-[22px] rounded-full bg-secondary-1 flex items-center justify-center text-white'>
-              2
-            </div>
-          </Link>
-          <Link to='' className=''>
-            Profile
-          </Link>
+        <div className='flex flex-col space-y-1'>
+          <p className='text-sm font-medium leading-none'>Ky Hung</p>
+          <p className='text-xs leading-none text-muted-foreground'>kyhung@gmail.com</p>
         </div>
-        <Separator className='my-6 bg-neutral-silver-3'></Separator>
+        <Separator className='my-3 bg-neutral-silver-3'></Separator>
+        {profile && profile?.roles?.includes(BASIC_ROLE.CLIENT) ? (
+          <div className='flex flex-col gap-y-6'>
+            <Link to='' className=''>
+              My Course
+            </Link>
+            <Link to='' className='flex items-center justify-between'>
+              Wishlist
+              <div className='w-[22px] h-[22px] rounded-full bg-secondary-1 flex items-center justify-center text-white'>
+                2
+              </div>
+            </Link>
+            <Link to='' className=''>
+              Profile
+            </Link>
+          </div>
+        ) : (
+          <div className='flex flex-col gap-y-6'>
+            <Link to='/admin' className='flex items-center gap-2'>
+              <Lock className='w-4 h-4'></Lock>
+              Manage Center
+            </Link>
+          </div>
+        )}
+
+        <Separator className='my-3 bg-neutral-silver-3'></Separator>
         <div className='flex flex-col gap-y-6'>
           <Link to='' className='flex items-center justify-between'>
             Language

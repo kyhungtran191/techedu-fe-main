@@ -35,8 +35,6 @@ const ManageCourseLayout: React.FC<IProps> = ({ children, HeaderCustom, SidebarC
     }
   }, [width])
 
-  console.log(width)
-  console.log('first', alert)
 
   return (
     <div className=''>

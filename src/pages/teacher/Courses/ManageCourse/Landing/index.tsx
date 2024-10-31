@@ -169,11 +169,7 @@ export default function LandingPage() {
                 <CourseTitle>Course description</CourseTitle>
                 <AIButton></AIButton>
               </div>
-              <Tiptap
-                description='This is your content'
-                onChange={(e) => console.log('e' + e)}
-                className='my-6'
-              ></Tiptap>
+              <Tiptap onChange={() => {}} description='This is your content' className='my-6'></Tiptap>
               <CourseNote>Description should have minimum 200 words.</CourseNote>
             </div>
             <div className='px-3 py-6 mt-6 bg-white shadow-custom-shadow rounded-xl'>

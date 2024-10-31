@@ -1,5 +1,4 @@
 import { Layout } from '@/components/custom/layout'
-import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
 
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
@@ -16,6 +15,7 @@ import useParamsVariables from '@/hooks/useParamsVariable'
 import SearchInput from '../components/Search'
 import FilterRole from '../components/FilterRoles'
 import FilterStatus from '../components/FilterStatus'
+import AvatarPopover from '@/components/AvatarPopover'
 
 type ITypePrivateUserTable = {
   _id: string
@@ -205,7 +205,7 @@ export default function PrivateUserManage() {
     <Layout>
       <Layout.Header className=''>
         <div className='flex items-center ml-auto space-x-4'>
-          <UserNav />
+          <AvatarPopover />
         </div>
       </Layout.Header>
       <Layout.Body>

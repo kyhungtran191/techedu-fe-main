@@ -39,6 +39,7 @@ const Header = ({
 
   const navigate = useNavigate()
 
+  console.log(isAuthenticated)
   return (
     <header className='z-30 flex w-full px-3 py-6 bg-white drop-shadow-1'>
       <div className='flex items-center justify-between flex-grow shadow-2 h-[48px] relative flex-wrap'>

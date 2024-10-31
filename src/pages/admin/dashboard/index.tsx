@@ -1,12 +1,12 @@
 import { Layout } from '@/components/custom/layout'
 import { Search } from '@/components/custom/search'
 import ThemeSwitch from '@/components/custom/theme-switch'
-import { UserNav } from '@/components/custom/user-nav'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Overview } from './components/Overview'
 import { RecentSales } from './components/RecentSales'
+import AvatarPopover from '@/components/AvatarPopover'
 
 export default function Dashboard() {
   return (
@@ -16,7 +16,7 @@ export default function Dashboard() {
         <div className='flex items-center ml-auto space-x-4'>
           <Search />
           <ThemeSwitch />
-          <UserNav />
+          <AvatarPopover></AvatarPopover>
         </div>
       </Layout.Header>
 

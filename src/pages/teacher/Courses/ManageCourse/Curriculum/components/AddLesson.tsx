@@ -44,7 +44,6 @@ export default function AddLesson() {
   }
 
   const handleSelectSubmitData = (type: string) => {
-    console.log(type, getValues('lesson_name'))
     // Call api to update the lesson in section
     // Reset the form after call api successfully
   }

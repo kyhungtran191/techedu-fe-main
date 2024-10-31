@@ -20,12 +20,12 @@ export default function SearchInput({ queryConfig, path, placeholder }: IProps) 
         pathname: path,
         search: createSearchParams({
           ...queryConfig,
-          page: 1,
-          search: searchValue
+          pageIndex: 1,
+          searchTerm: searchValue
         }).toString()
       })
     } else {
-      const updatedQuery = omit(queryConfig, ['search'])
+      const updatedQuery = omit(queryConfig, ['searchTerm'])
       return navigate({
         pathname: path,
         search: createSearchParams({

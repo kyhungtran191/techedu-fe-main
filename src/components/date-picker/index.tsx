@@ -59,7 +59,6 @@ export default function DatePickerCustom({
           const options = React.Children.toArray(children)
           const selected: any = options.find((child: any) => child.props.value === value)
           const handleChange = (value: any) => {
-            console.log(value)
             const changeEvent = {
               target: { value }
             }

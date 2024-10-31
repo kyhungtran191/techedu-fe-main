@@ -1,5 +1,6 @@
 import { ACLObj, buildAbilityFor } from '@/configs/acl'
 import { APP_PERMISSIONS } from '@/constants/permissions'
+import { BASIC_ROLE } from '@/constants/role'
 import { useAppContext } from '@/hooks/useAppContext'
 import Unauthorized from '@/pages/errors/Unauthorized'
 import { ReactNode } from 'react'
@@ -40,7 +41,7 @@ const PermissionsGuard = (props: AclGuardProps) => {
     subject: 'all'
   }
 
-  if (profile && profile.roles.includes(BASIC_ROLE.DIRECTOR)) {
+  if (profile && profile?.roles?.includes(BASIC_ROLE.DIRECTOR)) {
     return <>{children}</>
   } else if (ability && isAuthenticated && ability.can(aclAbilities.action, aclAbilities.subject)) {
     return <>{children}</>

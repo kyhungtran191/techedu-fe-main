@@ -13,9 +13,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onUpload, onSetFile, isAddNew
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
-        console.log('accepted files', acceptedFiles[0])
         onSetFile(acceptedFiles[0])
-        console.log('rerender')
       }
     },
     [onSetFile]
