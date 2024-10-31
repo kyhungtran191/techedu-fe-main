@@ -20,8 +20,8 @@ interface IProps {
 
 export default function PaginationCustom({ path, queryConfig, totalPage, className }: IProps) {
   const navigate = useNavigate()
-  const page = Number(queryConfig?.page) || Number(queryConfig?.pageIndex) || 1
-
+  const page = Number(queryConfig?.pageIndex) || 1
+  console.log(queryConfig?.pageIndex)
   let dotAfter = false
   let dotBefore = false
 
@@ -60,7 +60,7 @@ export default function PaginationCustom({ path, queryConfig, totalPage, classNa
       pathname: path,
       search: createSearchParams({
         ...queryConfig,
-        page: newPage.toString() // Ensure page is a string
+        pageIndex: newPage.toString() // Ensure page is a string
       }).toString()
     })
   }

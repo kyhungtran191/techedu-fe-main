@@ -37,6 +37,7 @@ import SearchInput from '../components/Search'
 import PaginationCustom from '@/components/Pagination'
 import LoadingCircle from '@/components/Loading/LoadingCircle'
 import { BASIC_ROLE } from '@/constants/role'
+import { formatSystemDate } from '@/utils'
 interface IRole {
   roleId: number
   name: string
@@ -71,7 +72,7 @@ export default function Role() {
     isUndefined
   )
   // Filter is checked list
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isFetching, refetch } = useQuery({
     queryKey: ['roles', queryConfig],
     queryFn: () => GetAllRoles(queryConfig),
     select: (data) => data?.data?.value
@@ -101,7 +102,7 @@ export default function Role() {
       id: 'createdDateTime',
       header: () => <p className=''>Create Date</p>,
       cell: ({ row }: { row: any }) => {
-        return <p className='font-semibold'>{moment(row?.original?.createdDateTime).format('DD/MM/YYYY')}</p>
+        return <p className='font-semibold'>{formatSystemDate(row.original.createdDateTime)}</p>
       },
       enableSorting: false,
       enableHiding: false
@@ -204,7 +205,7 @@ export default function Role() {
             CREATE_PERMISSION={CREATE}
           ></EditAddRoleDialog>
         </div>
-        {isLoading && <LoadingCircle></LoadingCircle>}
+        {isFetching && <LoadingCircle></LoadingCircle>}
         {data && data.items && (
           <Table className='border'>
             <TableHeader>
@@ -247,6 +248,7 @@ export default function Role() {
         )}
         {data && data.items.length > 0 && (
           <PaginationCustom
+            queryConfig={queryConfig}
             className='mt-7'
             totalPage={data && Math.ceil(data?.totalCount / data?.pageSize)}
           ></PaginationCustom>

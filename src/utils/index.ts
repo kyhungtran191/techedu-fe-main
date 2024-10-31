@@ -1,3 +1,6 @@
+import { Role } from '@/@types/admin/role.type'
+import moment from 'moment'
+
 export const formatPathToTitle = (path: string, last = false): string => {
   // Remove leading and trailing slashes
   path = path.replace(/^\/|\/$/g, '')
@@ -53,4 +56,12 @@ export function formatPrice(amount: number, currency: string) {
   } else {
     throw new Error('Unsupported currency format')
   }
+}
+
+export function formatRolesDisplay(roles: Role[]) {
+  return roles.map((role) => role.displayName).join(',')
+}
+
+export function formatSystemDate(value: string) {
+  return moment(value).format('DD/MM/YYYY')
 }

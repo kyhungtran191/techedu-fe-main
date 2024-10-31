@@ -10,86 +10,28 @@ import { useState } from 'react'
 import EditAddUserDialog from './components/EditAddDialog'
 import { usePermission } from '@/hooks/usePermissions'
 import { isUndefined, omitBy } from 'lodash'
-import { useNavigate } from 'react-router-dom'
 import useParamsVariables from '@/hooks/useParamsVariable'
 import SearchInput from '../components/Search'
 import FilterRole from '../components/FilterRoles'
 import FilterStatus from '../components/FilterStatus'
 import AvatarPopover from '@/components/AvatarPopover'
-
-type ITypePrivateUserTable = {
-  _id: string
-  fullName: string
-  email: string
-  roles: string[]
-  status: number
-  createdAt: string
-}
-
-const mockData: ITypePrivateUserTable[] = [
-  {
-    _id: '28cd8fba-3bc7-4c9c-aabf-8762e77e5893',
-    fullName: 'Teresa Scott',
-    email: 'larsenjoshua@yahoo.com',
-    roles: ['Manager'],
-    status: 0,
-    createdAt: '2024-10-22 09:25:30'
-  },
-  {
-    _id: '3b051a70-465f-4cf3-9a2e-b1f4d5b5d006',
-    fullName: 'Laura Wise',
-    email: 'robertporter@yahoo.com',
-    roles: ['Admin'],
-    status: 1,
-    createdAt: '2024-10-22 09:25:30'
-  },
-  {
-    _id: '8beddf7d-2959-43f9-ae5b-a64a92913f5d',
-    fullName: 'Gary Copeland',
-    email: 'valdezmichael@gmail.com',
-    roles: ['Instructor', 'Student'],
-    status: 1,
-    createdAt: '2024-10-22 09:25:30'
-  },
-  {
-    _id: 'f3a17e3f-bbfc-4600-8519-2a917c5cdfae',
-    fullName: 'Savannah Hernandez',
-    email: 'tgomez@knox.org',
-    roles: ['Instructor', 'Student'],
-    status: 1,
-    createdAt: '2024-10-22 09:25:30'
-  },
-  {
-    _id: '709fc22b-4946-4c6c-93b6-3bfaea5f6d1c',
-    fullName: 'Scott Hall',
-    email: 'collinssamuel@hotmail.com',
-    roles: ['Manager'],
-    status: 1,
-    createdAt: '2024-10-22 09:25:30'
-  }
-]
-
-type QueryParams = {
-  page?: string
-  limit?: string
-  search?: string
-  roles?: string
-  status?: string
-}
-
-export type QueryConfig = {
-  [key in keyof QueryParams]: string
-}
+import { PrivateUserQueryConfig, PrivateUserQueryParams } from '@/@types/admin/private-user.type'
+import { useQuery } from '@tanstack/react-query'
+import { GetAllPrivateUsers, ResendMail } from '@/services/admin/private-users.service'
+import LoadingCircle from '@/components/Loading/LoadingCircle'
+import { formatRolesDisplay, formatSystemDate } from '@/utils'
+import { USER_STATUS } from '@/constants'
+import { toast } from 'react-toastify'
 
 export default function PrivateUserManage() {
-  const queryParams: QueryParams = useParamsVariables()
-  const queryConfig: QueryConfig = omitBy(
+  const queryParams: PrivateUserQueryParams = useParamsVariables()
+  const queryConfig: PrivateUserQueryConfig = omitBy(
     {
-      page: queryParams.page || '1',
-      limit: queryParams.limit || '8',
+      pageIndex: queryParams.pageIndex || '1',
+      pageSize: queryParams.pageSize || '8',
       roles: queryParams.roles,
-      status: queryParams.status,
-      search: queryParams.search
+      userStatus: queryParams.userStatus,
+      searchTerm: queryParams.searchTerm
     },
     isUndefined
   )
@@ -100,12 +42,33 @@ export default function PrivateUserManage() {
   const [openDialog, setOpenDialog] = useState<boolean>(false)
   const [editUser, setEditUser] = useState<undefined | string>(undefined)
 
+  const { data, isLoading, isFetching, refetch } = useQuery({
+    queryKey: ['private-users', queryConfig],
+    queryFn: () => GetAllPrivateUsers(queryConfig),
+    select: (res) => res.data.value
+  })
+
+  const handleResendMail = (email: string) => {
+    ResendMail(email)
+      .then((data) => {
+        toast.success(`Resend success email to: ${email}`)
+      })
+      .catch((err) => {
+        const errMsg = err.response.data.Error.Message || 'Something when wrong'
+        toast.error(errMsg)
+      })
+  }
+
   const columns = [
     {
       id: 'fullName',
-      header: () => <p className=''>fullName</p>,
+      header: () => <p className=''>Full Name</p>,
       cell: ({ row }: { row: any }) => {
-        return <p className='font-medium'>{row.original.fullName}</p>
+        return (
+          <p className='font-medium'>
+            {row.original.firstName} {row.original.lastName}
+          </p>
+        )
       },
       enableSorting: false,
       enableHiding: false
@@ -123,7 +86,7 @@ export default function PrivateUserManage() {
       id: 'roles',
       header: () => <p className=''>Roles</p>,
       cell: ({ row }: { row: any }) => {
-        return <p className='font-medium'>{row.original.roles.join(', ')}</p>
+        return <p className='font-medium'>{formatRolesDisplay(row.original.roles)}</p>
       },
       enableSorting: false,
       enableHiding: false
@@ -132,7 +95,7 @@ export default function PrivateUserManage() {
       id: 'createdAt',
       header: () => <p className=''>Created date</p>,
       cell: ({ row }: { row: any }) => {
-        return <p className='font-medium'>{row.original.createdAt}</p>
+        return <p className='font-medium'>{formatSystemDate(row.original.createdDateTime)}</p>
       },
       enableSorting: false,
       enableHiding: false
@@ -143,9 +106,9 @@ export default function PrivateUserManage() {
       cell: ({ row }: { row: any }) => {
         return (
           <p
-            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == 0 ? 'bg-red-500 text-white' : 'bg-primary-1 text-white'}`}
+            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.userStatus == USER_STATUS.INACTIVE ? 'bg-red-500 text-white' : 'bg-primary-1 text-white'}`}
           >
-            {row.original.status == 0 ? 'Inactive' : 'Active'}
+            {row.original.userStatus == USER_STATUS.INACTIVE ? 'Inactive' : 'Active'}
           </p>
         )
       },
@@ -171,20 +134,28 @@ export default function PrivateUserManage() {
                     <DropdownMenuItem
                       className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
                       onSelect={() => {
-                        setEditUser(row.original._id)
+                        setEditUser(row.original.userId)
                         setOpenDialog(true)
                       }}
                     >
                       Update Member
                     </DropdownMenuItem>
                     <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                      {row.original.status == 0 ? 'Activated Member' : 'Inactivate Member'}
+                      {row.original.userStatus == USER_STATUS.INACTIVE ? 'Activated Member' : 'Inactivate Member'}
                     </DropdownMenuItem>
                   </>
                 )}
                 <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
                   Activity logs
                 </DropdownMenuItem>
+                {row.original.userStatus == USER_STATUS.INACTIVE && (
+                  <DropdownMenuItem
+                    className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                    onClick={() => handleResendMail(row.original.email)}
+                  >
+                    Resend mail
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -196,7 +167,7 @@ export default function PrivateUserManage() {
   ]
 
   const privateUserTable = useReactTable({
-    data: mockData,
+    data: data && data?.items ? data?.items : [],
     columns,
     getCoreRowModel: getCoreRowModel()
   })
@@ -224,13 +195,19 @@ export default function PrivateUserManage() {
         </div>
         <div className='grid grid-cols-2 mt-5'>
           <div className='grid items-center grid-cols-2 gap-2 md:grid-cols-3'>
-            <FilterRole queryConfig={queryConfig} className='col-span-2' path={'/admin/private-users'}></FilterRole>
+            <FilterRole
+              clientOption={false}
+              queryConfig={queryConfig}
+              className='col-span-2'
+              path={'/admin/private-users'}
+            ></FilterRole>
             {/* 2 */}
             <FilterStatus path='/admin/private-users' queryConfig={queryConfig}></FilterStatus>
           </div>
           <EditAddUserDialog
             CREATE_PERMISSION={CREATE}
             open={openDialog}
+            refetch={refetch}
             setOpenDialog={setOpenDialog}
             idUser={editUser}
             setEditUser={setEditUser}
@@ -238,48 +215,54 @@ export default function PrivateUserManage() {
           ></EditAddUserDialog>
         </div>
         <div className='mt-5 w-full overflow-auto h-[500px] rounded-lg no-scrollbar'>
-          <Table className='w-full h-full overflow-auto'>
-            <TableHeader className='sticky top-0 z-20 py-4 bg-white border-b tb:-top-3'>
-              {privateUserTable.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} className='font-bold text-center'>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-
-            <TableBody className='h-[50px] overflow-y-auto'>
-              {privateUserTable?.getRowModel()?.rows?.length ? (
-                privateUserTable?.getRowModel()?.rows?.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    className={`cursor-pointer text-center border-none`}
-                    onClick={() => {
-                      // setSelectedRow(row.original)
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                    ))}
+          {isLoading && isFetching && <LoadingCircle></LoadingCircle>}
+          {data && data.items && (
+            <Table className='w-full h-full overflow-auto'>
+              <TableHeader className='sticky top-0 z-20 py-4 bg-white border-b tb:-top-3'>
+                {privateUserTable.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id} className='font-bold text-center'>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      )
+                    })}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns?.length} className='h-24 text-center '>
-                    {/* Loading section */}
-                    {/* <ComponentsLoading></ComponentsLoading> */}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableHeader>
+
+              <TableBody className='h-[50px] overflow-y-auto'>
+                {privateUserTable?.getRowModel()?.rows?.length ? (
+                  privateUserTable?.getRowModel()?.rows?.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      className={`cursor-pointer text-center border-none`}
+                      onClick={() => {
+                        // setSelectedRow(row.original)
+                      }}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns?.length} className='h-24 font-bold text-center '>
+                      No data
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
         </div>
-        <PaginationCustom totalPage={10} className='mt-3' queryConfig={queryConfig}></PaginationCustom>
+        {data && data.items.length > 0 && (
+          <PaginationCustom queryConfig={queryConfig} className='mt-7' totalPage={data.totalPage}></PaginationCustom>
+        )}
       </Layout.Body>
     </Layout>
   )
