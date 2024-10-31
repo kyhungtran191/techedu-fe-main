@@ -1,7 +1,7 @@
 import React from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Separator } from '../ui/separator'
 import Language from '@/icons/CourseDetail/Language'
 import { Switch } from '../ui/switch'
@@ -13,6 +13,7 @@ import { toast } from 'react-toastify'
 export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?: boolean }) {
   const { isAuthenticated, setProfile, setIsAuthenticated, profile, setPermissions } = useAppContext()
 
+  const navigate = useNavigate()
   // Logout function
   const handleLogout = () => {
     clearLS()
@@ -20,6 +21,7 @@ export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?:
     setProfile(undefined)
     setPermissions(undefined)
     toast.success('Log out successfully !')
+    navigate('/')
   }
 
   return (

@@ -18,6 +18,7 @@ export type ResponseListRole = {
 }
 
 export type RoleParams = Pick<Role, 'displayName' | 'name' | 'description'>
+
 export type RoleUpdateParams = Partial<Omit<RoleParams, 'name'>>
 
 export type RolePermission = {

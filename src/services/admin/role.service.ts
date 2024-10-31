@@ -9,8 +9,10 @@ export const GetAllRoles = async (params: { searchTerm?: string; pageIndex?: str
   })
 
 export const GetDetailRole = async (roleId: string) => await instanceAxios.get(`${ROLE_API.GET_ALL}/${roleId}`)
+
 export const AddNewRole = async (roleData: RoleParams) =>
   await instanceAxios.post(`${ROLE_API.GET_ALL}`, { ...roleData })
+
 export const UpdateRole = async (roleData: RoleParams) => {
   return await instanceAxios.put(`${ROLE_API.GET_ALL}`, { ...roleData })
 }

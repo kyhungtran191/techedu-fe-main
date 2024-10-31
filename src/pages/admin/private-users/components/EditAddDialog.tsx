@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -16,8 +16,11 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 // import { separationFullName, toFullName } from '@/utils/helper'
 import { toast } from 'react-toastify'
 // import ComponentsLoading from '@/components/loading/ComponentsLoading'
-import { Switch } from '@/components/ui/switch'
 import { EMAIL_REG, PASSWORD_REG } from '@/constants/validate-rules'
+import { useGetListRoles } from '@/queries/role'
+import { Role } from '@/@types/admin/role.type'
+import { TPrivateUserAdd, TPrivateUserUpdate } from '@/@types/admin/private-user.type'
+import { AddNewPrivateUser, GetDetailPrivateUser, UpdatePrivateUser } from '@/services/admin/private-users.service'
 
 interface TCreateEditUser {
   open: boolean
@@ -25,22 +28,23 @@ interface TCreateEditUser {
   idUser?: string
   setOpenDialog: React.Dispatch<React.SetStateAction<boolean>>
   setEditUser: React.Dispatch<React.SetStateAction<string | undefined>>
-  refetch?: () => void
+  refetch: () => any
   wrapperClass?: string
   CREATE_PERMISSION: boolean
 }
 
 type TDefaultValue = {
-  password?: string
-  fullName: string
+  password?: string | null | undefined
+  firstName: string
+  lastName: string
   email: string
-  role: string
-  status?: number
+  roleId: string
 }
 
 export default function EditAddUserDialog({
   open,
   roles,
+  refetch,
   setEditUser,
   setOpenDialog,
   wrapperClass,
@@ -48,117 +52,162 @@ export default function EditAddUserDialog({
   CREATE_PERMISSION
 }: TCreateEditUser) {
   const schema = yup.object().shape({
-    email: yup.string().required('Required_field').matches(EMAIL_REG, 'Rules_email'),
-    password: idUser
-      ? yup.string().nonNullable()
-      : yup.string().required('Required_field').matches(PASSWORD_REG, 'Rules_password'),
-    fullName: yup.string().required('Required_field'),
-    role: yup.string().required('Required_field')
+    email: yup.string().required('Email is required').matches(EMAIL_REG, 'Format email error'),
+    password: yup.string().nullable(), // Allow null values
+    firstName: yup.string().required('First name is required'),
+    lastName: yup.string().required('Last name is required'),
+    roleId: yup.string().required('Role is required')
   })
+
+  const {
+    data: roleData,
+    isLoading: isLoadingRole,
+    isFetching: isFetchingRole
+  } = useGetListRoles(
+    {},
+    {
+      select: (data) => data.data.value.items as Role[]
+    }
+  )
 
   const defaultValues: TDefaultValue = {
     password: '',
-    fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
-    role: '',
-    status: 1
+    roleId: (roleData && roleData[0]?.roleId) || ''
   }
 
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isValid },
+    watch,
     setValue,
     reset,
+    setError,
     getValues
   } = useForm({
+    mode: 'onChange',
     defaultValues,
     resolver: yupResolver(schema)
   })
 
-  // const userDetailData = useQuery({
-  //   queryKey: ['users_detail', idUser],
-  //   queryFn: (_) => getDetailUser(idUser as string),
-  //   enabled: Boolean(idUser),
-  //   onSuccess: (data) => {
-  //     const user = data?.data?.data
-  //     reset({
-  //       fullName: toFullName(user?.lastName as string, user?.middleName as string, user?.firstName as string, 'vi'),
-  //       phoneNumber: user?.phoneNumber,
-  //       email: user?.email,
-  //       role: user?.role?._id,
-  //       password: '',
-  //       status: user?.status
-  //     })
-  //   }
-  // })
+  const userDetailData = useQuery({
+    queryKey: ['private_users_detail', idUser],
+    queryFn: (_) => GetDetailPrivateUser(idUser as string),
+    enabled: idUser !== undefined
+  })
+
+  useEffect(() => {
+    if (userDetailData.data) {
+      const private_user = userDetailData.data.data.value
+      reset({
+        email: private_user?.email,
+        firstName: private_user?.firstName,
+        lastName: private_user?.lastName,
+        password: '',
+        roleId: private_user?.roles && private_user?.roles[0]?.roleId
+      })
+      setValue('roleId', (private_user?.roles && private_user?.roles[0].roleId) as string)
+    }
+  }, [userDetailData.data, reset, setValue])
 
   //** */ Add function mutation
 
-  // const createUserMutation = useMutation({
-  //   mutationFn: (body: TUserAdd) => createUser(body)
-  // })
+  const createUserMutation = useMutation({
+    mutationFn: (body: TPrivateUserAdd) => AddNewPrivateUser(body)
+  })
 
-  //** */ Update function mutation
-  // const updateUserMutation = useMutation({
-  //   mutationFn: (body: TUserAdd) => updateUser(body, idUser as string)
-  // })
+  const updateUserMutation = useMutation({
+    mutationFn: (body: TPrivateUserUpdate) => UpdatePrivateUser(body)
+  })
 
-  // const handleForm = (data: TDefaultValue) => {
-  //   let { firstName, lastName, middleName } = separationFullName(data.fullName, 'vi')
-  //   if (!idUser) {
-  //     const addData: TUserAdd = {
-  //       email: data.email,
-  //       password: data.password as string,
-  //       role: data.role as string,
-  //       status: data.status,
-  //       phoneNumber: data.phoneNumber,
-  //       firstName,
-  //       lastName,
-  //       middleName
-  //     }
-  //     createUserMutation.mutate(addData, {
-  //       onSuccess(data) {
-  //         let successMessage = data.data.message
-  //         toast.success(successMessage)
-  //         // queryClient.invalidateQueries(["users"]);
-  //         refetch()
-  //         reset(defaultValues)
-  //         setOpenDialog(false)
-  //       },
-  //       onError(err: any) {
-  //         const errMessage = err.response.data.message
-  //         toast.error(errMessage)
-  //       }
-  //     })
-  //   } else {
-  //     const updatedData: TUserAdd = {
-  //       email: data.email,
-  //       password: data.password as string,
-  //       role: data.role as string,
-  //       phoneNumber: data.phoneNumber,
-  //       status: data.status,
-  //       firstName,
-  //       lastName,
-  //       middleName
-  //     }
-  //     updateUserMutation.mutate(updatedData, {
-  //       onSuccess(data) {
-  //         let successMessage = data.data.message
-  //         toast.success(successMessage)
-  //         // queryClient.invalidateQueries(["users"]);
-  //         refetch()
-  //         reset(defaultValues)
-  //         setOpenDialog(false)
-  //       },
-  //       onError(err: any) {
-  //         const errMessage = err.response.data.message
-  //         toast.error(errMessage)
-  //       }
-  //     })
-  //   }
-  // }
+  const selectedRoleId = watch('roleId')
 
+  const handleForm = (formData: TDefaultValue) => {
+    const { email, firstName, lastName, roleId, password } = formData
+    if (idUser) {
+      if (password) {
+        const validatePasswordRegex = PASSWORD_REG.test(password)
+        if (validatePasswordRegex) {
+          updateUserMutation.mutate(
+            {
+              firstName,
+              lastName,
+              password,
+              roleId,
+              userId: idUser
+            },
+            {
+              onSuccess: () => {
+                toast.success('Update Private User with new password successfully!')
+                refetch()
+                handleResetDialog()
+              },
+              onError: (err: any) => {
+                const errMsg = err.response.data.Error.Message || 'Something when wrong'
+                toast.error(errMsg)
+              }
+            }
+          )
+        } else {
+          return setError('password', {
+            message: 'Invalid format password'
+          })
+        }
+      } else {
+        updateUserMutation.mutate(
+          {
+            firstName,
+            lastName,
+            password: '',
+            roleId,
+            userId: idUser
+          },
+          {
+            onSuccess: () => {
+              toast.success('Update Private User without new password successfully!')
+              refetch()
+              handleResetDialog()
+            },
+            onError: (err: any) => {
+              const errMsg = err.response.data.Error.Message || 'Something when wrong'
+              toast.error(errMsg)
+            }
+          }
+        )
+      }
+    } else {
+      createUserMutation.mutate(
+        {
+          email,
+          firstName,
+          lastName,
+          roleId
+        },
+        {
+          onSuccess: () => {
+            toast.success('Register new account successfully! Please notice your member to active their account')
+            refetch()
+            handleResetDialog()
+          },
+          onError: (data: any) => {
+            const message = data.response.data.Error.Message || 'Something went wrong'
+            toast.error(message)
+          }
+        }
+      )
+    }
+  }
+
+  const handleResetDialog = () => {
+    setEditUser(undefined)
+    setOpenDialog(false)
+    reset(defaultValues)
+  }
+
+  console.log(selectedRoleId)
   return (
     <div>
       <Dialog defaultOpen={open} open={open} onOpenChange={setOpenDialog}>
@@ -170,35 +219,35 @@ export default function EditAddUserDialog({
             <span>Add new member</span>
           </DialogTrigger>
         )}
-        <DialogContent
-          className=''
-          onCloseAutoFocus={() => {
-            setEditUser(undefined)
-            setOpenDialog(false)
-            // reset(defaultValues)
-          }}
-        >
+        <DialogContent className='' onCloseAutoFocus={handleResetDialog}>
           <DialogHeader>
             <DialogTitle className='text-center'>{idUser ? 'Update User' : 'Add new User'}</DialogTitle>
           </DialogHeader>
           {/* Loading component when fetching user data */}
           {/* {userDetailData.isLoading && idUser && <ComponentsLoading></ComponentsLoading>} */}
           {/* {(!userDetailData.isLoading || !idUser) && */}
-          <form
-            className='grid gap-2 py-4'
-
-            // onSubmit={handleSubmit(handleForm)}
-          >
+          <form className='grid gap-2 py-4' onSubmit={handleSubmit(handleForm)}>
             <div>
-              <Label htmlFor='fullName'>Full Name</Label>
+              <Label htmlFor='firstName'>First Name</Label>
               <Controller
                 control={control}
-                name='fullName'
+                name='firstName'
                 render={({ field }) => (
-                  <Input className='px-4 py-6 text-sm outline-none' placeholder='Full Name' {...field}></Input>
+                  <Input className='px-4 py-6 text-sm outline-none' placeholder='First Name' {...field}></Input>
                 )}
               />
-              <div className='text-sm font-medium text-red-500 '>{errors?.fullName && errors?.fullName?.message}</div>
+              <div className='text-sm font-medium text-red-500 '>{errors?.firstName && errors?.firstName?.message}</div>
+            </div>
+            <div>
+              <Label htmlFor='lastName'>Last Name</Label>
+              <Controller
+                control={control}
+                name='lastName'
+                render={({ field }) => (
+                  <Input className='px-4 py-6 text-sm outline-none' placeholder='Last Name' {...field}></Input>
+                )}
+              />
+              <div className='text-sm font-medium text-red-500 '>{errors?.lastName && errors?.lastName?.message}</div>
             </div>
             <div>
               <Label htmlFor='email'>Email</Label>
@@ -218,58 +267,53 @@ export default function EditAddUserDialog({
 
               <div className='text-sm font-medium text-red-500 '>{errors?.email && errors?.email?.message}</div>
             </div>
-            <div>
-              <Label htmlFor='password'>Password</Label>
-              <Controller
-                control={control}
-                name='password'
-                render={({ field }) => (
-                  <Input
-                    className='px-4 py-6 text-sm outline-none'
-                    type='password'
-                    placeholder='Password'
-                    {...field}
-                  ></Input>
-                )}
-              />
-              <div className='text-sm font-medium text-red-500 '>{errors?.password && errors?.password?.message}</div>
-            </div>
+            {idUser && (
+              <div>
+                <Label htmlFor='password'>Password</Label>
+                <Controller
+                  control={control}
+                  name='password'
+                  render={({ field }) => (
+                    <Input
+                      className='px-4 py-6 text-sm outline-none'
+                      type='password'
+                      placeholder='Password'
+                      {...field}
+                      value={field.value || ''}
+                    ></Input>
+                  )}
+                />
+                <div className='text-sm font-medium text-red-500 '>{errors?.password && errors?.password?.message}</div>
+              </div>
+            )}
 
             <div>
               <Label htmlFor='role'>Role</Label>
               <Select
+                value={selectedRoleId || ''}
                 onValueChange={(value) => {
-                  setValue('role', value)
+                  setValue('roleId', value)
                 }}
-                defaultValue={getValues('role')}
               >
                 <SelectTrigger className=''>
                   <SelectValue placeholder='Select User Role' />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectGroup>
-                    {roles &&
-                      roles.map((role) => (
-                        <SelectItem value={role.value as string} key={role.label}>
-                          {role.label}
-                        </SelectItem>
-                      ))}
-                  </SelectGroup>
+                  {roleData &&
+                    roleData?.map((role: Role) => {
+                      if (role.name != 'client') {
+                        return (
+                          <SelectItem value={role.roleId as string} key={role.roleId}>
+                            {role.displayName}
+                          </SelectItem>
+                        )
+                      }
+                    })}
                 </SelectContent>
               </Select>
-              {/* <div className='text-sm font-medium text-red-500 '>{errors?.role && errors?.role?.message}</div> */}
+              <div className='text-sm font-medium text-red-500 '>{errors?.roleId && errors?.roleId?.message}</div>
             </div>
-            <div className='flex items-center space-x-2'>
-              <Label htmlFor='airplane-mode'>Status </Label>
-              <Switch
-                id='airplane-mode'
-                // defaultChecked={getValues('status') == 1}
-                // onCheckedChange={() => {
-                //   const currentStatus = getValues('status')
-                //   currentStatus == 1 ? setValue('status', 0) : setValue('status', 1)
-                // }}
-              />
-            </div>
+
             <DialogFooter>
               <Button type='submit' className='w-full mt-4' variant={'custom'}>
                 {idUser ? 'Update ' : 'Add'}

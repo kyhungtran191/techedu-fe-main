@@ -1,5 +1,7 @@
+import { Role } from '@/@types/admin/role.type'
 import { MultiSelect, OptionType, SelectedType } from '@/components/MultiSelect'
-import { omit } from 'lodash'
+import { useGetListRoles } from '@/queries/role'
+import { divide, omit } from 'lodash'
 import { useEffect, useState } from 'react'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 
@@ -7,16 +9,10 @@ type TProps = {
   queryConfig: any
   className?: string
   path: string
+  clientOption?: boolean
 }
-const options: OptionType[] = [
-  { label: 'Admin', value: 'admin' },
-  { label: 'Manager', value: 'manager' },
-  {
-    label: 'Client',
-    value: 'client'
-  }
-]
-export default function FilterRole({ queryConfig, className, path }: TProps) {
+
+export default function FilterRole({ queryConfig, className, path, clientOption = true }: TProps) {
   const navigate = useNavigate()
   const [roleSelected, setRoleSelected] = useState<SelectedType[] | []>(() => {
     return queryConfig?.roles
@@ -26,6 +22,24 @@ export default function FilterRole({ queryConfig, className, path }: TProps) {
         }))
       : []
   })
+
+  const [options, setOptions] = useState<OptionType[]>([])
+
+  const { isLoading, isFetching } = useGetListRoles(
+    {},
+    {
+      select: (data) => data.data.value.items,
+      onSuccess: (data: Role[]) => {
+        const newArr = data.map((item) => {
+          return {
+            label: item.displayName,
+            value: item.name
+          }
+        })
+        setOptions(clientOption ? newArr : newArr.filter((item) => item.value != 'client'))
+      }
+    }
+  )
   useEffect(() => {
     const parseMultiValue = roleSelected.length > 0 ? roleSelected.map((item) => item.value).join(',') : ''
     if (parseMultiValue) {
@@ -33,7 +47,7 @@ export default function FilterRole({ queryConfig, className, path }: TProps) {
         pathname: path,
         search: createSearchParams({
           ...queryConfig,
-          page: 1,
+          pageIndex: 1,
           roles: parseMultiValue
         }).toString()
       })
@@ -54,7 +68,7 @@ export default function FilterRole({ queryConfig, className, path }: TProps) {
       onChange={setRoleSelected}
       selected={roleSelected}
       name='Role'
-      classNameWrapper={className}
+      classNameWrapper={`${isLoading && isFetching && 'cursor-not-allowed bg-white/40'}${className}`}
     ></MultiSelect>
   )
 }

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import { omit } from 'lodash'
@@ -18,12 +17,12 @@ export default function FilterStatus({ queryConfig, className, path }: TProps) {
         pathname: path,
         search: createSearchParams({
           ...queryConfig,
-          page: 1,
-          status: value
+          pageIndex: 1,
+          userStatus: value
         }).toString()
       })
     } else {
-      const updatedQuery = omit(queryConfig, ['status'])
+      const updatedQuery = omit(queryConfig, ['userStatus'])
       return navigate({
         pathname: path,
         search: createSearchParams({
@@ -34,7 +33,7 @@ export default function FilterStatus({ queryConfig, className, path }: TProps) {
   }
 
   return (
-    <Select defaultValue={queryConfig.status} onValueChange={handleFilterStatus}>
+    <Select defaultValue={queryConfig.userStatus} onValueChange={handleFilterStatus}>
       <SelectTrigger className='font-medium rounded-lg outline-none text-neutral-black'>
         <SelectValue placeholder='Filter Status' />
       </SelectTrigger>
@@ -42,7 +41,7 @@ export default function FilterStatus({ queryConfig, className, path }: TProps) {
         <SelectItem value='all'>All Status</SelectItem> {/* Default option */}
         <SelectItem value='active'>Active</SelectItem>
         <SelectItem value='inactive'>Inactive</SelectItem>
-        <SelectItem value='blocked'>Block</SelectItem>
+        <SelectItem value='banned'>Banned</SelectItem>
       </SelectContent>
     </Select>
   )
