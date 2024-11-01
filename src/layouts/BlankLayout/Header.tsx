@@ -41,7 +41,7 @@ export default function Header({ headerOption }: { headerOption?: React.ReactNod
   }, [])
   return (
     <div
-      className='w-full transition-all duration-300 ease-in-out flex items-center justify-between h-[76px] text-white container-fluid'
+      className='w-full transition-all duration-300 ease-in-out flex items-center justify-between h-[76px] text-white container-fluid z-50 relative'
       ref={headerRef}
     >
       <Link to='/'>

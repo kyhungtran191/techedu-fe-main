@@ -8,86 +8,84 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 // import { EMAIL_REG } from '@/utils/regex'
 import { useMutation } from '@tanstack/react-query'
+import { EMAIL_REG } from '@/constants/validate-rules'
+import { ForgotPasswordUser } from '@/services/user.services'
+import { toast } from 'react-toastify'
 // import { Auth } from '@/services/client'
 // import Spinner from '@/components/Spinner'
 export default function ForgotPassword() {
   const [isSuccess, setIsSuccess] = useState(false)
 
-  // const schema = yup
-  //   .object({
-  //     email: yup.string().matches(EMAIL_REG, 'Please provide correct email type').required('Please provide your email'),
-  //   })
-  //   .required()
+  const schema = yup.object().shape({
+    email: yup.string().required('Email is required').matches(EMAIL_REG, 'Email Format Error')
+  })
 
-  // const { handleSubmit, control, formState: { errors }, setError } = useForm({
-  //   resolver: yupResolver(schema)
-  // })
-  // const { mutate, isLoading } = useMutation({
-  //   mutationFn: (email) => Auth.forgotPassword(email)
-  // })
+  const {
+    handleSubmit,
+    control,
+    formState: { errors, isValid },
+    reset,
+    setError
+  } = useForm({
+    mode: 'onChange',
+    resolver: yupResolver<{ email: string }>(schema),
+    defaultValues: {
+      email: ''
+    }
+  })
 
-  // const onSubmit = (data) => {
-  //   mutate(data.email, {
-  //     onSuccess() {
-  //       setIsSuccess(true)
-  //     },
-  //     onError(data) {
-  //       const errorMessage = data && data?.response?.data?.title
-  //       if (errorMessage) {
-  //         setError('email', { message: errorMessage })
-  //       }
-  //     }
-  //   })
-  // }
+  const { mutate, isLoading } = useMutation({
+    mutationFn: (email: string) => ForgotPasswordUser(email)
+  })
+
+  const onSubmit = ({ email }: { email: string }) => {
+    console.log('email', email)
+    mutate(email, {
+      onSuccess() {
+        toast.success('We have send reset password to your email. Please check your email')
+        reset({})
+      },
+      onError(err: any) {
+        if (err && err?.response.status) {
+          toast.error('This email is not exists!')
+        } else {
+          toast.error('Something went wrong, please try again!')
+        }
+      }
+    })
+  }
 
   return (
-    <div className='container flex flex-col items-center justify-center h-[80vh]'>
-      <div className='md:w-[50%] min-h-[400px]   p-10 rounded-lg '>
-        <div className='flex items-center justify-center gap-3'>
-          <img src='./logo.png' alt='' />
-          <h2 className='text-xl font-bold md:text-3xl'>Recover Password</h2>
+    <div className='relative z-20 flex-grow w-full pt-10 mx-auto overflow-y-auto text-xl text-neutral-black no-scrollbar '>
+      <h2 className='text-4xl font-bold text-center text-primary-1'>Account Recovery</h2>
+      <form onSubmit={handleSubmit(onSubmit)} className='container px-3 py-6 mt-8'>
+        <div className='mb-6'>
+          <Label className='mb-[18px] block text-xl'>Email</Label>
+          {/* Title input */}
+          <Controller
+            control={control}
+            name='email'
+            render={({ field }) => (
+              <Input
+                className='h-[50px] sm:h-[65px] bg-transparent !p-4 !outline-none !focus:outline-none mt-[18px] text-lg sm:text-xl border-primary-1 placeholder:text-neutral-silver-3'
+                placeholder='Enter your email'
+                {...field}
+              ></Input>
+            )}
+          />
+          <div className='h-3 mt-2 text-sm font-medium text-red-500'>{errors?.email && errors?.email?.message}</div>
         </div>
-        {/* {!isLoading && !isSuccess && ( */}
-        <form
-
-        // onSubmit={handleSubmit(onSubmit)}
-        >
-          <div className='my-4'>
-            <Label className='font-bold text-md'>Email</Label>
-            <Input className='p-4 mt-2 outline-none' placeholder='Your Email'></Input>
-          </div>
-          {/* <div className='h-5 mt-3 text-base font-semibold text-red-500'>{errors && errors?.email?.message}</div> */}
-          <div className='text-right'>
-            <Link
-              to='/login'
-              className='inline-block mt-3 font-semibold text-blue-500 underline cursor-pointer md:mt-5 text-md'
-            >
-              Back to Login
-            </Link>
-          </div>
-          <Button type={'submit'} className='w-full my-4 font-bold' variant={'custom'}>
-            Send Verify Email
+        <div className='text-center'>
+          <Button
+            type='submit'
+            variant='custom'
+            className='w-full mb-10 text-lg cursor-pointer py-7 max-w-[500px] mx-auto'
+            disabled={!isValid}
+          >
+            Send Reset Email
           </Button>
-        </form>
-        {/* )} */}
-        {/* {isLoading && (
-          <div className='flex items-center justify-center w-full h-full'>
-            <Spinner></Spinner>
-          </div>
-        )} */}
-        {isSuccess && (
-          <>
-            <div className='mt-4 font-semibold text-center text-green-500'>
-              Success! Please check your email for further instructions.
-            </div>
-            <div className='mt-10 text-center'>
-              <Link to='/login'>
-                <Button className='bg-blue-500 btn btn-primary'>Back to Login</Button>
-              </Link>
-            </div>
-          </>
-        )}
-      </div>
+        </div>
+      </form>
     </div>
   )
 }

@@ -1,41 +1,130 @@
-import React, { useEffect } from 'react'
-import email from '@/assets/confirm-email.png'
-import { CheckCircle, CircleCheck } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ConfirmEmailUser } from '@/services/user.services'
 import SectionLoading from '@/components/Loading/SectionLoading'
+import * as yup from 'yup'
+import { PASSWORD_REG, PHONE_REG } from '@/constants/validate-rules'
+import { Controller, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { toast } from 'react-toastify'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+
+const schema = yup.object().shape({
+  firstName: yup.string().required('First Name is required'),
+  lastName: yup.string().required('Last Name is required'),
+  phoneNumber: yup
+    .string()
+    .required('Phone Number is required')
+    .matches(PHONE_REG, 'Invalid phone number. Please ensure the  phone number meets format.')
+})
 export default function ConfirmEmail() {
   const { userId, token } = useParams()
 
   // const []
   const { data, isLoading, isSuccess } = useQuery({
-    queryKey: ['confirm-email'],
-    queryFn: () => {
-      if (userId && token) {
-        return ConfirmEmailUser({ userId, token })
-      }
-    },
-    enabled: Boolean(userId && token)
+    queryKey: ['confirm-email', userId, token],
+    queryFn: () => ConfirmEmailUser({ userId, token } as { userId: string; token: string }),
+    enabled: Boolean(userId && token),
+    onSuccess: () => {}
   })
 
+  const defaultValue = { firstName: '', lastName: '', phoneNumber: '' }
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors, isValid },
+    reset,
+    setError
+  } = useForm({
+    mode: 'onBlur',
+    resolver: yupResolver(schema),
+    defaultValues: defaultValue
+  })
+
+  const onSubmit = (data: { firstName: string; lastName: string; phoneNumber: string }) => {
+    // mutate(data, {
+    //   onSuccess(data) {
+    //     if (data.data.isSuccess) {
+    //       toast.success('Register Successfully, please check your email to active your account!')
+    //       reset(defaultValue)
+    //     }
+    //   },
+    //   onError(err: any) {
+    //     const errMessage = err?.response?.data?.Error?.Message || 'Something was wrong'
+    //     toast.error(errMessage)
+    //   }
+    // })
+  }
   return (
     <div className='relative flex flex-col items-center justify-center h-screen'>
       {isLoading && <SectionLoading></SectionLoading>}
-      <>
-        <img srcSet={`${email} 2x`} className='w-[300px] h-[300px]'></img>
-
-        <div className='flex items-center my-3 text-3xl font-semibold gap-x-3'>
-          Email Confirm Successfully <CircleCheck className='w-10 h-10 text-primary-1'></CircleCheck>
+      <form className='container max-w-[1000px]' onSubmit={handleSubmit(onSubmit)}>
+        <div className='absolute inset-0 w-full h-full opacity-40 bg-gradient-to-b from-transparent via-primary-3 to-parent'></div>
+        <div className='relative z-20 flex-grow w-full pt-10 mx-auto overflow-y-auto text-xl text-neutral-black no-scrollbar '>
+          <h2 className='text-4xl font-medium text-center text-primary-1'>Complete Your Registration</h2>
+          <div className='px-3 py-6 mt-8'>
+            <div className='mb-6'>
+              <div className='mb-6'>
+                <Label className='mb-[18px] block text-xl'>First name</Label>
+                <div className='relative w-full p-3 border rounded-lg border-primary-1'>
+                  {/* Title input */}
+                  <Controller
+                    control={control}
+                    name='firstName'
+                    render={({ field }) => (
+                      <Input
+                        placeholder='Enter your first name'
+                        className='px-0 py-0 text-xl border-none focus:outline-none text-neutral-black pr-[30px] placeholder:text-neutral-silver-3'
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+              <div className='mb-6'>
+                <Label className='mb-[18px] block text-xl'>Last name </Label>
+                <div className='relative w-full p-3 border rounded-lg border-primary-1'>
+                  {/* Title input */}
+                  <Controller
+                    control={control}
+                    name='lastName'
+                    render={({ field }) => (
+                      <Input
+                        placeholder='Enter your last name'
+                        className='px-0 py-0 text-xl border-none focus:outline-none text-neutral-black pr-[30px] placeholder:text-neutral-silver-3'
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+              <div className='mb-6'>
+                <Label className='mb-[18px] block text-xl'>Phone Number </Label>
+                <div className='relative w-full p-3 border rounded-lg border-primary-1'>
+                  {/* Title input */}
+                  <Controller
+                    control={control}
+                    name='phoneNumber'
+                    render={({ field }) => (
+                      <Input
+                        placeholder='Enter your last name'
+                        className='px-0 py-0 text-xl border-none focus:outline-none text-neutral-black pr-[30px] placeholder:text-neutral-silver-3'
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <span className='text-base'>You have been activated your account, you can enjoy our world now !</span>
-        <Link
-          to='/login'
-          className='px-4 py-2 text-lg text-white rounded-lg bg-primary-1 w-full max-w-[300px] text-center my-4'
-        >
-          Enter now
-        </Link>
-      </>
+        <Button type='submit' variant='custom' className='w-full mb-10 text-lg py-7' disabled={!isValid}>
+          Complete
+        </Button>
+      </form>
     </div>
   )
 }

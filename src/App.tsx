@@ -29,6 +29,7 @@ import Unauthorized from './pages/errors/Unauthorized'
 // Lazy loading for components
 const ConfirmPassword = lazy(() => import('./pages/general/confirm-password'))
 const ConfirmEmail = lazy(() => import('./pages/general/confirm-email'))
+const ResetPassword = lazy(() => import('./pages/general/reset-password'))
 const ForgotPassword = lazy(() => import('./pages/general/forgot-password'))
 const SignUp = lazy(() => import('./pages/general/SignUp'))
 const Login = lazy(() => import('./pages/general/Login'))
@@ -73,7 +74,7 @@ function App() {
           }
         />
 
-        {/* Dont need to Gurad Route */}
+        {/* Dont need to Guard Route */}
         <Route
           path='/courses'
           element={
@@ -98,6 +99,14 @@ function App() {
             element={
               <BlankLayout>
                 <ConfirmPassword></ConfirmPassword>
+              </BlankLayout>
+            }
+          ></Route>
+          <Route
+            path='/reset-password/:userId/token/:token'
+            element={
+              <BlankLayout>
+                <ResetPassword></ResetPassword>
               </BlankLayout>
             }
           ></Route>

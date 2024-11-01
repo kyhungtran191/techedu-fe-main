@@ -37,8 +37,10 @@ export default function Login() {
   // }, [])
   const schema = yup.object().shape({
     email: yup.string().required('Email is required').matches(EMAIL_REG, 'Email Format Error'),
-    password: yup.string().required('Password is required')
-    // .matches(PASSWORD_REG, 'Invalid password. Please ensure the password meets all required criteria.')
+    password: yup
+      .string()
+      .required('Password is required')
+      .matches(PASSWORD_REG, 'Invalid password. Please ensure the password meets all required criteria.')
   })
 
   const {
@@ -51,7 +53,7 @@ export default function Login() {
     resolver: yupResolver(schema),
     defaultValues: {
       email: 'director@gmail.com',
-      password: '12345678'
+      password: 'Admin123@@@'
     }
   })
 
@@ -66,8 +68,6 @@ export default function Login() {
       onSuccess(info) {
         const accessToken = data && (info?.data?.value?.accessToken as string)
         const refreshToken = data && (info?.data?.value?.refreshToken as string)
-        console.log('accessToken login', accessToken)
-        console.log('refreshToken login', refreshToken)
         const refreshTokenExpiryTime = data && (info?.data?.value?.refreshTokenExpiryTime as string)
         const exp = Math.floor(new Date(refreshTokenExpiryTime as string).getTime() / 1000)
         const dataDetail = jwtDecode(accessToken as string)

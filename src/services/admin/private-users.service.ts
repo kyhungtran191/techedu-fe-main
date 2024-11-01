@@ -8,6 +8,7 @@ import {
 import { ResponseData } from '@/@types/response.type'
 import { PRIVATE_USER_API } from '@/apis/admin/private-users.api'
 import instanceAxios from '@/configs/axiosInstance'
+import axios from 'axios'
 
 export const GetAllPrivateUsers = async (params: PrivateUserQueryConfig) =>
   await instanceAxios.get<ResponseData<ResponseListPrivateUsers>>(PRIVATE_USER_API.GET_ALL, {
@@ -30,8 +31,8 @@ export const ResendMail = async (email: string) => {
   })
 }
 
-// export const GetRolePermission = async (roleId: string) =>
-//   await instanceAxios.get(`${ROLE_API.GET_ALL}/${roleId}/permissions`)
+export const ActivePrivateUser = async (userId: string, data: { password: string; confirmPassword: string }) =>
+  await axios.put(`${PRIVATE_USER_API.GET_ALL}/accounts/${userId}/reset-password`, data)
 
 // export const UpdateRolePermission = async (roleId: string, permissions: RolePermission[]) => {
 //   await instanceAxios.put(`${ROLE_API.GET_ALL}/${roleId}/permissions`, permissions)
