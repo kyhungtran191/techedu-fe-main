@@ -1,5 +1,6 @@
 import { ResponseData } from '@/@types/response.type'
 import { UserAPI } from '@/apis/user.api'
+import instanceAxios from '@/configs/axiosInstance'
 import axios from 'axios'
 
 export const ConfirmEmailUser = async (data: { userId: string; token: string }) => {
@@ -32,4 +33,25 @@ export const ResetPasswordUser = async ({
     `${UserAPI.CONFIRM_EMAIL}/${userId}/reset-password?Token=${encodeURIComponent(token)}`,
     { password, confirmPassword }
   )
+}
+
+export const CompleteRegister = async (
+  userId: string,
+  data: { firstName: string; lastName: string; phoneNumber: string }
+) => {
+  return axios.put(`${UserAPI.CONFIRM_EMAIL}/${userId}/complete-registration`, data)
+}
+
+export const ResendEmailUser = async (email: string) => {
+  return axios.post(`${UserAPI.RESEND_EMAIL}`, {
+    email
+  })
+}
+
+export const GetMe = async () => instanceAxios.get(UserAPI.ME)
+
+export const ToggleBlockUser = async (userId: string, IsBlocked: boolean) => {
+  await instanceAxios.put(`${UserAPI.CONFIRM_EMAIL}/${userId}/block-status`, {
+    IsBlocked
+  })
 }

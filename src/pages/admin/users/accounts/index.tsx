@@ -15,122 +15,48 @@ import useParamsVariables from '@/hooks/useParamsVariable'
 import FilterRole from '../../components/FilterRoles'
 import FilterStatus from '../../components/FilterStatus'
 import AvatarPopover from '@/components/AvatarPopover'
-
-type QueryParams = {
-  page?: string
-  limit?: string
-  search?: string
-  roles?: string
-  status?: string
-}
-
-export type QueryConfig = {
-  [key in keyof QueryParams]: string
-}
-
-type ITypeAccountsTable = {
-  _id: string
-  fullName: string
-  email: string
-  createdAt: string
-  roles: string[]
-  status: 0 | 1
-}
-
-const mockData: ITypeAccountsTable[] = [
-  {
-    _id: '1',
-    fullName: 'John Doe',
-    email: 'john.doe@example.com',
-    roles: ['Client'],
-    createdAt: '2023-09-15',
-    status: 1
-  },
-  {
-    _id: '2',
-    fullName: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    roles: ['Admin'],
-    createdAt: '2023-08-22',
-    status: 0
-  },
-  {
-    _id: '3',
-    fullName: 'Michael Johnson',
-    roles: ['Manager'],
-    email: 'michael.johnson@example.com',
-    createdAt: '2023-07-10',
-    status: 1
-  },
-  {
-    _id: '4',
-    fullName: 'Emily Davis',
-    roles: ['Manager'],
-    email: 'emily.davis@example.com',
-    createdAt: '2023-10-01',
-    status: 0
-  },
-  {
-    _id: '5',
-    fullName: 'William Brown',
-    roles: ['Client'],
-    email: 'william.brown@example.com',
-    createdAt: '2023-06-18',
-    status: 1
-  },
-  {
-    _id: '4',
-    fullName: 'Emily Davis',
-    roles: ['Manager'],
-    email: 'emily.davis@example.com',
-    createdAt: '2023-10-01',
-    status: 0
-  },
-  {
-    _id: '5',
-    fullName: 'William Brown',
-    roles: ['Client'],
-    email: 'william.brown@example.com',
-    createdAt: '2023-06-18',
-    status: 1
-  },
-  {
-    _id: '4',
-    fullName: 'Emily Davis',
-    roles: ['Manager'],
-    email: 'emily.davis@example.com',
-    createdAt: '2023-10-01',
-    status: 0
-  },
-  {
-    _id: '5',
-    fullName: 'William Brown',
-    roles: ['Client'],
-    email: 'william.brown@example.com',
-    createdAt: '2023-06-18',
-    status: 1
-  }
-]
+import { PrivateUserQueryConfig, PrivateUserQueryParams } from '@/@types/admin/private-user.type'
+import { GetAllAccounts } from '@/services/admin/accounts.service'
+import { useQuery } from '@tanstack/react-query'
+import { formatRolesDisplay, formatSystemDate } from '@/utils'
+import { USER_STATUS } from '@/constants'
+import LoadingCircle from '@/components/Loading/LoadingCircle'
+import EditAddAccount from './components/EditAddAccount'
+import { useToggleBlockUserMutation } from '@/mutations/useToggleBlockUserMutation'
 
 export default function Accounts() {
-  const queryParams: QueryParams = useParamsVariables()
-  const queryConfig: QueryConfig = omitBy(
+  const queryParams: PrivateUserQueryParams = useParamsVariables()
+  const queryConfig: PrivateUserQueryConfig = omitBy(
     {
-      page: queryParams.page || '1',
-      limit: queryParams.limit || '8',
+      pageIndex: queryParams.pageIndex || '1',
+      pageSize: queryParams.pageSize || '8',
       roles: queryParams.roles,
-      status: queryParams.status,
-      search: queryParams.search
+      userStatus: queryParams.userStatus,
+      searchTerm: queryParams.searchTerm
     },
     isUndefined
   )
+
+  const [idUser, setIdUser] = useState<string | undefined>(undefined)
+  const [open, setOpen] = useState<boolean>(false)
+  const { data, isLoading, isFetching, refetch } = useQuery({
+    queryKey: ['private-users', queryConfig],
+    queryFn: () => GetAllAccounts(queryConfig),
+    select: (res) => res.data.value
+  })
+
+  const { mutate: toggleBlock } = useToggleBlockUserMutation(refetch)
 
   const columns = [
     {
       id: 'fullName',
       header: () => <p className=''>Full Name</p>,
       cell: ({ row }: { row: any }) => {
-        return <p className='font-medium'>{row.original.fullName}</p>
+        return (
+          <p className='font-medium'>
+            {row.original.firstName} {row.original.lastName}
+          </p>
+        )
       },
       enableSorting: false,
       enableHiding: false
@@ -148,7 +74,7 @@ export default function Accounts() {
       id: 'roles',
       header: () => <p className=''>Roles</p>,
       cell: ({ row }: { row: any }) => {
-        return <p className='font-medium'>{row.original.roles.join(', ')}</p>
+        return <p className='font-medium'>{formatRolesDisplay(row.original.roles)}</p>
       },
       enableSorting: false,
       enableHiding: false
@@ -157,7 +83,7 @@ export default function Accounts() {
       id: 'createdAt',
       header: () => <p className=''>Created date</p>,
       cell: ({ row }: { row: any }) => {
-        return <p className='font-medium'>{row.original.createdAt}</p>
+        return <p className='font-medium'>{formatSystemDate(row.original.createdDateTime)}</p>
       },
       enableSorting: false,
       enableHiding: false
@@ -168,9 +94,9 @@ export default function Accounts() {
       cell: ({ row }: { row: any }) => {
         return (
           <p
-            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == 0 ? 'bg-red-500 text-white' : 'bg-primary-1 text-white'}`}
+            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.userStatus !== USER_STATUS.ACTIVE ? 'bg-red-500 text-white' : 'bg-primary-1 text-white'}`}
           >
-            {row.original.status == 0 ? 'Inactive' : 'Active'}
+            {row.original.userStatus}
           </p>
         )
       },
@@ -191,12 +117,27 @@ export default function Accounts() {
                 <ThreeDots></ThreeDots>
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end' className='rounded-xl min-w-[160px] py-2'>
-                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                  Edit Account
+                <DropdownMenuItem
+                  className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                  onSelect={() => {
+                    setIdUser(row.original.userId)
+                    setOpen(true)
+                  }}
+                >
+                  View Member
                 </DropdownMenuItem>
-                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                  {row.original.status == 0 ? 'Activated Member' : 'Inactivate Member'}
+                <DropdownMenuItem
+                  className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                  onSelect={() => {
+                    toggleBlock({
+                      userId: row.original.userId,
+                      isBlock: row.original.userStatus !== USER_STATUS.BANNED
+                    })
+                  }}
+                >
+                  {row.original.userStatus === USER_STATUS.BANNED ? 'Un ban this account' : 'Ban this account'}
                 </DropdownMenuItem>
+
                 <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
                   Activity logs
                 </DropdownMenuItem>
@@ -211,21 +152,10 @@ export default function Accounts() {
   ]
 
   const accountTable = useReactTable({
-    data: mockData,
+    data: data && data?.items ? data?.items : [],
     columns,
     getCoreRowModel: getCoreRowModel()
   })
-
-  const options: OptionType[] = [
-    { label: 'Admin', value: 'admin' },
-    { label: 'Manager', value: 'manager' },
-    {
-      label: 'Client',
-      value: 'client'
-    }
-  ]
-
-  const [selected, setSelected] = useState<SelectedType[] | []>([])
 
   return (
     <Layout>
@@ -322,50 +252,56 @@ export default function Accounts() {
               <FilterStatus path='/admin/accounts' queryConfig={queryConfig}></FilterStatus>
             </div>
           </div>
+          <EditAddAccount open={open} setEditUser={setIdUser} idUser={idUser} setOpenDialog={setOpen}></EditAddAccount>
         </div>
         <div className='mt-5 w-full overflow-auto h-[500px] rounded-lg no-scrollbar'>
-          <Table className='w-full h-full overflow-auto'>
-            <TableHeader className='sticky top-0 z-20 bg-white border-b sm:py-4 tb:-top-3'>
-              {accountTable.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} className='font-bold text-center'>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-
-            <TableBody className='h-[50px] overflow-y-auto'>
-              {accountTable?.getRowModel()?.rows?.length ? (
-                accountTable?.getRowModel()?.rows?.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    className={`cursor-pointer text-center border-none`}
-                    onClick={() => {
-                      // setSelectedRow(row.original)
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                    ))}
+          {isFetching && <LoadingCircle></LoadingCircle>}
+          {!isFetching && (
+            <Table className='w-full h-full overflow-auto'>
+              <TableHeader className='sticky top-0 z-20 bg-white border-b sm:py-4 tb:-top-3'>
+                {accountTable.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id} className='font-bold text-center'>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      )
+                    })}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns?.length} className='h-24 text-center '>
-                    {/* Loading section */}
-                    {/* <ComponentsLoading></ComponentsLoading> */}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableHeader>
+
+              <TableBody className='h-[50px] overflow-y-auto'>
+                {accountTable?.getRowModel()?.rows?.length ? (
+                  accountTable?.getRowModel()?.rows?.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      className={`cursor-pointer text-center border-none`}
+                      onClick={() => {
+                        // setSelectedRow(row.original)
+                      }}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns?.length} className='h-24 text-center '>
+                      {/* Loading section */}
+                      {/* <ComponentsLoading></ComponentsLoading> */}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
         </div>
-        <PaginationCustom totalPage={10} className='mt-3'></PaginationCustom>
+        <PaginationCustom totalPage={data?.totalPage as number} className='mt-3'></PaginationCustom>
       </Layout.Body>
     </Layout>
   )

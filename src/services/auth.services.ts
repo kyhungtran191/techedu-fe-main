@@ -18,4 +18,4 @@ export const updateMe = async (body: any) => {
   return await instanceAxios.put<ResponseData<User>>(AUTH_API.ME, body)
 }
 
-export const logout = async () => await instanceAxios.post<User | null>(AUTH_API.LOGOUT)
+export const logout = async () => await instanceAxios.post<ResponseData<null>>(AUTH_API.LOGOUT)

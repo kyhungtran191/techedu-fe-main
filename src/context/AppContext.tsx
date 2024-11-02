@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { getAccessTokenFromLS, getPermissions, getUserFromLS } from '@/utils/auth'
+import {
+  clearLS,
+  getAccessTokenFromLS,
+  getPermissions,
+  getUserFromLS,
+  savePermissions,
+  saveUserToLS
+} from '@/utils/auth'
 import { Profile } from '@/@types/user.type'
 import { APP_PERMISSIONS } from '@/constants/permissions'
 import { User } from '@/@types/auth.type'
+import { GetMe } from '@/services/user.services'
+import { Role } from '@/@types/admin/role.type'
+import { toast } from 'react-toastify'
 
 // Api call get me
 // import { Auth } from '@/services/client'
@@ -38,6 +48,41 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   //   queryFn: Auth.profile,
   //   enabled: !!isAuthenticated
   // })
+  const accessToken = getAccessTokenFromLS()
+  const { data } = useQuery({
+    queryKey: ['me', isAuthenticated],
+    queryFn: GetMe,
+    select: (data) => data?.data?.value,
+    enabled: isAuthenticated && Boolean(accessToken),
+    onSuccess: (data) => {
+      if (data) {
+        const { email, firstName, lastName, avatar, roles, permissions, userId } = data
+        saveUserToLS({
+          email,
+          fullname: `${firstName} ${lastName}`,
+          id: userId,
+          phoneNumber: '',
+          roles: roles.map((item: Role) => item.name)
+        })
+        savePermissions(permissions)
+        setProfile({
+          email,
+          fullname: `${firstName} ${lastName}`,
+          id: userId,
+          phoneNumber: '',
+          roles: roles.map((item: Role) => item.name)
+        })
+        setPermissions(permissions)
+      }
+    },
+    onError: (err) => {
+      setIsAuthenticated(false)
+      setProfile(undefined)
+      setPermissions(undefined)
+      clearLS()
+      toast.error('Error when fetch me')
+    }
+  })
 
   return (
     <AppContext.Provider

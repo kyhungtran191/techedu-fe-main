@@ -71,10 +71,10 @@ export default function SignUp() {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center h-screen py-5 overflow-hidden '>
-      <div className='grid w-full h-[full] grid-cols-1 lg:grid-cols-2'>
+    <div className='flex flex-col items-center justify-center h-screen overflow-auto no-scrollbar '>
+      <div className='grid w-full h-[full] grid-cols-1 lg:grid-cols-2 max-h-screen fixed inset-0'>
         <AuthCarousel></AuthCarousel>
-        <div className='bg-primary-3 rounded-[20px] flex-col h-full flex p-5 sm:p-[40px] xl:p-[70px] justify-center sm:justify-normal'>
+        <div className='w-full flex-1 bg-primary-3 rounded-[20px] flex-col h-full flex overflow-auto no-scrollbar  justify-center px-[40px]'>
           <div className='flex justify-center'>
             <h1 className='text-2xl sm:text-[32px] font-medium'>Create your account</h1>
           </div>

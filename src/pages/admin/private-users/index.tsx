@@ -22,6 +22,7 @@ import LoadingCircle from '@/components/Loading/LoadingCircle'
 import { formatRolesDisplay, formatSystemDate } from '@/utils'
 import { USER_STATUS } from '@/constants'
 import { toast } from 'react-toastify'
+import { useToggleBlockUserMutation } from '@/mutations/useToggleBlockUserMutation'
 
 export default function PrivateUserManage() {
   const queryParams: PrivateUserQueryParams = useParamsVariables()
@@ -58,6 +59,8 @@ export default function PrivateUserManage() {
         toast.error(errMsg)
       })
   }
+
+  const { mutate: toggleBlock } = useToggleBlockUserMutation(refetch)
 
   const columns = [
     {
@@ -106,9 +109,9 @@ export default function PrivateUserManage() {
       cell: ({ row }: { row: any }) => {
         return (
           <p
-            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.userStatus == USER_STATUS.INACTIVE ? 'bg-red-500 text-white' : 'bg-primary-1 text-white'}`}
+            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.userStatus !== USER_STATUS.ACTIVE ? 'bg-red-500 text-white' : 'bg-primary-1 text-white'}`}
           >
-            {row.original.userStatus == USER_STATUS.INACTIVE ? 'Inactive' : 'Active'}
+            {row.original.userStatus}
           </p>
         )
       },
@@ -147,6 +150,17 @@ export default function PrivateUserManage() {
                 )}
                 <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
                   Activity logs
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                  onSelect={() => {
+                    toggleBlock({
+                      userId: row.original.userId,
+                      isBlock: row.original.userStatus !== USER_STATUS.BANNED
+                    })
+                  }}
+                >
+                  {row.original.userStatus === USER_STATUS.BANNED ? 'Un ban this account' : 'Ban this account'}
                 </DropdownMenuItem>
                 {row.original.userStatus == USER_STATUS.INACTIVE && (
                   <DropdownMenuItem
@@ -215,8 +229,8 @@ export default function PrivateUserManage() {
           ></EditAddUserDialog>
         </div>
         <div className='mt-5 w-full overflow-auto h-[500px] rounded-lg no-scrollbar'>
-          {isLoading && isFetching && <LoadingCircle></LoadingCircle>}
-          {data && data.items && (
+          {isFetching && <LoadingCircle></LoadingCircle>}
+          {!isFetching && (
             <Table className='w-full h-full overflow-auto'>
               <TableHeader className='sticky top-0 z-20 py-4 bg-white border-b tb:-top-3'>
                 {privateUserTable.getHeaderGroups().map((headerGroup) => (

@@ -24,23 +24,11 @@ export default function Login() {
     email: string
     password: string
   }
-  // const fetchAPI = async () => {
-  //   const res = await axios.post('http://techedu.click/api/v1/auth/login', {
-  //     email: 'director@gmail.com',
-  //     password: '12345678'
-  //   })
-  //   console.log(res)
-  // }
 
-  // useEffect(() => {
-  //   fetchAPI()
-  // }, [])
   const schema = yup.object().shape({
     email: yup.string().required('Email is required').matches(EMAIL_REG, 'Email Format Error'),
-    password: yup
-      .string()
-      .required('Password is required')
-      .matches(PASSWORD_REG, 'Invalid password. Please ensure the password meets all required criteria.')
+    password: yup.string().required('Password is required')
+    // .matches(PASSWORD_REG, 'Invalid password. Please ensure the password meets all required criteria.')
   })
 
   const {
@@ -53,14 +41,18 @@ export default function Login() {
     resolver: yupResolver(schema),
     defaultValues: {
       email: 'director@gmail.com',
-      password: 'Admin123@@@'
+      password: '12345678'
     }
   })
 
   const { setIsAuthenticated, setPermissions, setProfile } = useAppContext()
 
   const { isLoading, mutate } = useMutation({
-    mutationFn: (body: TLogin) => login(body)
+    mutationFn: (body: TLogin) => login(body),
+    onError: (err: any) => {
+      const errMsg = err.response.data.error.message 
+      toast.error(errMsg || 'error when login')
+    }
   })
 
   const onSubmit = (data: TLogin) => {
@@ -87,10 +79,10 @@ export default function Login() {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center h-screen overflow-hidden'>
-      <div className='grid w-full h-full grid-cols-1 lg:grid-cols-2'>
+    <div className='flex flex-col items-center justify-center h-screen overflow-auto no-scrollbar'>
+      <div className='fixed inset-0 grid w-full h-full grid-cols-1 lg:grid-cols-2'>
         <AuthCarousel></AuthCarousel>
-        <div className='justify-center sm:justify-normal flex-1 bg-primary-3 rounded-[20px] flex-col h-full flex p-5 sm:p-[40px] xl:p-[70px]'>
+        <div className='w-full flex-1 bg-primary-3 rounded-[20px] flex-col h-full flex overflow-auto no-scrollbar  justify-center px-[40px]'>
           <div className='flex justify-center'>
             <h1 className='text-2xl sm:text-[32px] font-medium'>Welcome back</h1>
             <img src={StarIcon} alt='' className='w-[36px] h-[36px] sm:w-[48px] sm:h-[48px] ml-2 sm:ml-6' />
@@ -151,9 +143,16 @@ export default function Login() {
               </Button>
             </>
           </form>
-          <Link to='/forgot-password' className='inline-block mt-6 underline text-primary-1'>
-            Forgot password?
-          </Link>
+          <div className='flex items-center justify-between'>
+            <Link to='/forgot-password' className='inline-block mt-6 underline text-primary-1'>
+              Forgot password?
+            </Link>
+
+            <Link to='/resend-email' className='inline-block mt-6 underline text-primary-1'>
+              I didn't receive confirm email?
+            </Link>
+          </div>
+
           <div className='mt-4 sm:mt-12 py-3 sm:py-[18px] px-4 xl:px-6 bg-neutral-silver text-neutral-silver-3 text-center text-lg sm:text-xl rounded-lg'>
             Don’t have an account?
             <Link to='/signup' className='ml-1 text-sm underline sm:text-base sm:ml-3 text-primary-1'>
