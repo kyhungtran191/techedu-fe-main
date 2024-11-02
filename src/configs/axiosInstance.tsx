@@ -17,7 +17,7 @@ let refreshQueue: any[] = []
 
 const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate()
-  const { setProfile, setIsAuthenticated } = useAppContext()
+  const { setProfile, setIsAuthenticated, setPermissions } = useAppContext()
   const queryClient = useQueryClient()
 
   instanceAxios.interceptors.request.use(async function (config) {
@@ -44,7 +44,6 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
                 }
               )
               .then((res) => {
-                console.log('call new refresh api success')
                 if (res && res?.data?.value) {
                   const responseData = res?.data?.value
                   if (responseData) {
@@ -81,12 +80,13 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
                 console.log('error when refresh token', error)
                 console.log('accessToken when call new refresh token', accessToken)
                 console.log('refreshToken when call new refresh token', refreshToken)
-                // clearLS()
-                // setProfile(undefined)
-                // setIsAuthenticated(false)
-                // queryClient.clear()
-                // toast.error('Refresh Token Timeout!')
-                // return navigate('/login')
+                toast.error('Refresh Token Timeout!')
+                clearLS()
+                setProfile(undefined)
+                setIsAuthenticated(false)
+                setPermissions(undefined)
+                queryClient.clear()
+                return navigate('/login')
               })
           } else {
             return new Promise<any>((resolve) => {
@@ -103,6 +103,7 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
           clearLS()
           setProfile(undefined)
           setIsAuthenticated(false)
+          setPermissions(undefined)
           queryClient.clear()
           return navigate('/login')
         }
@@ -110,9 +111,26 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
     }
     return config
   })
-  instanceAxios.interceptors.response.use((response) => {
-    return response
-  })
+  instanceAxios.interceptors.response.use(
+    (response) => {
+      return response
+    },
+    (error) => {
+      if (error.response.status === 403) {
+        toast.error('Your account has been banned')
+        clearLS()
+        setProfile(undefined)
+        setIsAuthenticated(false)
+        setPermissions(undefined)
+        queryClient.clear()
+        return navigate('/login')
+      } else if (error.response.status === 500) {
+        // do something for all 500 errors
+      } else {
+        // do something for all other error codes
+      }
+    }
+  )
   return <>{children}</>
 }
 

@@ -223,9 +223,6 @@ export default function EditAddUserDialog({
           <DialogHeader>
             <DialogTitle className='text-center'>{idUser ? 'Update User' : 'Add new User'}</DialogTitle>
           </DialogHeader>
-          {/* Loading component when fetching user data */}
-          {/* {userDetailData.isLoading && idUser && <ComponentsLoading></ComponentsLoading>} */}
-          {/* {(!userDetailData.isLoading || !idUser) && */}
           <form className='grid gap-2 py-4' onSubmit={handleSubmit(handleForm)}>
             <div>
               <Label htmlFor='firstName'>First Name</Label>

@@ -27,6 +27,7 @@ import NotFound from './pages/errors/NotFound'
 import Unauthorized from './pages/errors/Unauthorized'
 
 // Lazy loading for components
+const ResendEmail = lazy(() => import('./pages/general/resend-email'))
 const ConfirmPassword = lazy(() => import('./pages/general/confirm-password'))
 const ConfirmEmail = lazy(() => import('./pages/general/confirm-email'))
 const ResetPassword = lazy(() => import('./pages/general/reset-password'))
@@ -93,7 +94,14 @@ function App() {
           <Route path='/login' element={<Login />} />
 
           <Route path='/confirm-email/:userId/token/:token' element={<ConfirmEmail></ConfirmEmail>}></Route>
-
+          <Route
+            path='/resend-email'
+            element={
+              <BlankLayout>
+                <ResendEmail></ResendEmail>
+              </BlankLayout>
+            }
+          ></Route>
           <Route
             path='/confirm-password/:userId/token/:token'
             element={
