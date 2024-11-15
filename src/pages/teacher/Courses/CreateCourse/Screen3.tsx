@@ -1,10 +1,14 @@
+import { ResponseData } from '@/@types/response.type'
 import ImageDropUpload from '@/components/ImageDropUpload'
+import SectionLoading from '@/components/Loading/SectionLoading'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { FILE_CHUNK_SIZE } from '@/constants'
 import useCourseSetUp from '@/hooks/useCourseSetUp'
 import Navigate from '@/icons/Navigate'
+import { UploadThumbnail } from '@/services/instructor/draft-course.service'
 import { Check } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
@@ -12,26 +16,113 @@ export default function Screen3() {
   const [file, setFile] = useState<File | null>(null)
   const [previewURL, setPreviewURL] = useState<string | null>(null)
   const [checkedOption, setCheckedOption] = useState<number>(1)
-  const { setStep, setCourseData, setLocalStorageData, courseData } = useCourseSetUp()
+  const { setStep, setCourseData, setLocalStorageData, courseData, step } = useCourseSetUp()
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     if (checkedOption == 2) {
-      setPreviewURL(null)
       setFile(null)
     }
   }, [checkedOption])
 
   useEffect(() => {
     if (file) {
-      const previewURL = URL.createObjectURL(file)
-      setPreviewURL(previewURL)
+      handleUpload()
     }
   }, [file])
 
+  const uploadChunk = async (chunk: File, chunkIndex: number, totalChunks: number) => {
+    const formData = new FormData()
+    formData.append('file', chunk)
+    formData.append('chunkIndex', chunkIndex.toString())
+    formData.append('totalChunks', totalChunks.toString())
+
+    try {
+      return await UploadThumbnail(formData)
+    } catch (error) {
+      console.error(`Error uploading chunk ${chunkIndex + 1}:`, error)
+    }
+  }
+
+  const handleUpload = async () => {
+    if (!file) return
+    setLoading(true)
+    const totalChunks = Math.ceil(file.size / FILE_CHUNK_SIZE)
+    if (totalChunks === 1) {
+      await uploadChunk(file, 0, totalChunks)
+        .then((data) => {
+          if (data && data?.data?.value) {
+            setCourseData((prev) => ({
+              ...prev,
+              thumbnail: {
+                courseThumbnailFilePath: data?.data?.value?.courseThumbnailFilePath as string,
+                courseThumbnailFileUrl: data?.data?.value?.courseThumbnailFileUrl as string
+              }
+            }))
+            setLocalStorageData({
+              courseData: {
+                ...courseData,
+                thumbnail: {
+                  courseThumbnailFilePath: data?.data?.value?.courseThumbnailFilePath as string,
+                  courseThumbnailFileUrl: data?.data?.value?.courseThumbnailFileUrl as string
+                }
+              },
+              step: step
+            })
+          }
+        })
+        .catch((err) => {
+          console.log('err' + err)
+        })
+    } else {
+      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        const start = chunkIndex * FILE_CHUNK_SIZE
+        const end = Math.min(start + FILE_CHUNK_SIZE, file.size)
+        const chunkBlob = file.slice(start, end)
+        console.log('chunk Blob', chunkBlob)
+        const chunk = new File([chunkBlob], file.name, { type: file.type, lastModified: file.lastModified })
+        console.log('chunk', chunk)
+        console.log(chunkIndex, totalChunks)
+        await uploadChunk(chunk, chunkIndex, totalChunks)
+          .then((data) => {
+            console.log(`Uploaded chunk ${chunkIndex + 1} of ${totalChunks}`)
+            if (chunkIndex === totalChunks - 1) {
+              if (data && data?.data?.value) {
+                console.log('Chunk success', data?.data?.value)
+                setCourseData((prev) => ({
+                  ...prev,
+                  thumbnail: {
+                    courseThumbnailFilePath: data?.data?.value?.courseThumbnailFilePath as string,
+                    courseThumbnailFileUrl: data?.data?.value?.courseThumbnailFileUrl as string
+                  }
+                }))
+
+                setLocalStorageData({
+                  courseData: {
+                    ...courseData,
+                    thumbnail: {
+                      courseThumbnailFilePath: data?.data?.value?.courseThumbnailFilePath as string,
+                      courseThumbnailFileUrl: data?.data?.value?.courseThumbnailFileUrl as string
+                    }
+                  },
+                  step: step
+                })
+              }
+            }
+          })
+          .catch((error) => {
+            console.error(`Error uploading chunk ${chunkIndex + 1}:`, error)
+          })
+      }
+    }
+    setLoading(false)
+  }
+
   useEffect(() => {
-    if (courseData.thumbnail) {
+    console.log(courseData.thumbnail.courseThumbnailFileUrl)
+    if (courseData.thumbnail.courseThumbnailFileUrl) {
       setCheckedOption(1)
-      setPreviewURL(courseData.thumbnail)
+      setPreviewURL(courseData?.thumbnail?.courseThumbnailFileUrl)
     } else {
       setCheckedOption(2)
     }
@@ -39,17 +130,28 @@ export default function Screen3() {
 
   const handleSubmit = () => {
     if (checkedOption == 2) {
-      setCourseData((prev) => ({ ...prev, thumbnail: null }))
+      setCourseData((prev) => ({
+        ...prev,
+        thumbnail: {
+          courseThumbnailFilePath: '',
+          courseThumbnailFileUrl: ''
+        }
+      }))
       setStep((step) => step + 1)
       setLocalStorageData({
-        courseData: { ...courseData, thumbnail: null },
+        courseData: {
+          ...courseData,
+          thumbnail: {
+            courseThumbnailFilePath: '',
+            courseThumbnailFileUrl: ''
+          }
+        },
         step: 4
       })
     } else {
-      setCourseData((prev) => ({ ...prev, thumbnail: 'link-thumbnail' }))
       setStep((step) => step + 1)
       setLocalStorageData({
-        courseData: { ...courseData, thumbnail: 'link-thumbnail' },
+        courseData: courseData,
         step: 4
       })
     }
@@ -77,7 +179,7 @@ export default function Screen3() {
                 </div>
                 <span>Upload an image</span>
               </div>
-              {file && previewURL && (
+              {previewURL && (
                 <Label htmlFor='image' className='px-3 py-2 border rounded-lg cursor-pointer border-neutral-black'>
                   Change Image
                 </Label>
@@ -89,10 +191,13 @@ export default function Screen3() {
               <div
                 className={`w-full border-2 border-dashed rounded-lg   ${checkedOption == 1 ? 'h-[180px]  opacity-100' : 'h-0  opacity-0'} transition-all duration-300`}
               >
-                {file && previewURL ? (
+                {previewURL ? (
                   <img src={previewURL} className='object-cover w-full h-full'></img>
                 ) : (
-                  <ImageDropUpload onSetFile={setFile}></ImageDropUpload>
+                  <div className='relative'>
+                    {loading && <SectionLoading></SectionLoading>}
+                    <ImageDropUpload onSetFile={setFile}></ImageDropUpload>
+                  </div>
                 )}
                 <Input
                   type='file'
@@ -133,7 +238,7 @@ export default function Screen3() {
           <span className='ml-[10px] text-neutral-black'>Previous</span>
         </div>
         <Button
-          className={`${checkedOption === 1 && !file ? 'bg-neutral-silver-3 pointer-events-none cursor-not-allowed' : 'bg-primary-1 cursor-pointer pointer-events-auto'}`}
+          className={`${checkedOption === 1 && !previewURL ? 'bg-neutral-silver-3 pointer-events-none cursor-not-allowed' : 'bg-primary-1 cursor-pointer pointer-events-auto'}`}
           onClick={handleSubmit}
         >
           Continue

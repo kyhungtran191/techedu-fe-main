@@ -5,9 +5,12 @@ import useLocalStorage from '@/hooks/useLocalStorage'
 export type TCourseSetUpData = {
   title: string
   description: string
-  field: string
-  thumbnail: string | null
-  time: number | null
+  categoryId: string
+  thumbnail: {
+    courseThumbnailFilePath: string
+    courseThumbnailFileUrl: string
+  }
+  surveyAnswer: string
 }
 
 interface ILocal {
@@ -23,6 +26,7 @@ export interface ICourseSetUp {
   setCourseData: React.Dispatch<React.SetStateAction<TCourseSetUpData>>
   handleExit: () => void
   setLocalStorageData: React.Dispatch<React.SetStateAction<ILocal | null>>
+  handleResetData: () => void
 }
 
 const initState: ICourseSetUp = {
@@ -32,13 +36,17 @@ const initState: ICourseSetUp = {
   courseData: {
     title: '',
     description: '',
-    field: '',
-    thumbnail: null,
-    time: null
+    categoryId: '',
+    thumbnail: {
+      courseThumbnailFilePath: '',
+      courseThumbnailFileUrl: ''
+    },
+    surveyAnswer: ''
   },
   setCourseData: () => {},
   handleExit: () => {},
-  setLocalStorageData: () => {}
+  setLocalStorageData: () => {},
+  handleResetData: () => {}
 }
 
 export const CourseStepContext = createContext<ICourseSetUp>(initState)
@@ -100,6 +108,7 @@ export const CourseSetUpContextProvider = ({ children }: { children: React.React
         courseData,
         setCourseData,
         handleExit,
+        handleResetData,
         setLocalStorageData
       }}
     >

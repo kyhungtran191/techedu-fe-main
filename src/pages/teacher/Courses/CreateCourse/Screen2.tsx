@@ -1,3 +1,4 @@
+import { Category } from '@/@types/category.type'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -10,6 +11,7 @@ import {
 } from '@/components/ui/select'
 import useCourseSetUp from '@/hooks/useCourseSetUp'
 import Navigate from '@/icons/Navigate'
+import { useGetListCategories } from '@/queries/category'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
@@ -18,11 +20,11 @@ export default function Screen2() {
   const { isHavingValues, step, setStep, setCourseData, setLocalStorageData, courseData } = useCourseSetUp()
 
   type FormData = {
-    field: string
+    categoryId: string
   }
 
   const schema = yup.object().shape({
-    field: yup.string().required('Course field is required')
+    categoryId: yup.string().required('Course field is required')
   })
 
   const {
@@ -33,7 +35,7 @@ export default function Screen2() {
     mode: 'onChange',
     resolver: yupResolver<FormData>(schema),
     defaultValues: {
-      field: courseData.field || ''
+      categoryId: courseData.categoryId || ''
     }
   })
 
@@ -45,7 +47,7 @@ export default function Screen2() {
     })
     setStep((step) => step + 1)
   }
-
+  const { data } = useGetListCategories({ cacheTime: Infinity, staleTime: Infinity, select: (data) => data.data.value })
   return (
     <form className='flex flex-col h-full' onSubmit={handleSubmit(handleUpdateField)}>
       <div className='absolute inset-0 w-full h-full opacity-40 bg-gradient-to-b from-transparent via-primary-3 to-parent'></div>
@@ -59,25 +61,25 @@ export default function Screen2() {
           </p>
         </div>
         <Controller
-          name='field'
+          name='categoryId'
           control={control}
           render={({ field }) => (
-            <Select onValueChange={(value) => field.onChange(value)} defaultValue={courseData.field || ''}>
+            <Select onValueChange={(value) => field.onChange(value)} defaultValue={courseData.categoryId || ''}>
               <SelectTrigger className='max-w-[813px] mx-auto w-full py-6 outline-none text-xl text-neutral-black border-neutral-black'>
                 <SelectValue placeholder='Choose A Field' />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Choose A Field</SelectLabel>
-                  <SelectItem className='!px-8 py-3 text-xl font-medium cursor-pointer' value='designer'>
-                    Designer
-                  </SelectItem>
-                  <SelectItem className='!px-8 py-3 text-xl font-medium  cursor-pointer' value='it'>
-                    IT
-                  </SelectItem>
-                  <SelectItem className='!px-8 py-3 text-xl font-medium  cursor-pointer' value='marketing'>
-                    Marketing
-                  </SelectItem>
+                  {data &&
+                    data?.map((item: Category) => (
+                      <SelectItem
+                        className='!px-8 py-3 text-xl font-medium cursor-pointer'
+                        value={item.id}
+                        key={item.id}
+                      >
+                        {item.displayName}
+                      </SelectItem>
+                    ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -87,7 +89,7 @@ export default function Screen2() {
       {/* Footer */}
       <div className='z-10 flex items-center justify-between w-full py-8 mt-auto bg-white p container-fluid'>
         <div
-          className='py-2 px-3 rounded-lg flex items-center cursor-pointer border'
+          className='flex items-center px-3 py-2 border rounded-lg cursor-pointer'
           onClick={() => setStep((prev) => prev - 1)}
         >
           <Navigate />
