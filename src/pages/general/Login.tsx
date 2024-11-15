@@ -50,7 +50,7 @@ export default function Login() {
   const { isLoading, mutate } = useMutation({
     mutationFn: (body: TLogin) => login(body),
     onError: (err: any) => {
-      const errMsg = err.response.data.error.message 
+      const errMsg = err.response.data.error.message
       toast.error(errMsg || 'error when login')
     }
   })
