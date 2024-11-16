@@ -1,5 +1,5 @@
 export type Category = {
-  id: string
+  primaryId: string
   name: string
   displayName: string
   createdDateTime: string

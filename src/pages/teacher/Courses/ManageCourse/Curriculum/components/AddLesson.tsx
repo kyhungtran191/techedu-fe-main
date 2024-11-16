@@ -12,12 +12,25 @@ import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { COURSE_TYPE } from '@/constants/course'
-export default function AddLesson() {
+import { SectionItem, TSectionCurriculum } from '@/@types/instructor/course/curriculumn'
+import SectionLoading from '@/components/Loading/SectionLoading'
+import { useMutation } from '@tanstack/react-query'
+import { AddLessonItem } from '@/services/instructor/manage/curriculumn.service'
+import { useHandleOrderSectionItemMutation } from '@/mutations/useHandleOrderSectionItemMutation'
+import { handleFormatReorderCurriculum } from '@/utils/course'
+
+type TAddLessonProps = {
+  courseId: string
+  sectionId: number
+  updateSections: (updatedSections: TSectionCurriculum[]) => void
+  sections: TSectionCurriculum[]
+}
+export default function AddLesson({ courseId, sectionId, sections, updateSections }: TAddLessonProps) {
   const [isAddLesson, setIsAddLesson] = useState(false)
   const [isApplyLesson, setApplyLesson] = useState(false)
 
   const schema = yup.object().shape({
-    lesson_name: yup.string().required('Required_field').max(80, 'Max is 80')
+    title: yup.string().required('Required_field').max(80, 'Max is 80')
   })
 
   const {
@@ -28,12 +41,15 @@ export default function AddLesson() {
     getValues
   } = useForm({
     mode: 'onChange',
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
+    defaultValues: {
+      title: ''
+    }
   })
 
   const handleCancelCreateLesson = () => {
     reset({
-      lesson_name: ''
+      title: ''
     })
     setIsAddLesson(false)
     setApplyLesson(false)
@@ -43,12 +59,70 @@ export default function AddLesson() {
     setApplyLesson(true)
   }
 
+  const addNewLessonMutation = useMutation({
+    mutationFn: ({ title, type }: { title: string; type: string }) => AddLessonItem(type, title, courseId, sectionId)
+  })
+
+  const updateMutation = useHandleOrderSectionItemMutation()
+
   const handleSelectSubmitData = (type: string) => {
-    // Call api to update the lesson in section
-    // Reset the form after call api successfully
+    const title = getValues('title')
+    addNewLessonMutation.mutate(
+      { type, title },
+      {
+        onSuccess(data) {
+          const dataRes = data.data.value
+          const cloneSections: TSectionCurriculum[] = [...sections]
+
+          const newSections = cloneSections.map((section) => {
+            if (section.id === dataRes?.sectionId) {
+              const cloneSection: TSectionCurriculum = { ...section }
+
+              cloneSection.sectionItems.push({
+                id: dataRes.primaryAsset.sectionItemId,
+                itemType: 'Lectures',
+                primaryAsset: dataRes.primaryAsset,
+                sectionId: dataRes?.sectionId,
+                supplementaryAssets: [],
+                position: cloneSection.sectionItems.length,
+                title
+              })
+              return cloneSection
+            }
+            return section
+          })
+
+          const newOrderItemsList = handleFormatReorderCurriculum(newSections)
+          if (newOrderItemsList) {
+            updateMutation.mutate(
+              { courseId, sectionItems: newOrderItemsList },
+              {
+                onSuccess(data) {
+                  console.log('order update data successfully!', data.data)
+                  updateSections(newSections)
+                  setApplyLesson(false)
+                  setIsAddLesson(false)
+                  reset({
+                    title: ''
+                  })
+                },
+                onError(err) {
+                  console.log('error when update order data', err)
+                }
+              }
+            )
+          }
+        },
+        onError(err) {
+          console.log('Add new Lessons Err', err)
+        }
+      }
+    )
   }
+
   return (
-    <div className='mt-8'>
+    <div className='relative mt-8'>
+      {addNewLessonMutation.isLoading && <SectionLoading></SectionLoading>}
       <Button
         className={`${isAddLesson ? 'hidden' : 'flex'} items-center px-6 py-6 bg-white shadow-md text-neutral-black`}
         variant={'secondary'}
@@ -63,7 +137,7 @@ export default function AddLesson() {
       >
         <Controller
           control={control}
-          name='lesson_name'
+          name='title'
           render={({ field }) => (
             <Input
               className='w-full outline-none focus:border-primary-1 max-w-[400px] py-6 text-xl text-neutral-black'
@@ -83,7 +157,7 @@ export default function AddLesson() {
           </div>
           <Button
             disabled={!isValid}
-            className={` text-white p-6 ${errors?.lesson_name?.message ? 'bg-neutral-black' : 'bg-primary-1'}`}
+            className={` text-white p-6 ${errors?.title?.message ? 'bg-neutral-black' : 'bg-primary-1'}`}
             variant={'custom'}
           >
             Apply

@@ -31,12 +31,14 @@ export default function Screen3() {
     }
   }, [file])
 
-  const uploadChunk = async (chunk: File, chunkIndex: number, totalChunks: number) => {
+  const uploadChunk = async (chunk: File, chunkIndex: number, totalChunks: number, fileId?: string) => {
     const formData = new FormData()
+    if (fileId) {
+      formData.append('fileId', fileId)
+    }
     formData.append('file', chunk)
     formData.append('chunkIndex', chunkIndex.toString())
     formData.append('totalChunks', totalChunks.toString())
-
     try {
       return await UploadThumbnail(formData)
     } catch (error) {
@@ -48,6 +50,7 @@ export default function Screen3() {
     if (!file) return
     setLoading(true)
     const totalChunks = Math.ceil(file.size / FILE_CHUNK_SIZE)
+    let responseFileId = ''
     if (totalChunks === 1) {
       await uploadChunk(file, 0, totalChunks)
         .then((data) => {
@@ -79,13 +82,15 @@ export default function Screen3() {
         const start = chunkIndex * FILE_CHUNK_SIZE
         const end = Math.min(start + FILE_CHUNK_SIZE, file.size)
         const chunkBlob = file.slice(start, end)
-        console.log('chunk Blob', chunkBlob)
         const chunk = new File([chunkBlob], file.name, { type: file.type, lastModified: file.lastModified })
-        console.log('chunk', chunk)
-        console.log(chunkIndex, totalChunks)
-        await uploadChunk(chunk, chunkIndex, totalChunks)
+        // Maybe Occur Error
+        await uploadChunk(chunk, chunkIndex, totalChunks, responseFileId)
           .then((data) => {
-            console.log(`Uploaded chunk ${chunkIndex + 1} of ${totalChunks}`)
+            if (chunkIndex == 0) {
+              if (data && data?.data?.value && data?.data?.value?.fileId) {
+                responseFileId = data?.data?.value?.fileId
+              }
+            }
             if (chunkIndex === totalChunks - 1) {
               if (data && data?.data?.value) {
                 console.log('Chunk success', data?.data?.value)

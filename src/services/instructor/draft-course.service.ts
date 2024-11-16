@@ -8,6 +8,7 @@ export const UploadThumbnail = async (formData: FormData) => {
     ResponseData<{
       courseThumbnailFilePath: string
       courseThumbnailFileUrl: string
+      fileId?: string
     }>
   >(`${COURSE_API.UPLOAD_THUMBNAIL}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
