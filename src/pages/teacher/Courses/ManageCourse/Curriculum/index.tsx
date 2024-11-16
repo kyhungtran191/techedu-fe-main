@@ -1,102 +1,127 @@
-import React, { useState } from 'react'
+/* eslint-disable react-hooks/rules-of-hooks */
+import React, { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import Play from '@/icons/Play'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import AddSection from './components/AddSection'
 import Section from './components/Section'
-import { TSection } from '@/@types/course.type'
 import { DropResult } from 'react-beautiful-dnd'
 import SystemNotification from '../components/SystemNotification'
+import { TSectionCurriculum } from '@/@types/instructor/course/curriculumn'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
+import { GetSections } from '@/services/instructor/manage/curriculumn.service'
+import SectionLoading from '@/components/Loading/SectionLoading'
+import { handleFormatReorderCurriculum } from '@/utils/course'
+import { useHandleOrderSectionItemMutation } from '@/mutations/useHandleOrderSectionItemMutation'
 
 // Mock section Data
-const mockSection: TSection[] = [
-  {
-    id: '0e2f0db1-5457-46b0-949e-8032d2f9997a',
-    name: 'Section 1',
-    lessons: [
-      { id: '26fd50b3-3841-496e-8b32-73636f6f4197', name: 'Lesson 1', type: 'video' },
-      { id: 'b0ee9d50-d0a6-46f8-96e3-7f3f0f9a2525', name: 'Lesson 2', type: 'video' }
-    ]
-  },
-  {
-    id: '487f68b4-1746-438c-920e-d67b7df46247',
-    name: 'Section 2',
-    lessons: [
-      { id: '95ee6a5d-f927-4579-8c15-2b4eb86210ae', name: 'Lesson 1', type: 'video' },
-      { id: '5bee94eb-6bde-4411-b438-1c37fa6af364', name: 'Lesson 2', type: 'video' }
-    ]
-  }
-]
+
 export default function Curriculum() {
-  const [sections, setSections] = useState<TSection[]>(mockSection)
+  const [sections, setSections] = useState<TSectionCurriculum[]>([])
   // Get course id
-  const params = useParams()
-  
-  const handleDragAndDrop = (results: DropResult) => {
+  const { id } = useParams()
+  if (!id) {
+    toast.error('course ID not exist')
+    return
+  }
+
+  const orderCurriculumItemMutation = useHandleOrderSectionItemMutation()
+
+  console.log(sections)
+
+  const handleDragAndDrop = async (results: DropResult) => {
     const { source, destination, type } = results
 
+    console.log('source', source)
+    console.log('destination', destination)
+    console.log('destination', type)
+
+    // If there's no destination, just return
     if (!destination) return
 
+    // If the source and destination are the same, no need to do anything
     if (source.droppableId === destination.droppableId && source.index === destination.index) return
 
     if (type === 'group') {
-      const reorderedStores = [...sections]
+      const reorderedSections = [...sections]
+      const sourceIndex = source.index
+      const destIndex = destination.index
 
-      const storeSourceIndex = source.index
-      const storeDestinatonIndex = destination.index
+      const [removedSection] = reorderedSections.splice(sourceIndex, 1)
+      reorderedSections.splice(destIndex, 0, removedSection)
 
-      const [removedStore] = reorderedStores.splice(storeSourceIndex, 1)
-      reorderedStores.splice(storeDestinatonIndex, 0, removedStore)
+      console.log('reorderedSections:', reorderedSections)
 
-      return setSections(reorderedStores)
+      const newOrderItemsList = handleFormatReorderCurriculum(reorderedSections)
+
+      orderCurriculumItemMutation.mutate({ courseId: id, sectionItems: newOrderItemsList })
+      setSections(reorderedSections)
+
+      return
     }
-    // In
+
+    // Handle drag-and-drop for sectionItems (lessons)
     const itemSourceIndex = source.index
     const itemDestinationIndex = destination.index
 
-    const storeSourceIndex = sections.findIndex((store) => store.id === source.droppableId)
+    const sourceSectionIndex = sections.findIndex((section) => `sectionList-${section.id}` === source.droppableId)
+    const destinationSectionIndex = sections.findIndex(
+      (section) => `sectionList-${section.id}` === destination.droppableId
+    )
 
-    const storeDestinationIndex = sections.findIndex((store) => store.id === destination.droppableId)
+    if (sourceSectionIndex === -1 || destinationSectionIndex === -1) return
 
-    const newSourceItems = [...sections[storeSourceIndex].lessons]
-    const newDestinationItems =
-      source.droppableId !== destination.droppableId ? [...sections[storeDestinationIndex].lessons] : newSourceItems
+    const sourceItems = [...sections[sourceSectionIndex].sectionItems]
+    const destinationItems =
+      source.droppableId !== destination.droppableId ? [...sections[destinationSectionIndex].sectionItems] : sourceItems
 
-    const [deletedItem] = newSourceItems.splice(itemSourceIndex, 1)
-    newDestinationItems.splice(itemDestinationIndex, 0, deletedItem)
+    const [movedItem] = sourceItems.splice(itemSourceIndex, 1)
+    movedItem.sectionId = sections[destinationSectionIndex].id
+    destinationItems.splice(itemDestinationIndex, 0, movedItem)
 
-    const newStores = [...sections]
-
-    newStores[storeSourceIndex] = {
-      ...sections[storeSourceIndex],
-      lessons: newSourceItems
+    const updatedSections = [...sections]
+    updatedSections[sourceSectionIndex] = {
+      ...sections[sourceSectionIndex],
+      sectionItems: sourceItems
     }
 
-    newStores[storeDestinationIndex] = {
-      ...sections[storeDestinationIndex],
-      lessons: newDestinationItems
+    updatedSections[destinationSectionIndex] = {
+      ...sections[destinationSectionIndex],
+      sectionItems: destinationItems
     }
-    setSections(newStores)
+
+    const newOrderItemsList = handleFormatReorderCurriculum(updatedSections)
+
+    try {
+      orderCurriculumItemMutation.mutate({ courseId: id, sectionItems: newOrderItemsList })
+      setSections([...updatedSections])
+    } catch (error) {
+      console.error('Error updating section items:', error)
+    }
   }
 
-  /**
-   * AddSection Component ✅
-   * Section Component ✅
-   * Lesson Content Component
-   *
-   */
+  const querySectionData = useQuery({
+    queryKey: ['course-sections', id],
+    queryFn: (_) => GetSections(id),
+    enabled: Boolean(id) == true,
+    select: (data) => data.data.value,
+    onSuccess(data) {
+      if (data) {
+        setSections(data)
+      }
+    }
+  })
 
-  /**
-   *
-   * Fetch Data here
-   *
-   *
-   */
+  const handleUpdateSections = (updatedSections: TSectionCurriculum[]) => {
+    setSections(updatedSections)
+  }
 
   return (
     <div className='flex flex-col h-full'>
       <SystemNotification></SystemNotification>
+      {(querySectionData.isFetching || querySectionData.isLoading) && <SectionLoading></SectionLoading>}
       <DragDropContext onDragEnd={handleDragAndDrop}>
         <Droppable droppableId='ROOT' type='group'>
           {(provided) => (
@@ -121,17 +146,22 @@ export default function Curriculum() {
               {/* Section List */}
               {sections &&
                 sections.map((item, index) => (
-                  <Draggable draggableId={item.id as string} index={index} key={item.id}>
+                  <Draggable key={`item-${item.id}`} draggableId={`item-${item.id}`} index={index}>
                     {(provided) => (
                       <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
-                        <Section {...item}></Section>
+                        <Section
+                          courseId={id}
+                          sections={sections}
+                          updateSections={handleUpdateSections}
+                          items={item}
+                        ></Section>
                       </div>
                     )}
                   </Draggable>
                 ))}
               {provided.placeholder}
               {/* New Section Button */}
-              <AddSection></AddSection>
+              <AddSection updateSections={handleUpdateSections} sections={sections} courseId={id}></AddSection>
             </div>
           )}
         </Droppable>

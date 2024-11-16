@@ -1,6 +1,7 @@
 import { Progress } from '@/components/ui/progress'
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table'
 import Close from '@/icons/Close'
+import { formatSystemDate } from '@/utils'
 import React from 'react'
 
 interface UploadStatusProps {
@@ -14,7 +15,7 @@ interface UploadStatusProps {
 const UploadStatus: React.FC<UploadStatusProps> = ({
   filename,
   type = 'Video',
-  progress = 100,
+  progress = 50,
   uploadDate,
   onRemove
 }) => {
@@ -40,11 +41,11 @@ const UploadStatus: React.FC<UploadStatusProps> = ({
             <TableCell className='text-center'>
               {filename && progress < 100 ? <Progress value={progress}></Progress> : 'Processing'}
             </TableCell>
-            <TableCell className='text-center'>{uploadDate || Date.now()}</TableCell>
+            <TableCell className='text-center'>{uploadDate || formatSystemDate(Date.now().toString())}</TableCell>
             <TableCell className='text-center'>
               {progress == 100 && <div className=''>Replace</div>}
-              {filename && progress != 100 && (
-                <div className='' onClick={onRemove}>
+              {progress != 100 && (
+                <div className='text-black cursor-pointer' onClick={onRemove}>
                   <Close className='w-6 h-6'></Close>
                 </div>
               )}

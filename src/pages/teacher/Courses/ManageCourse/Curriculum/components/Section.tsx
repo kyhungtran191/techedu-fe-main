@@ -6,13 +6,23 @@ import { Separator } from '@/components/ui/separator'
 import AddLesson from './AddLesson'
 import Lesson from './Lesson'
 // Type
-import { TSection } from '@/@types/course.type'
 // Drag n Drop Import
 import { Draggable, Droppable } from 'react-beautiful-dnd'
-export default function Section(props: TSection) {
-  const { id, lessons, name } = props
+import { TSectionCurriculum } from '@/@types/instructor/course/curriculumn'
+
+type TSectionItemProps = {
+  updateSections: (updatedSections: TSectionCurriculum[]) => void
+  sections: TSectionCurriculum[]
+  items: TSectionCurriculum
+  courseId: string
+}
+
+
+
+export default function Section({ courseId, items, sections, updateSections }: TSectionItemProps) {
+  const { id, sectionItems, title, isPublished, position } = items
   return (
-    <Droppable droppableId={id as string}>
+    <Droppable droppableId={`sectionList-${id}`}>
       {(provided) => (
         <div
           {...provided.droppableProps}
@@ -24,7 +34,7 @@ export default function Section(props: TSection) {
           </div>
           <div className='flex-1 rounded-r-lg bg-neutral-silver'>
             <div className='flex items-center justify-between p-6'>
-              <h3 className='text-xl text-primary-1'>{name}</h3>
+              <h3 className='text-xl text-primary-1'>{title}</h3>
               <DropdownMenu>
                 <DropdownMenuTrigger className='flex items-center rounded-full data-[state=open]:bg-primary-1 data-[state=open]:text-white '>
                   <ThreeDots></ThreeDots>
@@ -39,9 +49,9 @@ export default function Section(props: TSection) {
             <Separator className='bg-neutral-black'></Separator>
             {/* Section List */}
             <div className='px-6 py-4'>
-              {lessons?.length > 0 &&
-                lessons.map((item, index) => (
-                  <Draggable draggableId={item.id as string} index={index} key={item.id}>
+              {sectionItems?.length > 0 &&
+                sectionItems.map((item, index) => (
+                  <Draggable draggableId={`lesson-${item.id}`} index={index} key={item.id}>
                     {(provided) => (
                       <div
                         className=''
@@ -49,15 +59,19 @@ export default function Section(props: TSection) {
                         {...provided.draggableProps}
                         ref={provided.innerRef}
                       >
-                        <Lesson {...item} key={item.id}></Lesson>
+                        <Lesson courseId={courseId} items={item} key={item.id}></Lesson>
                       </div>
                     )}
                   </Draggable>
                 ))}
               {provided.placeholder}
-              <AddLesson></AddLesson>
+              <AddLesson
+                courseId={courseId}
+                sectionId={id}
+                sections={sections}
+                updateSections={updateSections}
+              ></AddLesson>
             </div>
-            {/* Button Add new Content */}
           </div>
         </div>
       )}

@@ -19,8 +19,15 @@ export type TLesson = {
 
 export type TSection = {
   id: string | number
-  name: string
-  lessons: TLesson[]
+  title: string
+  isPublished: boolean
+  position: number
+  sectionItems: TLesson[]
+}
+
+export type TAddSection = {
+  courseId: string
+  title: string
 }
 
 export interface CourseListConfig {
@@ -40,3 +47,4 @@ export interface CourseListConfig {
 export type QueryConfig = {
   [key in keyof CourseListConfig]: string
 }
+

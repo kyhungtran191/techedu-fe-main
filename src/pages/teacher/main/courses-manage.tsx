@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 // ShadcnUI
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -17,18 +17,23 @@ import {
 } from '@/components/ui/dropdown-menu'
 import ThreeDots from '@/icons/ThreeDots'
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { GetAllInstructorCourse } from '@/services/instructor/instructor-course.service'
+import { useQuery } from '@tanstack/react-query'
+import SectionLoading from '@/components/Loading/SectionLoading'
+import PlaceHolderIMG from '@/assets/placeholder.jpg'
+import { formatSystemDate } from '@/utils'
 
 // End
 
-interface ICourse {
-  _id: string
-  thumbnail: string
-  name: string
-  status: number
-  created_date: string | null
-}
-
 export default function CourseManage() {
+  const { data: courseData, isLoading } = useQuery({
+    queryKey: ['my-courses'],
+    queryFn: GetAllInstructorCourse,
+    select: (data) => data.data.value
+  })
+
+  const navigate = useNavigate()
+
   const columns = [
     {
       id: 'thumbnail',
@@ -36,9 +41,9 @@ export default function CourseManage() {
       cell: ({ row }: { row: any }) => {
         return (
           <img
-            src={row.original.thumbnail}
-            alt={row.original.name}
-            className='font-semibold w-[120px] h-[90px] object-cover mx-auto'
+            src={row.original.thumbnailUrl || PlaceHolderIMG}
+            alt={row.original.title}
+            className='font-semibold w-[120px] h-[100px] object-cover mx-auto'
           />
         )
       },
@@ -48,9 +53,9 @@ export default function CourseManage() {
 
     {
       id: 'slug',
-      header: () => <p className='text-lg text-primary-1'>Name</p>,
+      header: () => <p className='text-lg text-primary-1'>Title</p>,
       cell: ({ row }: { row: any }) => {
-        return <p className='text-lg font-medium'>{row.original.name}</p>
+        return <p className='text-lg font-medium'>{row.original.title}</p>
       },
       enableSorting: false,
       enableHiding: false
@@ -59,7 +64,7 @@ export default function CourseManage() {
       id: 'created_date',
       header: () => <p className='text-lg text-primary-1'>Created Date</p>,
       cell: ({ row }: { row: any }) => {
-        return <p className='text-lg'>{row.original.created_date}</p>
+        return <p className='text-lg'>{formatSystemDate(row.original.createdDate)}</p>
       },
       enableSorting: false,
       enableHiding: false
@@ -70,9 +75,9 @@ export default function CourseManage() {
       cell: ({ row }: { row: any }) => {
         return (
           <p
-            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == 0 ? 'bg-neutral-silver-1 text-neutral-black' : row.original.status == 1 ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-black'}`}
+            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.isPublish ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-black'}`}
           >
-            {row.original.status == 0 ? 'Draft' : row.original.status == 1 ? 'Published' : 'Pending'}
+            {row.original.isPublish ? 'Publish' : 'Draft'}
           </p>
         )
       },
@@ -96,7 +101,10 @@ export default function CourseManage() {
                 <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
                   Preview course as Student
                 </DropdownMenuItem>
-                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
+                <DropdownMenuItem
+                  className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                  onClick={() => navigate(`/teacher/course/${row.original.courseId}/manage/curriculum`)}
+                >
                   Edit Course
                 </DropdownMenuItem>
                 <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
@@ -112,75 +120,8 @@ export default function CourseManage() {
     }
   ]
 
-  const courseData: ICourse[] = [
-    {
-      _id: '1',
-      created_date: new Date().toLocaleDateString('vi-VN'),
-      name: 'Rapid prototyping in the Chrome Browser',
-      status: 0,
-      thumbnail:
-        'https://s3-alpha-sig.figma.com/img/1ebf/3e1a/61ad8b680f1d53b2c9158b087115ff7f?Expires=1730073600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=G7WMxgfST~2Oz~DmSitObHdat~JS-eQkW0MPHmLiy4PxuDOlyklA8vfS~eAk8DfFpl3sCeKRkt-jn53YYh4XNAg6O0e~4LbJ9gITpHZ3FYH-VrdERpymHwZhMkfDuyOVDWdHlFxDKvZex016KasoeEvsVbDhalPelWSc0tg0dLhcyAjG~cGN9IawpyVw20L-NXisPOc1bmaOgRGTXm27tjHtc2nU4jme~oLcdLm0sxVvw~u0E1O1saEQb~ND0Zhq8Qm75cVHP05~xPHzBUJl9tckET15dv7CDLxgBmoY9ILsthE0bE5eNYFPfrozlpADmWinv9D1iTh1G1M5HOg-5g__'
-    },
-    {
-      _id: '2',
-      created_date: new Date().toLocaleDateString('vi-VN'),
-      name: 'Rapid prototyping in the Chrome Browser',
-      status: 1,
-      thumbnail:
-        'https://s3-alpha-sig.figma.com/img/1ebf/3e1a/61ad8b680f1d53b2c9158b087115ff7f?Expires=1730073600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=G7WMxgfST~2Oz~DmSitObHdat~JS-eQkW0MPHmLiy4PxuDOlyklA8vfS~eAk8DfFpl3sCeKRkt-jn53YYh4XNAg6O0e~4LbJ9gITpHZ3FYH-VrdERpymHwZhMkfDuyOVDWdHlFxDKvZex016KasoeEvsVbDhalPelWSc0tg0dLhcyAjG~cGN9IawpyVw20L-NXisPOc1bmaOgRGTXm27tjHtc2nU4jme~oLcdLm0sxVvw~u0E1O1saEQb~ND0Zhq8Qm75cVHP05~xPHzBUJl9tckET15dv7CDLxgBmoY9ILsthE0bE5eNYFPfrozlpADmWinv9D1iTh1G1M5HOg-5g__'
-    },
-    {
-      _id: '2',
-      created_date: new Date().toLocaleDateString('vi-VN'),
-      name: 'Rapid prototyping in the Chrome Browser',
-      status: 1,
-      thumbnail:
-        'https://s3-alpha-sig.figma.com/img/1ebf/3e1a/61ad8b680f1d53b2c9158b087115ff7f?Expires=1730073600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=G7WMxgfST~2Oz~DmSitObHdat~JS-eQkW0MPHmLiy4PxuDOlyklA8vfS~eAk8DfFpl3sCeKRkt-jn53YYh4XNAg6O0e~4LbJ9gITpHZ3FYH-VrdERpymHwZhMkfDuyOVDWdHlFxDKvZex016KasoeEvsVbDhalPelWSc0tg0dLhcyAjG~cGN9IawpyVw20L-NXisPOc1bmaOgRGTXm27tjHtc2nU4jme~oLcdLm0sxVvw~u0E1O1saEQb~ND0Zhq8Qm75cVHP05~xPHzBUJl9tckET15dv7CDLxgBmoY9ILsthE0bE5eNYFPfrozlpADmWinv9D1iTh1G1M5HOg-5g__'
-    },
-    {
-      _id: '3',
-      created_date: new Date().toLocaleDateString('vi-VN'),
-      name: 'Rapid prototyping in the Chrome Browser',
-      status: 2,
-      thumbnail:
-        'https://s3-alpha-sig.figma.com/img/1ebf/3e1a/61ad8b680f1d53b2c9158b087115ff7f?Expires=1730073600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=G7WMxgfST~2Oz~DmSitObHdat~JS-eQkW0MPHmLiy4PxuDOlyklA8vfS~eAk8DfFpl3sCeKRkt-jn53YYh4XNAg6O0e~4LbJ9gITpHZ3FYH-VrdERpymHwZhMkfDuyOVDWdHlFxDKvZex016KasoeEvsVbDhalPelWSc0tg0dLhcyAjG~cGN9IawpyVw20L-NXisPOc1bmaOgRGTXm27tjHtc2nU4jme~oLcdLm0sxVvw~u0E1O1saEQb~ND0Zhq8Qm75cVHP05~xPHzBUJl9tckET15dv7CDLxgBmoY9ILsthE0bE5eNYFPfrozlpADmWinv9D1iTh1G1M5HOg-5g__'
-    },
-    {
-      _id: '4',
-      created_date: new Date().toLocaleDateString('vi-VN'),
-      name: 'Rapid prototyping in the Chrome Browser',
-      status: 1,
-      thumbnail:
-        'https://s3-alpha-sig.figma.com/img/1ebf/3e1a/61ad8b680f1d53b2c9158b087115ff7f?Expires=1730073600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=G7WMxgfST~2Oz~DmSitObHdat~JS-eQkW0MPHmLiy4PxuDOlyklA8vfS~eAk8DfFpl3sCeKRkt-jn53YYh4XNAg6O0e~4LbJ9gITpHZ3FYH-VrdERpymHwZhMkfDuyOVDWdHlFxDKvZex016KasoeEvsVbDhalPelWSc0tg0dLhcyAjG~cGN9IawpyVw20L-NXisPOc1bmaOgRGTXm27tjHtc2nU4jme~oLcdLm0sxVvw~u0E1O1saEQb~ND0Zhq8Qm75cVHP05~xPHzBUJl9tckET15dv7CDLxgBmoY9ILsthE0bE5eNYFPfrozlpADmWinv9D1iTh1G1M5HOg-5g__'
-    },
-    {
-      _id: '5',
-      created_date: new Date().toLocaleDateString('vi-VN'),
-      name: 'Rapid prototyping in the Chrome Browser',
-      status: 0,
-      thumbnail:
-        'https://s3-alpha-sig.figma.com/img/1ebf/3e1a/61ad8b680f1d53b2c9158b087115ff7f?Expires=1730073600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=G7WMxgfST~2Oz~DmSitObHdat~JS-eQkW0MPHmLiy4PxuDOlyklA8vfS~eAk8DfFpl3sCeKRkt-jn53YYh4XNAg6O0e~4LbJ9gITpHZ3FYH-VrdERpymHwZhMkfDuyOVDWdHlFxDKvZex016KasoeEvsVbDhalPelWSc0tg0dLhcyAjG~cGN9IawpyVw20L-NXisPOc1bmaOgRGTXm27tjHtc2nU4jme~oLcdLm0sxVvw~u0E1O1saEQb~ND0Zhq8Qm75cVHP05~xPHzBUJl9tckET15dv7CDLxgBmoY9ILsthE0bE5eNYFPfrozlpADmWinv9D1iTh1G1M5HOg-5g__'
-    },
-    {
-      _id: '5',
-      created_date: new Date().toLocaleDateString('vi-VN'),
-      name: 'Rapid prototyping in the Chrome Browser',
-      status: 0,
-      thumbnail:
-        'https://s3-alpha-sig.figma.com/img/1ebf/3e1a/61ad8b680f1d53b2c9158b087115ff7f?Expires=1730073600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=G7WMxgfST~2Oz~DmSitObHdat~JS-eQkW0MPHmLiy4PxuDOlyklA8vfS~eAk8DfFpl3sCeKRkt-jn53YYh4XNAg6O0e~4LbJ9gITpHZ3FYH-VrdERpymHwZhMkfDuyOVDWdHlFxDKvZex016KasoeEvsVbDhalPelWSc0tg0dLhcyAjG~cGN9IawpyVw20L-NXisPOc1bmaOgRGTXm27tjHtc2nU4jme~oLcdLm0sxVvw~u0E1O1saEQb~ND0Zhq8Qm75cVHP05~xPHzBUJl9tckET15dv7CDLxgBmoY9ILsthE0bE5eNYFPfrozlpADmWinv9D1iTh1G1M5HOg-5g__'
-    },
-    {
-      _id: '5',
-      created_date: new Date().toLocaleDateString('vi-VN'),
-      name: 'Rapid prototyping in the Chrome Browser',
-      status: 0,
-      thumbnail:
-        'https://s3-alpha-sig.figma.com/img/1ebf/3e1a/61ad8b680f1d53b2c9158b087115ff7f?Expires=1730073600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=G7WMxgfST~2Oz~DmSitObHdat~JS-eQkW0MPHmLiy4PxuDOlyklA8vfS~eAk8DfFpl3sCeKRkt-jn53YYh4XNAg6O0e~4LbJ9gITpHZ3FYH-VrdERpymHwZhMkfDuyOVDWdHlFxDKvZex016KasoeEvsVbDhalPelWSc0tg0dLhcyAjG~cGN9IawpyVw20L-NXisPOc1bmaOgRGTXm27tjHtc2nU4jme~oLcdLm0sxVvw~u0E1O1saEQb~ND0Zhq8Qm75cVHP05~xPHzBUJl9tckET15dv7CDLxgBmoY9ILsthE0bE5eNYFPfrozlpADmWinv9D1iTh1G1M5HOg-5g__'
-    }
-  ]
-
   const courseTable = useReactTable({
-    data: courseData,
+    data: courseData || [],
     columns,
     getCoreRowModel: getCoreRowModel()
   })
@@ -220,6 +161,7 @@ export default function CourseManage() {
       </div>
       <div className='flex-grow px-6 py-3 mt-4 overflow-y-auto bg-white rounded-xl no-scrollbar'>
         <Table className='w-full h-full overflow-auto'>
+          {isLoading && <SectionLoading></SectionLoading>}
           <TableHeader className='sticky z-20 py-4 bg-white border-b -top-3'>
             {courseTable.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -251,8 +193,7 @@ export default function CourseManage() {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns?.length} className='h-24 text-center'>
-                  {/* Loading section */}
-                  {/* <ComponentsLoading></ComponentsLoading> */}
+                  <div className='text-xl font-medium text-center'>No courses yet</div>
                 </TableCell>
               </TableRow>
             )}
