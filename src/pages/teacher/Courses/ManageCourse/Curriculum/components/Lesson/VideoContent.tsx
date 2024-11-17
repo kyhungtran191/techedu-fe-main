@@ -5,9 +5,8 @@ import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
 import { PrimaryAsset } from '@/@types/instructor/course/curriculumn'
-import { UpdateContentVideo } from '@/services/instructor/manage/curriculumn.service'
+import { getAssets, UpdateContentVideo } from '@/services/instructor/manage/curriculumn.service'
 import { FILE_CHUNK_SIZE } from '@/constants'
 
 interface IVideoContentSectionItem {
@@ -18,6 +17,7 @@ interface IVideoContentSectionItem {
   sectionId: number
   sectionItemId: number
   setIsAddNewContent: React.Dispatch<React.SetStateAction<boolean>>
+  onUpdatePrimaryAsset: (updatedAsset: PrimaryAsset) => void
 }
 export default function VideoContent({
   isAddFromLibrary,
@@ -26,19 +26,12 @@ export default function VideoContent({
   courseId,
   sectionId,
   sectionItemId,
-  setIsAddNewContent
+  onUpdatePrimaryAsset
 }: IVideoContentSectionItem) {
   const [file, setFile] = useState<File | null>(null)
   const [progress, setProgress] = useState<number>(0)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isEdit, setIsEdit] = useState<boolean>(false)
-
-  const handleCancel = () => {
-    abortControllerRef.current?.forEach((controller) => controller.abort())
-    abortControllerRef.current = []
-    setIsLoading(false)
-    console.log('Upload canceled')
-  }
 
   const abortControllerRef = useRef<AbortController[]>([])
 
@@ -51,9 +44,7 @@ export default function VideoContent({
     formData.append('sectionId', sectionId.toString())
     formData.append('sectionItemId', sectionItemId.toString())
     try {
-      return await UpdateContentVideo(formData, {
-        signal: controller.signal
-      })
+      return await UpdateContentVideo(formData)
     } catch (error: any) {
       if (error?.name === 'AbortError') {
         console.log(`Chunk ${chunkIndex + 1} upload aborted`)
@@ -67,6 +58,19 @@ export default function VideoContent({
     handleUpload()
   }, [file])
 
+  const getCurrentAsset = async () => {
+    const res = await getAssets(courseId, sectionId, sectionItemId)
+    if (res && res.data && res?.data?.value) {
+      onUpdatePrimaryAsset(res?.data?.value[0] as PrimaryAsset)
+    }
+  }
+
+  const shouldRenderVideoUpload =
+    isEdit ||
+    (isEdit && !isAddFromLibrary) ||
+    (!primaryAsset.fileUrl && isAddNewContent) ||
+    (isAddNewContent && !isLoading && !primaryAsset?.fileUrl && !isAddFromLibrary)
+
   const handleUpload = async () => {
     if (!file) return
     const totalChunks = Math.ceil(file.size / FILE_CHUNK_SIZE)
@@ -75,11 +79,11 @@ export default function VideoContent({
       const controller = new AbortController()
       abortControllerRef.current.push(controller)
       await uploadChunk(file, 0, totalChunks, controller)
-        .then((data) => {})
-        .catch((err) => {
-          console.log('err', err)
+        .then((data) => {
+          getCurrentAsset()
+          setIsLoading(false)
         })
-        .finally(() => {
+        .catch((err) => {
           setIsLoading(false)
         })
     } else {
@@ -93,11 +97,10 @@ export default function VideoContent({
         const percentCompleted = Math.round((chunkIndex / totalChunks) * 100)
         setProgress(percentCompleted)
         await uploadChunk(chunk, chunkIndex, totalChunks, controller)
-          .then((data) => {
-            console.log('chunking video' + chunkIndex)
+          .then(async (data) => {
             if (chunkIndex === totalChunks - 1) {
+              getCurrentAsset()
               setIsLoading(false)
-              console.log('Uploading complete', data)
             }
           })
           .catch((error) => {
@@ -109,18 +112,24 @@ export default function VideoContent({
   }
   return (
     <>
-      {((!isAddFromLibrary || !isLoading) && !primaryAsset.fileUrl && !primaryAsset.thumnailUrl) ||
-        (isAddNewContent && (
-          <>
+      {shouldRenderVideoUpload && (
+        <>
+          {!isAddFromLibrary && (
             <VideoUpload onSetFile={setFile} onUpload={handleUpload} isAddNewContent={isAddNewContent}></VideoUpload>
-            <div className='font-light text-[18px] mt-6'>
-              <span className='font-normal'>Notes: </span>Files should be at least 720p and less than 4.0 GB.
-            </div>
-          </>
-        ))}
+          )}
+          <div className='flex items-center justify-between font-light text-[18px] mt-6'>
+            <div className='font-normal'>Notes: Files should be at least 720p and less than 4.0 GB.</div>
+            {!isAddFromLibrary && isEdit && (
+              <div className='text-base font-medium cursor-pointer text-primary-1' onClick={() => setIsEdit(false)}>
+                Cancel Edit
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
       {file && isLoading && (
-        <UploadStatus filename={file?.name as string} onRemove={handleCancel} progress={progress}></UploadStatus>
+        <UploadStatus filename={file?.name as string} onRemove={() => {}} progress={progress}></UploadStatus>
       )}
 
       {/* Library add */}
@@ -201,7 +210,7 @@ export default function VideoContent({
         </div>
       )}
       {/* After uploading success*/}
-      {primaryAsset.fileUrl && (
+      {primaryAsset && !isEdit && primaryAsset?.fileUrl && (
         <div>
           <div className='flex items-center mt-6'>
             <div className='flex items-center flex-1'>
@@ -220,7 +229,7 @@ export default function VideoContent({
               <div
                 className='text-lg font-medium cursor-pointer text-primary-1'
                 onClick={() => {
-                  setIsAddNewContent(true)
+                  setIsEdit(true)
                 }}
               >
                 Edit

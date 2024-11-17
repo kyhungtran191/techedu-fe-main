@@ -23,8 +23,6 @@ const FileDropUpload: React.FC<FileDropUploadProps> = ({ onUpload, onSetFile, cl
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'application/zip': [], // Accept .zip files
-      'application/x-zip-compressed': [], // Another MIME type for zip files
       '*/*': [] // Accept all file types if desired (optional)
     }
   })
