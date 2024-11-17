@@ -54,7 +54,7 @@ export default function AddSection({ updateSections, courseId, sections }: AddSe
 
   const handleAddNewSection = ({ title }: { title: string }) => {
     addNewSectionMutation.mutate(title, {
-      onSuccess(data) {
+      async onSuccess(data) {
         reset({
           title: ''
         })
@@ -67,6 +67,7 @@ export default function AddSection({ updateSections, courseId, sections }: AddSe
             title: title
           })
           updateSections(newSections)
+          setIsAddSection(false)
         }
       }
     })

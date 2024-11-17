@@ -73,11 +73,9 @@ export default function AddLesson({ courseId, sectionId, sections, updateSection
         onSuccess(data) {
           const dataRes = data.data.value
           const cloneSections: TSectionCurriculum[] = [...sections]
-
           const newSections = cloneSections.map((section) => {
             if (section.id === dataRes?.sectionId) {
               const cloneSection: TSectionCurriculum = { ...section }
-
               cloneSection.sectionItems.push({
                 id: dataRes.primaryAsset.sectionItemId,
                 itemType: 'Lectures',
@@ -98,10 +96,9 @@ export default function AddLesson({ courseId, sectionId, sections, updateSection
               { courseId, sectionItems: newOrderItemsList },
               {
                 onSuccess(data) {
-                  console.log('order update data successfully!', data.data)
                   updateSections(newSections)
-                  setApplyLesson(false)
                   setIsAddLesson(false)
+                  setApplyLesson(false)
                   reset({
                     title: ''
                   })
@@ -122,7 +119,7 @@ export default function AddLesson({ courseId, sectionId, sections, updateSection
 
   return (
     <div className='relative mt-8'>
-      {addNewLessonMutation.isLoading && <SectionLoading></SectionLoading>}
+      {(addNewLessonMutation.isLoading || updateMutation.isLoading) && <SectionLoading></SectionLoading>}
       <Button
         className={`${isAddLesson ? 'hidden' : 'flex'} items-center px-6 py-6 bg-white shadow-md text-neutral-black`}
         variant={'secondary'}

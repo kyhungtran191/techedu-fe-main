@@ -29,14 +29,8 @@ export default function Curriculum() {
 
   const orderCurriculumItemMutation = useHandleOrderSectionItemMutation()
 
-  console.log(sections)
-
   const handleDragAndDrop = async (results: DropResult) => {
     const { source, destination, type } = results
-
-    console.log('source', source)
-    console.log('destination', destination)
-    console.log('destination', type)
 
     // If there's no destination, just return
     if (!destination) return
