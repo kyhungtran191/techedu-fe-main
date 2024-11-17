@@ -20,6 +20,7 @@ interface IArticleContentSectionItem {
   sectionId: number
   sectionItemId: number
   setIsAddNewContent: React.Dispatch<React.SetStateAction<boolean>>
+  onUpdatePrimaryAsset: (updatedAsset: PrimaryAsset) => void
 }
 
 export default function ArticleContent({
@@ -28,7 +29,7 @@ export default function ArticleContent({
   courseId,
   sectionId,
   sectionItemId,
-  setIsAddNewContent
+  onUpdatePrimaryAsset
 }: IArticleContentSectionItem) {
   const {
     handleSubmit,
@@ -42,7 +43,6 @@ export default function ArticleContent({
     resolver: yupResolver(schema)
   })
 
-  const [primaryAssetItems, setPrimaryAssetItems] = useState<PrimaryAsset | undefined>(primaryAsset || undefined)
   const [isEdit, setIsEdit] = useState<boolean>(false)
 
   const updateContentArticleMutation = useMutation({
@@ -61,7 +61,7 @@ export default function ArticleContent({
         if (data) {
           const { articleAsset } = data.data.value as TArticleResponse
           if (articleAsset) {
-            setPrimaryAssetItems(articleAsset)
+            onUpdatePrimaryAsset(articleAsset)
             setIsEdit(false)
           }
         }
@@ -72,7 +72,7 @@ export default function ArticleContent({
   return (
     <form onSubmit={handleSubmit(onUpdateContentArticle)} className='relative'>
       {updateContentArticleMutation.isLoading && <SectionLoading className='z-30'></SectionLoading>}
-      {primaryAssetItems?.body && !isEdit && (
+      {primaryAsset?.body && !isEdit && (
         <div className='p-5'>
           <div
             className='flex items-center justify-end font-medium cursor-pointer text-primary-1'
@@ -82,11 +82,11 @@ export default function ArticleContent({
           >
             {isEdit ? 'Cancel' : 'Edit'}
           </div>
-          <p dangerouslySetInnerHTML={{ __html: primaryAssetItems?.body }}></p>
+          <p dangerouslySetInnerHTML={{ __html: primaryAsset?.body }}></p>
         </div>
       )}
 
-      {(!primaryAssetItems?.body || isEdit) && (
+      {(!primaryAsset?.body || isEdit) && (
         <div>
           <Controller
             control={control}
@@ -95,7 +95,7 @@ export default function ArticleContent({
               <Tiptap
                 className='my-3 min-h-[206px] w-full text-xl rounded-lg  py-[18px] px-3 outline-none placeholder:text-neutral-silver-3 bg-white cursor-text'
                 placeholder='Add a description that outlines what students will be able to do after finishing the '
-                description={primaryAssetItems?.body || ''}
+                description={primaryAsset?.body || ''}
                 {...field}
                 onChange={field.onChange}
               />

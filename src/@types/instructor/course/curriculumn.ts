@@ -14,6 +14,7 @@ export type TSectionCurriculum = {
 export type SectionItem = {
   id: number
   sectionId: number
+  description?: string
   itemType: string
   title: string
   position?: number

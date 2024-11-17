@@ -12,6 +12,8 @@ interface UploadStatusProps {
   onRemove: () => void // Callback for removing the upload item
 }
 
+const initDate = formatSystemDate(new Date(Date.now()).toString())
+
 const UploadStatus: React.FC<UploadStatusProps> = ({
   filename,
   type = 'Video',
@@ -41,7 +43,7 @@ const UploadStatus: React.FC<UploadStatusProps> = ({
             <TableCell className='text-center'>
               {filename && progress < 100 ? <Progress value={progress}></Progress> : 'Processing'}
             </TableCell>
-            <TableCell className='text-center'>{uploadDate || formatSystemDate(Date.now().toString())}</TableCell>
+            <TableCell className='text-center'>{initDate}</TableCell>
             <TableCell className='text-center'>
               {progress == 100 && <div className=''>Replace</div>}
               {progress != 100 && (
