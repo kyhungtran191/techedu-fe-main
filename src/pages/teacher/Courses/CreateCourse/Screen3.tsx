@@ -93,7 +93,6 @@ export default function Screen3() {
             }
             if (chunkIndex === totalChunks - 1) {
               if (data && data?.data?.value) {
-                console.log('Chunk success', data?.data?.value)
                 setCourseData((prev) => ({
                   ...prev,
                   thumbnail: {

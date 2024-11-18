@@ -58,7 +58,6 @@ export default function VideoContent({
     handleUpload()
   }, [file])
 
-  console.log(primaryAsset)
 
   const shouldRenderVideoUpload =
     isEdit || (isAddNewContent && !isLoading && !primaryAsset?.fileUrl && primaryAsset?.status == 'Initial')
@@ -111,6 +110,9 @@ export default function VideoContent({
       }
     }
   }
+
+
+  
   return (
     <>
       {shouldRenderVideoUpload && (

@@ -39,7 +39,6 @@ export default function ResendEmail() {
   })
 
   const onSubmit = ({ email }: { email: string }) => {
-    console.log('email', email)
     mutate(email, {
       onSuccess() {
         toast.success('We have send confirm to your email. Please check your email')

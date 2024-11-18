@@ -54,7 +54,6 @@ export default function PermissionDialog({ roleId }: { roleId: string }) {
     select: (res) => res.data.value as ResponsePermission
   })
 
-  console.log(data)
   // Filter permissions
   useEffect(() => {
     const systemPermissions = (data?.permissionsUnSelected || []).map((item) => ({

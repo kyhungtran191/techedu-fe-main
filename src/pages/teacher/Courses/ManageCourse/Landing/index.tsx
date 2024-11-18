@@ -32,10 +32,16 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 import { MAX_VIDEO_SIZE } from '@/constants'
+import { useGetListCategories } from '@/queries/category'
+import SectionLoading from '@/components/Loading/SectionLoading'
+import { Category } from '@/@types/category.type'
+import { useQuery } from '@tanstack/react-query'
+import { GetSubCategories } from '@/services/categories'
+import VideoPromotion from './components/video-promotion'
+import Thumbnail from './components/thumbnail'
 
 export default function LandingPage() {
   const [thumbnail, setThumbnail] = useState<File | null>(null)
-  const [previewThumbnailURL, setPreviewThumbnailURL] = useState<string | null>(null)
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -51,9 +57,9 @@ export default function LandingPage() {
   }, [])
 
   const schema = yup.object().shape({
-    thumbnail: yup.mixed().required('Please choose image video'),
+    thumbnailFilePath: yup.string().required('Please choose image thumbnail'),
     title: yup.string().required('Course title is require').max(180, 'Course title limit 180 characters'),
-    subtitle: yup.string().required('Course title is require').max(180, 'Course subtitle limit 180 characters'),
+    shortDescription: yup.string().required('Course title is require').max(180, 'Course subtitle limit 180 characters'),
     language: yup.string().required('Please choose course language'),
     category: yup.string().required('Please choose course category'),
     subcategory: yup.string().required('Please choose course subcategory'),
@@ -62,10 +68,7 @@ export default function LandingPage() {
       .string()
       .required('Course description is required')
       .max(180, 'Course subtitle limit 180 characters'),
-    video: yup.mixed().test('fileSize', 'Video size must be less than 4GB', (value) => {
-      if (!value) return false
-      return (value as File).size <= MAX_VIDEO_SIZE
-    })
+    videoPromotionFilePath: yup.string().required('Video Promotion is Required')
   })
 
   const {
@@ -81,31 +84,24 @@ export default function LandingPage() {
     resolver: yupResolver(schema)
   })
 
-  // Clear image
-  const clearThumbnail = () => {
-    setThumbnail(null)
-    setPreviewThumbnailURL(null)
-  }
-
-  // Change image Function
-  const onThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0]
-    setThumbnail(file)
-    if (file) {
-      const url = URL.createObjectURL(file)
-      setPreviewThumbnailURL(url)
-    } else {
-      setPreviewThumbnailURL(null)
-    }
-  }
-
   // Handle submit form function
   const submitForm = (data: unknown) => {
     console.log(data)
   }
 
-  // Watch have video file or not
-  const videoFile = watch('video')
+  // tracking
+  const categoryId = watch('category')
+
+  const { data: categoryData, isLoading: categoryLoading } = useGetListCategories({
+    select: (data) => data.data.value
+  })
+
+  const subCategoriesData = useQuery({
+    queryKey: ['subcategories', categoryId],
+    queryFn: () => GetSubCategories(categoryId),
+    select: (data) => data.data.value,
+    enabled: Boolean(categoryId)
+  })
 
   return (
     <div className='flex flex-col h-full'>
@@ -173,7 +169,7 @@ export default function LandingPage() {
               <CourseNote>Description should have minimum 200 words.</CourseNote>
             </div>
             <div className='px-3 py-6 mt-6 bg-white shadow-custom-shadow rounded-xl'>
-              <CourseTitle>Basic infomation</CourseTitle>
+              <CourseTitle>Basic information</CourseTitle>
               <div className='mt-[14px] mb-8'>
                 <h3 className='text-xl font-medium'>Language</h3>
                 <Select>
@@ -182,62 +178,73 @@ export default function LandingPage() {
                     <SelectValue placeholder='Select Language' />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='apple' className='!px-8 py-3 text-xl font-medium border-b'>
-                      <div>Viet Nam</div>
+                    <SelectItem value='Vietnamese' className='!px-8 py-3 text-xl font-medium border-b'>
+                      <div>Vietnamese</div>
                     </SelectItem>
-                    <SelectItem value='english' className='!px-8 py-3 text-xl font-medium border-b'>
+                    <SelectItem value='English' className='!px-8 py-3 text-xl font-medium border-b'>
                       <div>English</div>
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-
               <div className='mb-8'>
                 <h3 className='text-xl font-medium'>Level</h3>
                 <Select>
-                  <SelectTrigger className='flex items-center px-8 py-7 text-xl rounded-lg mt-[18px] w-full focus:outline-none '>
-                    <SelectValue placeholder='-- Choose category --' className='!text-neutral-silver-3' />
+                  <SelectTrigger className='flex items-center px-8 py-7 text-xl rounded-lg mt-[18px] w-full focus:outline-none'>
+                    <SelectValue placeholder='-- Choose Level --' className='!text-neutral-silver-3' />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='cat-1' className='!px-8 py-3 text-xl font-medium border-b'>
-                      <div>Category 1</div>
+                    <SelectItem value='Beginner' className='!px-8 py-3 text-xl font-medium border-b'>
+                      <div>Beginner</div>
                     </SelectItem>
-                    <SelectItem value='cat-2' className='!px-8 py-3 text-xl font-medium border-b'>
-                      <div>Category 2</div>
+                    <SelectItem value='Immediately' className='!px-8 py-3 text-xl font-medium border-b'>
+                      <div>Immediately</div>
+                    </SelectItem>
+                    <SelectItem value='Senior' className='!px-8 py-3 text-xl font-medium border-b'>
+                      <div>Senior</div>
+                    </SelectItem>
+                    <SelectItem value='Expert' className='!px-8 py-3 text-xl font-medium border-b'>
+                      <div>Expert</div>
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className='mb-8'>
                 <h3 className='text-xl font-medium'>Category</h3>
-                <Select>
-                  <SelectTrigger className='flex items-center px-8 py-7 text-xl rounded-lg mt-[18px] w-full focus:outline-none'>
+                <Select onValueChange={(value) => setValue('category', value)}>
+                  <SelectTrigger className='flex items-center px-8 py-7 text-xl rounded-lg mt-[18px] w-full focus:outline-none '>
                     <SelectValue placeholder='-- Choose category --' className='!text-neutral-silver-3' />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='cat-1' className='!px-8 py-3 text-xl font-medium border-b'>
-                      <div>Category 1</div>
-                    </SelectItem>
-                    <SelectItem value='cat-2' className='!px-8 py-3 text-xl font-medium border-b'>
-                      <div>Category 2</div>
-                    </SelectItem>
+                  <SelectContent className='relative'>
+                    {categoryLoading && <SectionLoading></SectionLoading>}
+                    {categoryData &&
+                      categoryData.map((item: Category) => (
+                        <SelectItem
+                          value={item.primaryId}
+                          key={item.primaryId}
+                          className='!px-8 py-3 text-xl font-medium border-b'
+                        >
+                          <div>{item.displayName}</div>
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className='mb-8'>
                 <h3 className='text-xl font-medium'>Subcategory</h3>
-                <Select>
+                <Select onValueChange={(value) => setValue('subcategory', value)}>
                   <SelectTrigger className='flex items-center px-8 py-7 text-xl rounded-lg mt-[18px] w-full focus:outline-none '>
                     <SelectValue placeholder='-- Choose Sub Category --' className='!text-neutral-silver-3' />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='subcat-1' className='!px-8 py-3 text-xl font-medium border-b'>
-                      <div>SubCategory 1</div>
-                    </SelectItem>
-                    <SelectItem value='subcat-2' className='!px-8 py-3 text-xl font-medium border-b'>
-                      <div>SubCategory 2</div>
-                    </SelectItem>
+                  <SelectContent className='relative min-h-[100px]'>
+                    {subCategoriesData.isLoading && <SectionLoading className='z-30 h-[100px]'></SectionLoading>}
+                    {subCategoriesData?.data &&
+                      subCategoriesData.data?.map((item: Category) => (
+                        <SelectItem value={item.primaryId} className='!px-8 py-3 text-xl font-medium border-b'>
+                          <div>{item.displayName}</div>
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -265,108 +272,9 @@ export default function LandingPage() {
           </div>
           <div className='col-span-5'>
             {/* Block 1 */}
-            <div className='px-3 py-6 bg-white shadow-custom-shadow rounded-xl'>
-              <div className='flex items-center justify-between'>
-                <h3 className='text-xl font-medium'>Thumbnail</h3>
-                {previewThumbnailURL && (
-                  <Label
-                    className='bg-transparent border py-3 px-[18px] rounded-lg cursor-pointer block border-neutral-black text-neutral-black hover:text-inherit hover:bg-inherit'
-                    htmlFor='thumbnail'
-                  >
-                    Change thumbnail
-                  </Label>
-                )}
-              </div>
-              <div className='h-[200px] my-[18px] bg-primary-3 rounded-lg  w-full'>
-                <div
-                  className={`${previewThumbnailURL ? 'hidden' : 'flex'} flex-col items-center justify-center h-full`}
-                >
-                  <Image className='text-neutral-silver-3 mb-[18px]'></Image>
-                  <Input
-                    className='hidden'
-                    id='thumbnail'
-                    type='file'
-                    accept='image/*'
-                    onChange={onThumbnailChange}
-                  ></Input>
-                  <Label
-                    htmlFor='thumbnail'
-                    className='bg-transparent border py-3 px-[18px] rounded-lg cursor-pointer block border-neutral-black text-neutral-black hover:text-inherit hover:bg-inherit'
-                  >
-                    Upload thumbnail
-                  </Label>
-                </div>
-                <div className={`${previewThumbnailURL ? 'block' : 'hidden'} h-full`}>
-                  {previewThumbnailURL && (
-                    <div className='relative w-full h-full group'>
-                      <img src={previewThumbnailURL} alt='' className='relative object-cover w-full h-full ' />
-                      <div
-                        onClick={clearThumbnail}
-                        className='absolute items-center justify-center hidden p-3 transition-all -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg cursor-pointer group-hover:flex left-1/2 top-1/2 hover:bg-red-500 hover:text-white'
-                      >
-                        <Trash></Trash>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+            <Thumbnail setValue={setValue}></Thumbnail>
             {/* Block 2 */}
-            <div className='px-3 py-6 bg-white shadow-custom-shadow rounded-xl mt-[18px]'>
-              <div className='flex items-center justify-between'>
-                <h3 className='text-xl font-medium'>Promotional video</h3>
-                {videoFile && !errors.video && (
-                  <Label
-                    className='bg-transparent border py-3 px-[18px] rounded-lg cursor-pointer block border-neutral-black text-neutral-black hover:text-inherit hover:bg-inherit'
-                    htmlFor='promotion-video'
-                  >
-                    Change Video
-                  </Label>
-                )}
-              </div>
-
-              <div className='my-[18px] w-full h-[185px] flex flex-col items-center justify-center bg-primary-3 rounded-lg'>
-                <PlayBtn className='w-12 h-12 text-neutral-silver-3 mb-[18px]'></PlayBtn>
-                <Controller
-                  name='video'
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      className='hidden'
-                      id='promotion-video'
-                      type='file'
-                      accept='video/mp4'
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) {
-                          setValue('video', file)
-                          field.onChange(file)
-                        }
-                      }}
-                    />
-                  )}
-                />
-                <Label
-                  htmlFor='promotion-video'
-                  className='bg-transparent border py-3 px-[18px] rounded-lg cursor-pointer block border-neutral-black text-neutral-black hover:text-inherit hover:bg-inherit'
-                >
-                  Upload video
-                </Label>
-              </div>
-              <div className='font-light'>
-                {errors.video?.message ? (
-                  <p className='font-medium text-red-500'>{errors.video.message}</p>
-                ) : (
-                  <>
-                    <span className='font-normal'>Note:</span> a quick and compelling way for students to preview what
-                    they’ll learn in your course.
-                    <Link className='font-medium underline text-primary-1' to='/'>
-                      How to make your promo video awesome?
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
+            <VideoPromotion setValue={setValue} errors={errors} watch={watch} control={control}></VideoPromotion>
             {/* Block 3 */}
             <div className='px-3 py-6 bg-white shadow-custom-shadow rounded-xl mt-[18px]'>
               <h3 className='text-xl font-medium'>Instructors</h3>

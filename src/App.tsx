@@ -60,6 +60,7 @@ const Category = lazy(() => import('./pages/admin/category'))
 const PrivateUserManage = lazy(() => import('./pages/admin/private-users'))
 const CourseDetailAdmin = lazy(() => import('./pages/admin/courses/CourseDetailAdmin'))
 const InstructorDetail = lazy(() => import('./pages/admin/users/instructors/InstructorDetail'))
+const PreviewCourse = lazy(() => import('./pages/general/Courses/preview-draft'))
 
 function App() {
   return (
@@ -67,10 +68,10 @@ function App() {
       <Routes>
         {/* Main */}
         <Route
-          path=''
+          path='/'
           element={
             <ClientMainLayout>
-              <div className=''>1</div>
+              <Courses />
             </ClientMainLayout>
           }
         />
@@ -84,7 +85,6 @@ function App() {
             </ClientMainLayout>
           }
         >
-          <Route index element={<Courses />} />
           <Route path=':id' element={<CourseDetail />} />
         </Route>
         {/* End */}
@@ -195,6 +195,9 @@ function App() {
             }
           />
           <Route path='/checkout' element={<Checkout />} />
+
+          <Route path='/preview-draft-course/:id' element={<PreviewCourse />}></Route>
+
           <Route
             path='/profile'
             element={
@@ -214,6 +217,7 @@ function App() {
           />
         </Route>
         {/* End */}
+
         {/* Admin */}
         <Route element={<AdminGuard />}>
           <Route

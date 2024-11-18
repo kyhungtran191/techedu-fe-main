@@ -21,9 +21,6 @@ export default function ConfirmPassword() {
   // const [isConfirmed, setIsConfirmed] = useState(true)
   // const [isOpenPassword, setIsOpenPassword] = useState(false)
   // const [isOpenConfirm, setIsOpenConfirm] = useState(false)
-
-  // console.log('userId, token', userId, token)
-
   const handleResendConfirmEmail = () => {}
 
   const schema = yup.object().shape({

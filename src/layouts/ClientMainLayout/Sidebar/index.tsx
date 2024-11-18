@@ -31,34 +31,34 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   }
 
   const sidebarOptions: sideBarOption[] = [
-    {
-      groupOptions: [
-        {
-          link: '/',
-          icon: (
-            <svg xmlns='http://www.w3.org/2000/svg' width='24' height='25' viewBox='0 0 24 25' fill='currentColor'>
-              <g clipPath='url(#clip0_2067_1566)'>
-                <path
-                  d='M19 5.29736V7.29736H15V5.29736H19ZM9 5.29736V11.2974H5V5.29736H9ZM19 13.2974V19.2974H15V13.2974H19ZM9 17.2974V19.2974H5V17.2974H9ZM21 3.29736H13V9.29736H21V3.29736ZM11 3.29736H3V13.2974H11V3.29736ZM21 11.2974H13V21.2974H21V11.2974ZM11 15.2974H3V21.2974H11V15.2974Z'
-                  fill='currentColor'
-                />
-              </g>
-              <defs>
-                <clipPath id='clip0_2067_1566'>
-                  <rect width='24' height='24' fill='white' transform='translate(0 0.297363)' />
-                </clipPath>
-              </defs>
-            </svg>
-          ),
-          title: 'Dashboard'
-        }
-      ]
-    },
+    // {
+    //   groupOptions: [
+    //     {
+    //       link: '/',
+    //       icon: (
+    //         <svg xmlns='http://www.w3.org/2000/svg' width='24' height='25' viewBox='0 0 24 25' fill='currentColor'>
+    //           <g clipPath='url(#clip0_2067_1566)'>
+    //             <path
+    //               d='M19 5.29736V7.29736H15V5.29736H19ZM9 5.29736V11.2974H5V5.29736H9ZM19 13.2974V19.2974H15V13.2974H19ZM9 17.2974V19.2974H5V17.2974H9ZM21 3.29736H13V9.29736H21V3.29736ZM11 3.29736H3V13.2974H11V3.29736ZM21 11.2974H13V21.2974H21V11.2974ZM11 15.2974H3V21.2974H11V15.2974Z'
+    //               fill='currentColor'
+    //             />
+    //           </g>
+    //           <defs>
+    //             <clipPath id='clip0_2067_1566'>
+    //               <rect width='24' height='24' fill='white' transform='translate(0 0.297363)' />
+    //             </clipPath>
+    //           </defs>
+    //         </svg>
+    //       ),
+    //       title: 'Dashboard'
+    //     }
+    //   ]
+    // },
     {
       parent: 'Explore',
       groupOptions: [
         {
-          link: '/courses',
+          link: '/',
           icon: (
             <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'>
               <g clipPath='url(#clip0_2067_501)'>
@@ -240,7 +240,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         )}
         {(isCourseDetail || isCourseLearningDetail) && (
           <div className='mt-6'>
-            <Link to='/courses' className='flex items-center group'>
+            <Link to='/' className='flex items-center group'>
               <Navigate className='transition-transform duration-150 ease-in-out group-hover:-translate-x-1'></Navigate>
               <span className='ml-3 text-neutral-black group-hover:text-black group-hover:font-medium'>
                 Back to courses

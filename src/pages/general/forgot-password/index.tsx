@@ -39,7 +39,6 @@ export default function ForgotPassword() {
   })
 
   const onSubmit = ({ email }: { email: string }) => {
-    console.log('email', email)
     mutate(email, {
       onSuccess() {
         toast.success('We have send reset password to your email. Please check your email')

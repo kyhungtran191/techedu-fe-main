@@ -65,7 +65,6 @@ export default function EditAddAccount({ open, setEditUser, setOpenDialog, idUse
     role: '',
     userStatus: ''
   }
-  console.log(idUser)
 
   const {
     handleSubmit,

@@ -38,6 +38,14 @@ export default function CourseLearningSpace() {
             controls={true}
             url={`https://res.cloudinary.com/demo/video/upload/fl_splice,l_video:cld_opener_preroll_sd,so_0/what_is_cloudinary_sd.mp4`}
             onProgress={(data) => {}}
+            onContextMenu={(e: any) => e.preventDefault()}
+            config={{
+              file: {
+                attributes: {
+                  controlsList: 'nodownload'
+                }
+              }
+            }}
             width='100%'
             height='100%'
             onPlay={() => setPlaying(true)}

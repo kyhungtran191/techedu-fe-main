@@ -89,7 +89,7 @@ export default function EnrolledCourses() {
 
   return (
     <div className='grid h-full grid-cols-12 overflow-y-auto  no-scrollbar rounded-xl gap-[10px]'>
-      <div className='col-span-10 px-3 bg-white rounded-xl py-[18px]'>
+      <div className='col-span-12 px-3 bg-white rounded-xl py-[18px]'>
         <div className='flex items-center justify-between'>
           <h2 className='text-2xl font-medium'>All Course</h2>
           <div className='flex items-center gap-x-6'>
@@ -120,20 +120,20 @@ export default function EnrolledCourses() {
               <div></div>
             </div>
             <div className='mt-6'>
-              <div className='grid items-center w-full grid-cols-3 gap-8 mb-6 font-medium'>
-                <div className='flex items-center gap-x-[18px]'>
+              <div className='grid items-center w-full grid-cols-3 gap-8 p-3 mb-6 font-medium rounded-lg shadow-custom-shadow'>
+                <div className='flex items-center gap-x-[18px] col-span-3  sm:col-span-1'>
                   <img src={CourseImage} alt='' className='w-[80px] h-[80px] object-cover rounded-xl' />
                   <div className='flex-1 w-full'>
                     <h2 className='text-[18px]'>Design thinking</h2>
                     <p className='text-sm font-light'>Pill Drake</p>
                   </div>
                 </div>
-                <div className=''>
+                <div className='col-span-3 sm:col-span-1'>
                   <Progress value={50} className='h-[20px]'></Progress>
                   <span className='block mt-2 text-sm font-light'>Completed 65%</span>
                 </div>
-                <div className='flex items-center justify-end w-full gap-x-3'>
-                  <Button variant={'custom'} className='mr-8'>
+                <div className='flex items-center justify-between col-span-3 sm:col-span-1 sm:justify-end gap-x-3'>
+                  <Button variant={'custom'} className='w-full mr-8 sm:w-fit'>
                     Continue
                   </Button>
                   <DropDownMenuListCustom></DropDownMenuListCustom>
@@ -169,7 +169,7 @@ export default function EnrolledCourses() {
           </div>
         </div>
       </div>
-      <div className='col-span-2 p-3 bg-white rounded-xl'>
+      <div className='hidden col-span-2 p-3 bg-white rounded-xl'>
         <div>
           <h3 className='text-2xl font-medium'>List</h3>
           {/* List Item */}

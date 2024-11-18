@@ -9,6 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { formatPathToTitle, formatSlugToTitleCourseDetail } from '@/utils'
 import CircularProgressBar from '@/components/CircularProgressBar'
 import Share from '@/icons/Share'
+import AvatarPopover from '@/components/AvatarPopover'
+import { useAppContext } from '@/hooks/useAppContext'
 
 const LearningSpaceHeader = (props: {
   sidebarOpen: string | boolean | undefined
@@ -18,6 +20,8 @@ const LearningSpaceHeader = (props: {
   const titleRef = useRef<HTMLDivElement | null>(null)
   // const navigate = useNavigate()
   const params = useParams()
+
+  const { isAuthenticated } = useAppContext()
 
   return (
     <header className='sticky top-0 flex w-full px-3 py-6 bg-white z-[30] drop-shadow-1'>
@@ -46,23 +50,13 @@ const LearningSpaceHeader = (props: {
           <CircularProgressBar percentage={50}></CircularProgressBar>
           <Separator orientation='vertical' className='hidden h-6 mx-2 bg-black sm:mx-6 xs:block'></Separator>
           <Button
-            className='hidden xs:flex text-sm sm:text-base text-neutral-black px-[18px] py-3 rounded-lg h-10 sm:h-[48px] border-neutral-black'
+            className='hidden xs:flex text-sm sm:text-base text-neutral-black mx-3 px-[18px] py-3 rounded-lg h-10 sm:h-[48px] border-neutral-black'
             variant={'outline'}
           >
             <Share className='w-4 h-4 sm:w-6 sm:h-6'></Share>
             <span className='ml-[10px] '>Share</span>
           </Button>
-          <Popover>
-            <PopoverTrigger className='ml-2 xs:ml-5 sm:ml-[38px]'>
-              <div className='flex items-center gap-x-2'>
-                <Avatar>
-                  <AvatarImage src='https://github.com/shadcn.png' />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-              </div>
-            </PopoverTrigger>
-            <PopoverContent>Place content for the popover here.</PopoverContent>
-          </Popover>
+          {isAuthenticated && <AvatarPopover></AvatarPopover>}
         </div>
       </div>
     </header>
