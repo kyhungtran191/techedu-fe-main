@@ -49,7 +49,6 @@ export default function Screen2() {
   }
 
   const { data } = useGetListCategories({ cacheTime: Infinity, staleTime: Infinity, select: (data) => data.data.value })
-  console.log('categories', data)
   return (
     <form className='flex flex-col h-full' onSubmit={handleSubmit(handleUpdateField)}>
       <div className='absolute inset-0 w-full h-full opacity-40 bg-gradient-to-b from-transparent via-primary-3 to-parent'></div>

@@ -1,3 +1,3 @@
 import { URL } from '.'
 
-export const CATEGORIES = `${URL}/categories`
+export const CATEGORIES = `${URL}categories`

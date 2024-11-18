@@ -98,8 +98,11 @@ export default function CourseManage() {
                 <ThreeDots></ThreeDots>
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end' className='rounded-xl min-w-[160px] py-2'>
-                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                  Preview course as Student
+                <DropdownMenuItem
+                  className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                  onClick={() => navigate(`/preview-draft-course/${row.original.courseId}`)}
+                >
+                  Preview course
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
@@ -139,7 +142,7 @@ export default function CourseManage() {
           </div>
           <Select defaultValue='newest'>
             <SelectTrigger
-              className='w-[180px] h-[56px]  !py-4 !px-6 bg-transparent  border-neutral-black text-lg'
+              className='w-[180px] h-[56px] !py-4 !px-6 bg-transparent  border-neutral-black text-lg'
               defaultValue={'newest'}
             >
               <SelectValue placeholder='Select a timezone' />
@@ -192,8 +195,8 @@ export default function CourseManage() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns?.length} className='h-24 text-center'>
-                  <div className='text-xl font-medium text-center'>No courses yet</div>
+                <TableCell colSpan={columns?.length} className='h-24 font-semibold text-center'>
+                  {isLoading ? <SectionLoading></SectionLoading> : 'No course yet'}
                 </TableCell>
               </TableRow>
             )}

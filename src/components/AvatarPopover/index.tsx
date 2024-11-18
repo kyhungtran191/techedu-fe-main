@@ -63,13 +63,13 @@ export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?:
         </PopoverTrigger>
         <PopoverContent className='py-[18px] px-3 text-neutral-black max-w-[242px]' align='end'>
           <div className='flex flex-col space-y-1'>
-            <p className='text-sm font-medium leading-none'>Ky Hung</p>
-            <p className='text-xs leading-none text-muted-foreground'>kyhung@gmail.com</p>
+            <p className='text-sm font-medium leading-none'>{profile?.fullname}</p>
+            <p className='text-xs leading-none text-muted-foreground'>{profile?.email}</p>
           </div>
           <Separator className='my-3 bg-neutral-silver-3'></Separator>
           {profile && profile?.roles?.includes(BASIC_ROLE.CLIENT) ? (
             <div className='flex flex-col gap-y-6'>
-              <Link to='' className=''>
+              <Link to='/enrolled-courses' className=''>
                 My Course
               </Link>
               <Link to='' className='flex items-center justify-between'>

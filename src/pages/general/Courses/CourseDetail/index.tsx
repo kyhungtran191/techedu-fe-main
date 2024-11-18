@@ -49,6 +49,14 @@ export default function CourseDetail() {
             onProgress={(data) => {}}
             width='100%'
             height={'100%'}
+            onContextMenu={(e: any) => e.preventDefault()}
+            config={{
+              file: {
+                attributes: {
+                  controlsList: 'nodownload'
+                }
+              }
+            }}
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
           ></ReactPlayer>

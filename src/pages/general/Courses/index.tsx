@@ -44,7 +44,6 @@ export default function Courses() {
     isUndefined
   )
 
-  
   return (
     <div className='relative z-0 grid h-full  grid-cols-1  xl:grid-cols-[1fr_265px] gap-x-5'>
       <div className='w-full h-full overflow-y-auto text-white bg-white rounded-xl no-scrollbar'>
@@ -86,7 +85,7 @@ export default function Courses() {
               <CourseCard vertical={false} wrapperClass='my-5'></CourseCard>
             </div>
             <PaginationCustom
-              path='/courses'
+              path='/'
               totalPage={100}
               queryConfig={queryConfig}
               className='justify-center sm:justify-end'

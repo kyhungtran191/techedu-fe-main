@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import Play from '@/icons/Play'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
@@ -29,14 +29,8 @@ export default function Curriculum() {
 
   const orderCurriculumItemMutation = useHandleOrderSectionItemMutation()
 
-  console.log(sections)
-
   const handleDragAndDrop = async (results: DropResult) => {
     const { source, destination, type } = results
-
-    console.log('source', source)
-    console.log('destination', destination)
-    console.log('destination', type)
 
     // If there's no destination, just return
     if (!destination) return
@@ -102,6 +96,8 @@ export default function Curriculum() {
     }
   }
 
+  const navigate = useNavigate()
+
   const querySectionData = useQuery({
     queryKey: ['course-sections', id],
     queryFn: (_) => GetSections(id),
@@ -121,7 +117,9 @@ export default function Curriculum() {
   return (
     <div className='flex flex-col h-full'>
       <SystemNotification></SystemNotification>
-      {(querySectionData.isFetching || querySectionData.isLoading) && <SectionLoading></SectionLoading>}
+      {(querySectionData.isFetching || querySectionData.isLoading) && (
+        <SectionLoading className='z-30'></SectionLoading>
+      )}
       <DragDropContext onDragEnd={handleDragAndDrop}>
         <Droppable droppableId='ROOT' type='group'>
           {(provided) => (
@@ -133,14 +131,17 @@ export default function Curriculum() {
               <div className='flex items-center justify-between'>
                 <p>0 min of video content uploaded</p>
                 <DropdownMenu>
-                  <DropdownMenuTrigger className='flex items-center text-white bg-primary-1 py-3 px-[18px] rounded-lg'>
+                  <DropdownMenuTrigger
+                    onClick={() => navigate(`/preview-draft-course/${id}`)}
+                    className='flex items-center text-white bg-primary-1 py-3 px-[18px] rounded-lg'
+                  >
                     <Play></Play>
                     <div className='ml-[10px]'>Preview</div>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className=''>
+                  {/* <DropdownMenuContent className=''>
                     <DropdownMenuItem className='w-full px-2 py-3 cursor-pointer'>View as Student</DropdownMenuItem>
                     <DropdownMenuItem className='w-full px-2 py-3 cursor-pointer'>View as Instructor</DropdownMenuItem>
-                  </DropdownMenuContent>
+                  </DropdownMenuContent> */}
                 </DropdownMenu>
               </div>
               {/* Section List */}

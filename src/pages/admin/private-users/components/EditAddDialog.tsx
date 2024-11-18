@@ -207,7 +207,6 @@ export default function EditAddUserDialog({
     reset(defaultValues)
   }
 
-  console.log(selectedRoleId)
   return (
     <div>
       <Dialog defaultOpen={open} open={open} onOpenChange={setOpenDialog}>

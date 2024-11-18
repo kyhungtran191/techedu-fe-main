@@ -64,7 +64,6 @@ export default function Sidebar({ className, isCollapsed, setIsCollapsed }: Side
   const isDirector = profile && profile?.roles?.includes(BASIC_ROLE.DIRECTOR) ? true : false
   const mappedArrMenu = filterMenuByPermissions(sidelinks, permissions ? (permissions as string[]) : [], isDirector)
 
-  console.log(isCollapsed)
   return (
     <aside
       className={cn(

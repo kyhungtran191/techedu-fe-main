@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation, useParams } from 'react-router-dom'
 import Logo from '@/assets/logo.png'
 import { Button } from '@/components/ui/button'
 import ClickOutside from '@/hooks/useClickOutside'
@@ -17,7 +17,9 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
   const { pathname } = location
   const trigger = useRef<any>(null)
   const sidebar = useRef<any>(null)
+  const { id } = useParams()
 
+  console.log(id)
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -53,26 +55,24 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
       parent: 'Create your course',
       groupOptions: [
         {
-          link: '/courses',
-
+          link: `/teacher/course/${id}/manage/curriculum`,
           title: 'Curriculum'
-        },
-        {
-          link: '/webinars',
-          title: 'Caption'
         }
+        // {
+        //   link: '/webinars',
+        //   title: 'Caption'
+        // }
       ]
     },
     {
       parent: 'Plan your course',
       groupOptions: [
         {
-          link: '/schedules',
-
+          link: `/teacher/course/${id}/manage/overview`,
           title: 'Intended learners'
         },
         {
-          link: '/message',
+          link: `/teacher/course/${id}/manage/course-messages`,
           title: 'Course messages '
         }
       ]
@@ -81,17 +81,17 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
       parent: 'Publish your course',
       groupOptions: [
         {
-          link: '/schedules',
+          link: `/teacher/course/${id}/manage/landing-page`,
           title: 'Landing page'
         },
         {
-          link: '/message',
+          link: `/teacher/course/${id}/manage/price`,
           title: 'Price'
-        },
-        {
-          link: '/message',
-          title: 'Coupon'
         }
+        // {
+        //   link: '/message',
+        //   title: 'Coupon'
+        // }
       ]
     }
   ]
@@ -123,17 +123,17 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
           </button>
         </div>
         {/* <!-- SIDEBAR HEADER --> */}
-        <Link to='/courses' className='flex items-center mt-8 mb-[18px] group'>
+        <Link to='/teacher/courses' className='flex items-center mt-8 mb-[18px] group'>
           <Navigate className='transition-transform duration-150 ease-in-out group-hover:-translate-x-1'></Navigate>
           <span className='ml-3 text-neutral-black group-hover:text-black group-hover:font-medium'>
             Back to courses
           </span>
         </Link>
         <div className='flex items-center gap-2'>
-          <div className='text-neutral-silver-3'>Course 1231232133211</div>
+          <h2 className='mt-2 mb-1 text-xl font-bold bg-white text-neutral-black'>UI animation for UX/UI Designers</h2>
           <div className='px-3 py-2 rounded-lg bg-neutral-silver-1'>Draft</div>
         </div>
-        <h2 className='mt-2 mb-1 text-xl font-bold bg-white text-neutral-black'>UI animation for UX/UI Designers</h2>
+
         <div className='flex flex-col h-full overflow-y-scroll duration-300 ease-linear no-scrollbar'>
           {/* <!-- Sidebar Menu --> */}
           <nav className='mt-5'>

@@ -28,7 +28,7 @@ const Header = ({
   useEffect(() => {
     const currentTitle: HTMLDivElement | null = titleRef.current
     if (currentTitle) {
-      currentTitle.textContent = location.pathname !== '/' ? formatPathToTitle(location.pathname, true) : 'Dashboard'
+      currentTitle.textContent = location.pathname !== '/' ? formatPathToTitle(location.pathname, true) : 'Courses'
     }
   }, [location.pathname])
 
@@ -39,7 +39,6 @@ const Header = ({
 
   const navigate = useNavigate()
 
-  console.log(isAuthenticated)
   return (
     <header className='z-30 flex w-full px-3 py-6 bg-white drop-shadow-1'>
       <div className='flex items-center justify-between flex-grow shadow-2 h-[48px] relative flex-wrap'>

@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { PrimaryAsset } from '@/@types/instructor/course/curriculumn'
 import { getAssets, UpdateContentVideo } from '@/services/instructor/manage/curriculumn.service'
 import { FILE_CHUNK_SIZE } from '@/constants'
-
+import DraftVideo from '@/assets/placeholder.jpg'
 interface IVideoContentSectionItem {
   isAddNewContent: boolean
   isAddFromLibrary: boolean
@@ -35,7 +35,7 @@ export default function VideoContent({
 
   const abortControllerRef = useRef<AbortController[]>([])
 
-  const uploadChunk = async (chunk: File, chunkIndex: number, totalChunks: number, controller: AbortController) => {
+  const uploadChunk = async (chunk: File, chunkIndex: number, totalChunks: number) => {
     const formData = new FormData()
     formData.append('file', chunk)
     formData.append('chunkIndex', chunkIndex.toString())
@@ -58,32 +58,26 @@ export default function VideoContent({
     handleUpload()
   }, [file])
 
-  const getCurrentAsset = async () => {
-    const res = await getAssets(courseId, sectionId, sectionItemId)
-    if (res && res.data && res?.data?.value) {
-      onUpdatePrimaryAsset(res?.data?.value[0] as PrimaryAsset)
-    }
-  }
 
   const shouldRenderVideoUpload =
-    isEdit ||
-    (isEdit && !isAddFromLibrary) ||
-    (!primaryAsset.fileUrl && isAddNewContent) ||
-    (isAddNewContent && !isLoading && !primaryAsset?.fileUrl && !isAddFromLibrary)
+    isEdit || (isAddNewContent && !isLoading && !primaryAsset?.fileUrl && primaryAsset?.status == 'Initial')
 
   const handleUpload = async () => {
     if (!file) return
     const totalChunks = Math.ceil(file.size / FILE_CHUNK_SIZE)
     setIsLoading(true)
     if (totalChunks === 1) {
-      const controller = new AbortController()
-      abortControllerRef.current.push(controller)
-      await uploadChunk(file, 0, totalChunks, controller)
-        .then((data) => {
-          getCurrentAsset()
+      await uploadChunk(file, 0, totalChunks)
+        .then(async (data) => {
+          const res = await getAssets(courseId, sectionId, sectionItemId)
+          if (res && res.data && res?.data?.value) {
+            onUpdatePrimaryAsset({ ...primaryAsset, title: file.name, status: 'Processing' })
+          }
+          setIsEdit(false)
           setIsLoading(false)
         })
         .catch((err) => {
+          setIsEdit(false)
           setIsLoading(false)
         })
     } else {
@@ -96,20 +90,29 @@ export default function VideoContent({
         const chunk = new File([chunkBlob], file.name, { type: file.type, lastModified: file.lastModified })
         const percentCompleted = Math.round((chunkIndex / totalChunks) * 100)
         setProgress(percentCompleted)
-        await uploadChunk(chunk, chunkIndex, totalChunks, controller)
+        await uploadChunk(chunk, chunkIndex, totalChunks)
           .then(async (data) => {
             if (chunkIndex === totalChunks - 1) {
-              getCurrentAsset()
+              const res = await getAssets(courseId, sectionId, sectionItemId)
+              if (res && res.data && res?.data?.value) {
+                console.log(res?.data?.value[0])
+                onUpdatePrimaryAsset(res?.data?.value[0] as PrimaryAsset)
+              }
+              setIsEdit(false)
               setIsLoading(false)
             }
           })
           .catch((error) => {
+            setIsEdit(false)
             setIsLoading(false)
             console.error(`Error uploading chunk ${chunkIndex + 1}:`, error)
           })
       }
     }
   }
+
+
+  
   return (
     <>
       {shouldRenderVideoUpload && (
@@ -210,11 +213,15 @@ export default function VideoContent({
         </div>
       )}
       {/* After uploading success*/}
-      {primaryAsset && !isEdit && primaryAsset?.fileUrl && (
+      {!isEdit && (primaryAsset?.status !== 'Initial' || primaryAsset?.fileUrl || primaryAsset?.thumnailUrl) && (
         <div>
           <div className='flex items-center mt-6'>
             <div className='flex items-center flex-1'>
-              <img src={primaryAsset.thumnailUrl} alt='' className='w-[100px] h-[80px] object-cover rounded-lg' />
+              <img
+                src={primaryAsset.thumnailUrl || DraftVideo}
+                alt=''
+                className='w-[100px] h-[80px] object-cover rounded-lg'
+              />
               <h3 className='font-medium text-[18px] text-neutral-black ml-3'>{primaryAsset.title}</h3>
             </div>
 
@@ -222,7 +229,9 @@ export default function VideoContent({
               <p
                 className={`text-[18px] ${primaryAsset.status === 'Failed' ? 'text-red-500' : 'text-green-500'} font-medium`}
               >
-                {primaryAsset.status}
+                {primaryAsset.thumnailUrl && primaryAsset.fileUrl && primaryAsset.status
+                  ? primaryAsset.status
+                  : 'Processing'}
               </p>
             </div>
             <div className='flex items-center justify-between flex-1'>

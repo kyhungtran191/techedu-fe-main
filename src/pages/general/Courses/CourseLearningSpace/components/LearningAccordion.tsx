@@ -39,12 +39,10 @@ export default function LearningAccordion() {
                   <span className='ml-5'>Resources</span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Billing</DropdownMenuItem>
-                  <DropdownMenuItem>Team</DropdownMenuItem>
-                  <DropdownMenuItem>Subscription</DropdownMenuItem>
+                  <DropdownMenuItem>Resource1.pptx</DropdownMenuItem>
+                  <DropdownMenuItem>Resource2.pptx</DropdownMenuItem>
+                  <DropdownMenuItem>Resource3.pptx</DropdownMenuItem>
+                  <DropdownMenuItem>Resource4.pptx</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

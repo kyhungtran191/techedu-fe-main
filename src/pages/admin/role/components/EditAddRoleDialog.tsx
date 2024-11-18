@@ -72,7 +72,6 @@ export default function EditAddRoleDialog({
       })
     }
   })
-  console.log('rerender')
   // Update Role
   const updateRoleMutation = useMutation({
     mutationFn: (roleData: RoleParams) => UpdateRole(roleData)

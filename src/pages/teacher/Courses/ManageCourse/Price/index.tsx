@@ -21,11 +21,11 @@ const concurrency = [
     value: 'usd',
     price: [9.99, 19.99, 29.99, 33.99, 49.99]
   },
-  {
-    name: 'VND',
-    value: 'vnd',
-    price: [199.0, 299.0, 399.0, 499.0]
-  }
+  // {
+  //   name: 'VND',
+  //   value: 'vnd',
+  //   price: [199.0, 299.0, 399.0, 499.0]
+  // }
 ]
 
 export default function Price() {
