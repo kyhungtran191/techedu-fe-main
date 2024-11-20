@@ -8,5 +8,5 @@ export const AUTH_API = {
 
   LOGOUT: `${BASE_URL}/logout`,
   REFRESH_TOKEN: `${URL}tokens/refresh`,
-  ME: ''
+  ME: `${URL}users/accounts/profile`
 }

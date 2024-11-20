@@ -7,23 +7,24 @@ import { UploadThumbnail } from '@/services/instructor/draft-course.service'
 import { FILE_CHUNK_SIZE } from '@/constants'
 import SectionLoading from '@/components/Loading/SectionLoading'
 import { UseFormSetValue } from 'react-hook-form'
+import { VideoLandingPageAsset } from '@/@types/instructor/course/landing-page'
 
 type TThumbnailUpload = {
   setValue: UseFormSetValue<{
     title: string
-    thumbnailFilePath: string
+    thumbnailFilePath?: string
     shortDescription: string
     language: string
     category: string
     subcategory: string
     level: string
     description: string
-    videoPromotionFilePath: string
   }>
+  thumbnailUrl?: string
 }
 
-export default function Thumbnail({ setValue }: TThumbnailUpload) {
-  const [previewThumbnailURL, setPreviewThumbnailURL] = useState<string | null>(null)
+export default function Thumbnail({ setValue, thumbnailUrl }: TThumbnailUpload) {
+  const [previewThumbnailURL, setPreviewThumbnailURL] = useState<string | null>(thumbnailUrl || null)
   const [file, setFile] = useState<File | null>(null)
   const [isLoading, setLoading] = useState(false)
   // Clear image

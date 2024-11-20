@@ -14,7 +14,7 @@ export const getMe = async () => {
   return await instanceAxios.get<ResponseData<User>>(AUTH_API.ME)
 }
 
-export const updateMe = async (body: any) => {
+export const updateMe = async (body: { firstName: string; lastName: string; headline: string; bio: string }) => {
   return await instanceAxios.put<ResponseData<User>>(AUTH_API.ME, body)
 }
 

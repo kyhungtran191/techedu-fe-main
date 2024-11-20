@@ -63,15 +63,16 @@ export default function Login() {
         const refreshTokenExpiryTime = data && (info?.data?.value?.refreshTokenExpiryTime as string)
         const exp = Math.floor(new Date(refreshTokenExpiryTime as string).getTime() / 1000)
         const dataDetail = jwtDecode(accessToken as string)
+        console.log(dataDetail)
         const { email, fullname, id, permissions, phoneNumber, roles } = dataDetail as any
         const roleData = JSON.parse(roles)
         const permissionData = JSON.parse(permissions)
         savePermissions(permissionData)
         saveAccessTokenToLS(accessToken)
         saveRefreshTokenToLS(refreshToken as string, exp)
-        saveUserToLS({ email, fullname, id, phoneNumber, roles: roleData })
+        saveUserToLS({ email, userId: id, phoneNumber, roles: roleData })
         setPermissions(permissionData)
-        setProfile({ email, fullname, id, phoneNumber, roles: roleData })
+        setProfile({ email, userId: id, phoneNumber, roles: roleData })
         setIsAuthenticated(true)
         toast.success('Login successfully!')
       }

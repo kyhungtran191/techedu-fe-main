@@ -1,11 +1,18 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useParams } from 'react-router-dom'
 import Logo from '@/assets/logo.png'
 import { Button } from '@/components/ui/button'
 import ClickOutside from '@/hooks/useClickOutside'
 import { Checkbox } from '@/components/ui/checkbox'
 import Navigate from '@/icons/Navigate'
+import { useMutation } from '@tanstack/react-query'
+import { SubmitReviewCourse } from '@/services/instructor/submit-course.service'
+import { toast } from 'react-toastify'
+import { formatErrorMessagesSubmitCourse } from '@/utils/course'
+import ErrorAlertDialog from '@/components/ErrorAlert'
+import SectionLoading from '@/components/Loading/SectionLoading'
 
 interface SidebarManageProps {
   sidebarOpen: boolean
@@ -18,8 +25,8 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
   const trigger = useRef<any>(null)
   const sidebar = useRef<any>(null)
   const { id } = useParams()
-
-  console.log(id)
+  const [errors, setErrors] = useState<Record<string, string[]> | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -41,10 +48,20 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
     return () => document.removeEventListener('keydown', keyHandler)
   })
 
+  if (!id) {
+    toast.error('No course id found !')
+    return
+  }
+
+  const submitCourseMutation = useMutation({
+    mutationFn: (_) => SubmitReviewCourse(id)
+  })
+
   type GroupOption = {
     link: string
     title: string
   }
+
   type sideBarOption = {
     parent?: string
     groupOptions: GroupOption[]
@@ -69,7 +86,7 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
       groupOptions: [
         {
           link: `/teacher/course/${id}/manage/overview`,
-          title: 'Intended learners'
+          title: 'Course overview'
         },
         {
           link: `/teacher/course/${id}/manage/course-messages`,
@@ -96,8 +113,26 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
     }
   ]
 
+  const handleSubmitCourse = () => {
+    submitCourseMutation.mutate(undefined, {
+      onSuccess(data) {
+        if (data?.data?.value?.courseValidationErrors) {
+          const errors = data?.data?.value?.courseValidationErrors
+          if (Object.keys(errors).length > 0) {
+            setErrors(errors)
+            setIsDialogOpen(true)
+          }
+        } else {
+          toast.success('Submit course for review successfully! Please wait the notification from system!')
+        }
+      }
+    })
+  }
+
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
+      {submitCourseMutation.isLoading && <SectionLoading className='z-30'></SectionLoading>}
+      {errors && <ErrorAlertDialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} errors={errors} />}
       <div
         className={`fixed inset-0 z-40 bg-black/40 ${sidebarOpen ? 'block' : 'hidden'} `}
         onClick={() => setSidebarOpen(false)}
@@ -163,7 +198,11 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
 
             {/* <!-- Others Group --> */}
           </nav>
-          <Button className='py-6 !rounded-lg px-[18px] text-base bg-neutral-silver-3' variant={'custom'} disabled>
+          <Button
+            className='py-6 !rounded-lg px-[18px] text-base bg-neutral-silver-3'
+            variant={'custom'}
+            onClick={handleSubmitCourse}
+          >
             Submit for review
           </Button>
           {/* <!-- Sidebar Menu --> */}

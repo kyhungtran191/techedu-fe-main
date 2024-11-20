@@ -38,13 +38,15 @@ export type PrimaryAsset = {
   isPrimary: boolean
 }
 
-type SupplementaryAssetItem = {
+export type SupplementaryAssetItem = {
+  id: number
   sectionItemId: number
   timeEstimation: number
   fileSize: number
   type: string
   status: string
   thumnailUrl: string
+  title?: string
   fileUrl: string
   contentSummary: string
   processingErrors: never[]

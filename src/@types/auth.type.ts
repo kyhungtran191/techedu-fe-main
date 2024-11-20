@@ -1,8 +1,13 @@
 export type User = {
   email: string
-  fullname: string
-  id: string
+  userId: string
   phoneNumber: string
+  firstName?: string
+  lastName?: string
+  avatar?: string
+  headline?: string
+  bio?: string
+  userStatus?: string
   roles: string[]
 }
 
