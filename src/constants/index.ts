@@ -4,4 +4,4 @@ export const USER_STATUS = {
   INACTIVE: 'Inactive',
   BANNED: 'Banned'
 }
-export const FILE_CHUNK_SIZE = 10 * 1024
+export const FILE_CHUNK_SIZE = 20 * 1024

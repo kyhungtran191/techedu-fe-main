@@ -9,6 +9,7 @@ import { PrimaryAsset } from '@/@types/instructor/course/curriculumn'
 import { getAssets, UpdateContentVideo } from '@/services/instructor/manage/curriculumn.service'
 import { FILE_CHUNK_SIZE } from '@/constants'
 import DraftVideo from '@/assets/placeholder.jpg'
+import { Link } from 'react-router-dom'
 interface IVideoContentSectionItem {
   isAddNewContent: boolean
   isAddFromLibrary: boolean
@@ -35,8 +36,11 @@ export default function VideoContent({
 
   const abortControllerRef = useRef<AbortController[]>([])
 
-  const uploadChunk = async (chunk: File, chunkIndex: number, totalChunks: number) => {
+  const uploadChunk = async (chunk: File, chunkIndex: number, totalChunks: number, fileId?: string) => {
     const formData = new FormData()
+    if (fileId) {
+      formData.append('fileId', fileId)
+    }
     formData.append('file', chunk)
     formData.append('chunkIndex', chunkIndex.toString())
     formData.append('totalChunks', totalChunks.toString())
@@ -58,13 +62,13 @@ export default function VideoContent({
     handleUpload()
   }, [file])
 
-
   const shouldRenderVideoUpload =
     isEdit || (isAddNewContent && !isLoading && !primaryAsset?.fileUrl && primaryAsset?.status == 'Initial')
 
   const handleUpload = async () => {
     if (!file) return
     const totalChunks = Math.ceil(file.size / FILE_CHUNK_SIZE)
+    let responseFileId = ''
     setIsLoading(true)
     if (totalChunks === 1) {
       await uploadChunk(file, 0, totalChunks)
@@ -87,11 +91,18 @@ export default function VideoContent({
         const start = chunkIndex * FILE_CHUNK_SIZE
         const end = Math.min(start + FILE_CHUNK_SIZE, file.size)
         const chunkBlob = file.slice(start, end)
-        const chunk = new File([chunkBlob], file.name, { type: file.type, lastModified: file.lastModified })
+        const chunk = new File([chunkBlob], file.name)
         const percentCompleted = Math.round((chunkIndex / totalChunks) * 100)
+
         setProgress(percentCompleted)
-        await uploadChunk(chunk, chunkIndex, totalChunks)
+        await uploadChunk(chunk, chunkIndex, totalChunks, responseFileId)
           .then(async (data) => {
+            console.log('Chunk index' + chunkIndex)
+            if (chunkIndex == 0) {
+              if (data && data?.data?.value && data?.data?.value?.fileId) {
+                responseFileId = data?.data?.value?.fileId
+              }
+            }
             if (chunkIndex === totalChunks - 1) {
               const res = await getAssets(courseId, sectionId, sectionItemId)
               if (res && res.data && res?.data?.value) {
@@ -111,8 +122,6 @@ export default function VideoContent({
     }
   }
 
-
-  
   return (
     <>
       {shouldRenderVideoUpload && (
@@ -213,7 +222,7 @@ export default function VideoContent({
         </div>
       )}
       {/* After uploading success*/}
-      {!isEdit && (primaryAsset?.status !== 'Initial' || primaryAsset?.fileUrl || primaryAsset?.thumnailUrl) && (
+      {!isEdit && (primaryAsset?.status == 'Processing' || primaryAsset?.fileUrl || primaryAsset?.thumnailUrl) && (
         <div>
           <div className='flex items-center mt-6'>
             <div className='flex items-center flex-1'>
@@ -222,10 +231,11 @@ export default function VideoContent({
                 alt=''
                 className='w-[100px] h-[80px] object-cover rounded-lg'
               />
+
               <h3 className='font-medium text-[18px] text-neutral-black ml-3'>{primaryAsset.title}</h3>
             </div>
 
-            <div className='flex items-center justify-between flex-1'>
+            <div className='flex items-center justify-center flex-1 '>
               <p
                 className={`text-[18px] ${primaryAsset.status === 'Failed' ? 'text-red-500' : 'text-green-500'} font-medium`}
               >
@@ -234,6 +244,11 @@ export default function VideoContent({
                   : 'Processing'}
               </p>
             </div>
+            {primaryAsset?.fileUrl && (
+              <Link to={primaryAsset?.fileUrl} className='mx-10 text-blue-500 underline'>
+                URL
+              </Link>
+            )}
             <div className='flex items-center justify-between flex-1'>
               <div
                 className='text-lg font-medium cursor-pointer text-primary-1'

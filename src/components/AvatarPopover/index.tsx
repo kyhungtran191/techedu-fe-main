@@ -1,4 +1,3 @@
-import React from 'react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Link, useNavigate } from 'react-router-dom'
@@ -12,7 +11,6 @@ import { Lock } from 'lucide-react'
 import { toast } from 'react-toastify'
 import { useMutation } from '@tanstack/react-query'
 import { logout } from '@/services/auth.services'
-import SectionLoading from '../Loading/SectionLoading'
 import GlobalLoading from '../Loading'
 export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?: boolean }) {
   const { isAuthenticated, setProfile, setIsAuthenticated, profile, setPermissions } = useAppContext()
@@ -45,7 +43,7 @@ export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?:
         <PopoverTrigger>
           <div className='flex items-center gap-x-2'>
             <Avatar>
-              <AvatarImage src='https://github.com/shadcn.png' />
+              <AvatarImage src={profile?.avatar || 'https://github.com/shadcn.png'} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             {isAvatarName && (
@@ -62,10 +60,15 @@ export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?:
           </div>
         </PopoverTrigger>
         <PopoverContent className='py-[18px] px-3 text-neutral-black max-w-[242px]' align='end'>
-          <div className='flex flex-col space-y-1'>
-            <p className='text-sm font-medium leading-none'>{profile?.fullname}</p>
+          <Link
+            to='/teacher/profile/basic-info'
+            className='flex flex-col px-3 py-2 space-y-1 rounded-lg hover:bg-neutral-100 '
+          >
+            <p className='text-sm font-medium leading-none'>
+              {profile?.firstName} {profile?.lastName}
+            </p>
             <p className='text-xs leading-none text-muted-foreground'>{profile?.email}</p>
-          </div>
+          </Link>
           <Separator className='my-3 bg-neutral-silver-3'></Separator>
           {profile && profile?.roles?.includes(BASIC_ROLE.CLIENT) ? (
             <div className='flex flex-col gap-y-6'>
@@ -77,9 +80,6 @@ export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?:
                 <div className='w-[22px] h-[22px] rounded-full bg-secondary-1 flex items-center justify-center text-white'>
                   2
                 </div>
-              </Link>
-              <Link to='' className=''>
-                Profile
               </Link>
             </div>
           ) : (

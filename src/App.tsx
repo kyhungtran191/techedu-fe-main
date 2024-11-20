@@ -3,7 +3,7 @@ import { Suspense, lazy } from 'react'
 // Partial - Layout
 import BlankLayout from './layouts/BlankLayout'
 import ClientMainLayout from './layouts/ClientMainLayout'
-import OurPlan from './components/BlankOptions/OurPlan'
+// import OurPlan from './components/BlankOptions/OurPlan'
 import Header from './layouts/BlankLayout/Header'
 import CreateCourseLayout from './layouts/TeacherLayout/CreateCourseLayout'
 import ManageCourseLayout from './layouts/ManageCourseLayout'
@@ -25,9 +25,12 @@ import PermissionsGuard from './guards/PermissionsGuard'
 import { APP_PERMISSIONS } from './constants/permissions'
 import NotFound from './pages/errors/NotFound'
 import Unauthorized from './pages/errors/Unauthorized'
+import { InstructorProfile } from './pages/teacher/main/profile'
 
 // Lazy loading for components
 const ResendEmail = lazy(() => import('./pages/general/resend-email'))
+const Photo = lazy(() => import('./pages/teacher/main/instructor-info/photo'))
+const BasicInfo = lazy(() => import('./pages/teacher/main/instructor-info/basic-info'))
 const ConfirmPassword = lazy(() => import('./pages/general/confirm-password'))
 const ConfirmEmail = lazy(() => import('./pages/general/confirm-email'))
 const ResetPassword = lazy(() => import('./pages/general/reset-password'))
@@ -174,6 +177,10 @@ function App() {
             }
           >
             <Route path='courses' element={<CourseManage />} />
+            <Route path='profile' element={<InstructorProfile></InstructorProfile>}>
+              <Route index path='basic-info' element={<BasicInfo />} />
+              <Route index path='photo' element={<Photo />} />
+            </Route>
           </Route>
 
           {/* Learning Space */}

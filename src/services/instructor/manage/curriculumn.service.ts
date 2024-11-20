@@ -31,10 +31,10 @@ export const CreateSection = async (courseId: string, title: string) => {
 export const AddLessonItem = async (type: string, title: string, courseId: string, sectionId: number) => {
   const path =
     type == COURSE_TYPE.ARTICLE
-      ? `${SECTION_ITEM_ASSETS}/article-assets`
+      ? `${SECTION_ITEM_ASSETS}article-assets`
       : type == COURSE_TYPE.VIDEO
-        ? `${SECTION_ITEM_ASSETS}/video-assets`
-        : `${SECTION_ITEM_ASSETS}/quiz-assets`
+        ? `${SECTION_ITEM_ASSETS}video-assets`
+        : `${SECTION_ITEM_ASSETS}quiz-assets`
   return await instanceAxios.post<ResponseData<AddLessonItemResult>>(path, {
     courseId,
     sectionId,
@@ -51,26 +51,12 @@ export const UpdateOrderSection = async (courseId: string, sectionItems: Section
   )
 }
 
-export const UpdateContentVideo = async (
-  formData: FormData,
-  options: {
-    signal?: AbortSignal
-    onUploadProgress?: (progressEvent: ProgressEvent) => void
-    additionalHeaders?: Record<string, string>
-  } = {}
-) => {
-  try {
-    return await instanceAxios.put(`${SECTION_ITEM_ASSETS}/video-assets/upload`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        ...(options.additionalHeaders || {})
-      },
-      signal: options.signal
-    })
-  } catch (error) {
-    console.error('Error in UpdateContentVideo:', error)
-    throw error
-  }
+export const UpdateContentVideo = async (formData: FormData) => {
+  return await instanceAxios.put(`${SECTION_ITEM_ASSETS}/video-assets/upload`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
 }
 
 export const getAssets = async (courseId: string, sectionId: number, sectionItemId: number) => {

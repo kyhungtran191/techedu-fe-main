@@ -8,8 +8,7 @@ import {
   savePermissions,
   saveUserToLS
 } from '@/utils/auth'
-import { Profile } from '@/@types/user.type'
-import { APP_PERMISSIONS } from '@/constants/permissions'
+
 import { User } from '@/@types/auth.type'
 import { GetMe } from '@/services/user.services'
 import { Role } from '@/@types/admin/role.type'
@@ -43,11 +42,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [profile, setProfile] = useState(initialAppContext.profile)
   const [permissions, setPermissions] = useState(initialAppContext.permissions || undefined)
 
-  // const { isLoading, data } = useQuery({
-  //   queryKey: ['profile'],
-  //   queryFn: Auth.profile,
-  //   enabled: !!isAuthenticated
-  // })
   const accessToken = getAccessTokenFromLS()
   const { data } = useQuery({
     queryKey: ['me', isAuthenticated],
@@ -56,20 +50,42 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     enabled: isAuthenticated && Boolean(accessToken),
     onSuccess: (data) => {
       if (data) {
-        const { email, firstName, lastName, avatar, roles, permissions, userId } = data
+        const {
+          email,
+          firstName,
+          lastName,
+          avatar,
+          roles,
+          permisisons,
+          userId,
+          userStatus,
+          phoneNumber,
+          bio,
+          headline
+        } = data
         saveUserToLS({
           email,
-          fullname: `${firstName} ${lastName}`,
-          id: userId,
-          phoneNumber: '',
+          firstName,
+          lastName,
+          avatar,
+          userStatus,
+          bio,
+          headline,
+          userId,
+          phoneNumber,
           roles: roles.map((item: Role) => item.name)
         })
-        savePermissions(permissions)
+        savePermissions(permisisons)
         setProfile({
           email,
-          fullname: `${firstName} ${lastName}`,
-          id: userId,
-          phoneNumber: '',
+          firstName,
+          lastName,
+          avatar,
+          userStatus,
+          bio,
+          headline,
+          userId,
+          phoneNumber,
           roles: roles.map((item: Role) => item.name)
         })
         setPermissions(permissions)

@@ -116,15 +116,15 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
       return response
     },
     (error) => {
-      if (error.response.status === 403) {
-        toast.error('Your account has been banned')
+      if (error.response.status === 403 || error.response.status === 401) {
+        toast.error(error.response.status === 401 ? 'Unauthorize ! Please Login again' : 'Your account has been banned')
         clearLS()
         setProfile(undefined)
         setIsAuthenticated(false)
         setPermissions(undefined)
         queryClient.clear()
         return navigate('/login')
-      } else if (error.response.status === 500) {
+      } else if (error.response.status === 405) {
         // do something for all 500 errors
       } else {
         // do something for all other error codes

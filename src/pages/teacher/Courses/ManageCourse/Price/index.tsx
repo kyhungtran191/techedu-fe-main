@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useEffect, useMemo, useState } from 'react'
 import SystemNotification from '../components/SystemNotification'
 import { Button } from '@/components/ui/button'
@@ -14,13 +15,18 @@ import {
 import Info from '@/icons/Info'
 import { formatPrice } from '@/utils'
 import CourseNote from '@/components/CourseNote'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { GetCoursePrice, UpdatePrice } from '@/services/instructor/manage/price.service'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import SectionLoading from '@/components/Loading/SectionLoading'
 
 const concurrency = [
   {
     name: 'USD',
     value: 'usd',
     price: [9.99, 19.99, 29.99, 33.99, 49.99]
-  },
+  }
   // {
   //   name: 'VND',
   //   value: 'vnd',
@@ -29,6 +35,11 @@ const concurrency = [
 ]
 
 export default function Price() {
+  const { id } = useParams()
+  if (!id) {
+    toast.error('ID Course Not Found !')
+    return
+  }
   const [currentCurrency, setCurrentCurrency] = useState<{ currency: string | undefined; price: number | undefined }>({
     currency: '',
     price: undefined
@@ -39,9 +50,48 @@ export default function Price() {
     return concurrency.find((item) => item.value === currentCurrency.currency)?.price
   }, [currentCurrency.currency])
 
+  const UpdatePriceMutation = useMutation({
+    mutationFn: (data: { amount: number; currency: string }) => UpdatePrice(id, data)
+  })
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['course-price', id],
+    enabled: Boolean(id),
+    queryFn: () => GetCoursePrice(id),
+    select: (data) => data.data.value,
+    onSuccess(data) {
+      if (data) {
+        setCurrentCurrency({
+          currency: data.currency.toLowerCase(),
+          price: data.amount
+        })
+      }
+    }
+  })
+
+  const submitPrice = () => {
+    if (currentCurrency.currency && currentCurrency.price) {
+      UpdatePriceMutation.mutate(
+        {
+          amount: currentCurrency.price,
+          currency: currentCurrency.currency.toUpperCase()
+        },
+        {
+          onSuccess() {
+            toast.success('Update Course Price Successfully!')
+          },
+          onError(err) {
+            console.log(err)
+          }
+        }
+      )
+    }
+  }
+
   return (
     <div className='flex flex-col h-full'>
       <SystemNotification></SystemNotification>
+      {(UpdatePriceMutation.isLoading || isLoading) && <SectionLoading></SectionLoading>}
       <div className='flex-grow p-6 mt-4 overflow-y-auto bg-white rounded-xl no-scrollbar text-neutral-black'>
         <div className='flex items-start bg-[#FFF5CC] p-3 text-neutral-black font-medium mb-6'>
           <svg
@@ -80,6 +130,7 @@ export default function Price() {
             <div className='flex flex-col'>
               <div className='mb-[18px] text-xl font-bold'>Currency</div>
               <Select
+                value={currentCurrency.currency || ''}
                 onValueChange={(value) => {
                   setCurrentCurrency({ currency: value, price: undefined })
                 }}
@@ -104,7 +155,10 @@ export default function Price() {
                 <span>Price Tier</span>
                 <Info className='ml-[18px] text-primary-1'></Info>
               </div>
-              <Select onValueChange={(value) => setCurrentCurrency((prev) => ({ ...prev, price: Number(value) }))}>
+              <Select
+                value={currentCurrency.price?.toString() || undefined}
+                onValueChange={(value) => setCurrentCurrency((prev) => ({ ...prev, price: Number(value) }))}
+              >
                 <SelectTrigger className='focus:outline-primary-1 w-[306px] !py-[30px] px-[18px]  rounded-lg border-neutral-black text-neutral-black text-base'>
                   <SelectValue placeholder='Choose a price' />
                 </SelectTrigger>
@@ -126,7 +180,12 @@ export default function Price() {
             If you’d like to offer your course is free , it must have a total video length of less 2 hours. Also,
             courses with practice tests can not be free.
           </CourseNote>
-          <Button className='w-[250px] py-7' variant={'custom'} disabled={!currentCurrency.currency || !currentCurrency.price}>
+          <Button
+            className='w-[250px] py-7'
+            variant={'custom'}
+            onClick={submitPrice}
+            disabled={!currentCurrency.currency || !currentCurrency.price}
+          >
             Save
           </Button>
         </div>

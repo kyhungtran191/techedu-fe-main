@@ -2,27 +2,22 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Navigate from '@/icons/Navigate'
 import Drag from '@/icons/Drag'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+
 // Shadcnui import
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 import ThreeDots from '@/icons/ThreeDots'
 import PlayBtn from '@/icons/CourseDetail/PlayBtn'
 import Document from '@/icons/CourseDetail/Document2'
 import { Button } from '@/components/ui/button'
 import { Plus, Search } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import VideoUpload from '../VideoUpload'
-import axios, { CancelTokenSource } from 'axios'
-import UploadStatus from '../VideoUpload/UploadStatus'
-import Tiptap from '@/components/TipTap'
 
-import * as yup from 'yup'
-import { Controller, useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import FileDropUpload from '@/components/FileUploads'
-import { PrimaryAsset, SectionItem, TSectionCurriculum } from '@/@types/instructor/course/curriculumn'
+import {
+  PrimaryAsset,
+  SectionItem,
+  SupplementaryAssetItem,
+  TSectionCurriculum
+} from '@/@types/instructor/course/curriculumn'
 import { COURSE_TYPE } from '@/constants/course'
 import VideoContent from './VideoContent'
 import ArticleContent from './ArticleContent'
@@ -30,7 +25,7 @@ import ResourcesUpload from './ResourcesUpload'
 import Close from '@/icons/Close'
 import DescriptionContent from './DescriptionContent'
 import { useMutation } from '@tanstack/react-query'
-import { DeleteSectionItem } from '@/services/instructor/manage/curriculumn.service'
+import { DeleteAsset, DeleteSectionItem } from '@/services/instructor/manage/curriculumn.service'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,7 +41,8 @@ import { useHandleOrderSectionItemMutation } from '@/mutations/useHandleOrderSec
 import { handleFormatReorderCurriculum } from '@/utils/course'
 import { toast } from 'react-toastify'
 import SectionLoading from '@/components/Loading/SectionLoading'
-import GlobalLoading from '@/components/Loading'
+import Swal from 'sweetalert2'
+import 'sweetalert2/src/sweetalert2.scss'
 
 type TLesson = {
   items: SectionItem
@@ -68,6 +64,9 @@ export default function Lesson({ courseId, items, sections, updateSection }: TLe
 
   const handleUpdatePrimaryAsset = (updatedAsset: PrimaryAsset) =>
     setSectionItem({ ...sectionItem, primaryAsset: updatedAsset })
+
+  const handleUpdateSupplementAssets = (updatedAsset: SupplementaryAssetItem[]) =>
+    setSectionItem({ ...sectionItem, supplementaryAssets: updatedAsset })
 
   const deleteSectionItemMutation = useMutation({
     mutationFn: (_) => DeleteSectionItem(courseId, sectionItem.sectionId, sectionItem.id)
@@ -102,6 +101,41 @@ export default function Lesson({ courseId, items, sections, updateSection }: TLe
     })
   }
 
+  const deleteAssetMutation = useMutation({
+    mutationFn: (id: number) => DeleteAsset(courseId, items?.sectionId, items?.id, id)
+  })
+
+  // const handleOnDelete
+  const handleOnDeleteAsset = (id: number) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await DeleteAsset(courseId, items?.sectionId, items?.id, id)
+          .then(() => {
+            setSectionItem((prev) => {
+              const newSectionsItem = { ...prev }
+              newSectionsItem.supplementaryAssets = newSectionsItem.supplementaryAssets.filter((item) => item.id != id)
+              return newSectionsItem
+            })
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'Your file has been deleted.',
+              icon: 'success'
+            })
+          })
+          .catch((err) => {
+            toast.error('Something wrong when delete ' + err)
+          })
+      }
+    })
+  }
   return (
     <>
       <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
@@ -149,7 +183,7 @@ export default function Lesson({ courseId, items, sections, updateSection }: TLe
             </Button>
           )} */}
 
-            {sectionItem?.primaryAsset.type == COURSE_TYPE.VIDEO && !sectionItem?.primaryAsset.fileUrl && (
+            {sectionItem?.primaryAsset?.type == COURSE_TYPE.VIDEO && !sectionItem?.primaryAsset.fileUrl && (
               <Button
                 className={`${!isAddNewContent ? 'flex' : 'hidden'} items-center border-neutral-black px-[18px] rounded-lg bg-transparent`}
                 variant={'outline'}
@@ -160,7 +194,7 @@ export default function Lesson({ courseId, items, sections, updateSection }: TLe
               </Button>
             )}
 
-            {sectionItem?.primaryAsset.type == COURSE_TYPE.ARTICLE && !sectionItem?.primaryAsset.body && (
+            {sectionItem?.primaryAsset?.type == COURSE_TYPE.ARTICLE && !sectionItem?.primaryAsset.body && (
               <Button
                 className={`${!isAddNewContent ? 'flex' : 'hidden'} items-center border-neutral-black px-[18px] rounded-lg bg-transparent`}
                 variant={'outline'}
@@ -193,7 +227,7 @@ export default function Lesson({ courseId, items, sections, updateSection }: TLe
         <div
           className={`transition-all duration-300 ease-in-out overflow-hidden ${isAddNewContent ? 'h-auto py-6' : 'h-0 p-0'}`}
         >
-          {sectionItem?.primaryAsset.type == COURSE_TYPE.VIDEO ? (
+          {sectionItem?.primaryAsset?.type == COURSE_TYPE.VIDEO ? (
             <VideoContent
               onUpdatePrimaryAsset={handleUpdatePrimaryAsset}
               setIsAddNewContent={setIsAddNewContent}
@@ -204,7 +238,7 @@ export default function Lesson({ courseId, items, sections, updateSection }: TLe
               isAddNewContent={isAddNewContent}
               primaryAsset={sectionItem.primaryAsset}
             ></VideoContent>
-          ) : sectionItem?.primaryAsset.type == COURSE_TYPE.ARTICLE ? (
+          ) : (
             <ArticleContent
               onUpdatePrimaryAsset={handleUpdatePrimaryAsset}
               setIsAddNewContent={setIsAddNewContent}
@@ -214,8 +248,6 @@ export default function Lesson({ courseId, items, sections, updateSection }: TLe
               isAddNewContent={isAddNewContent}
               primaryAsset={sectionItem?.primaryAsset}
             ></ArticleContent>
-          ) : (
-            <div>Quiz</div>
           )}
 
           <div className=''>
@@ -230,15 +262,18 @@ export default function Lesson({ courseId, items, sections, updateSection }: TLe
               courseId={courseId}
               sectionId={sectionItem.sectionId}
               sectionItemId={sectionItem.id}
+              handleUpdateSupplementAssets={handleUpdateSupplementAssets}
             ></ResourcesUpload>
           </div>
 
-          <div className='flex flex-col gap-3 my-6 justify-item'>
+          <div className='flex flex-col gap-3 my-6 cursor-auto justify-item'>
             <h2 className='font-semibold'>Material Resources</h2>
-            <div className='flex items-end text-base font-medium '>
-              Resources1.pptx
-              <Close className='w-5 h-5 ml-3 cursor-pointer'></Close>
-            </div>
+            {sectionItem.supplementaryAssets.map((item) => (
+              <div className='flex items-end text-base font-medium '>
+                <div>{item?.title}</div>
+                <Close className='w-5 h-5 ml-3 cursor-pointer' onClick={() => handleOnDeleteAsset(item.id)}></Close>
+              </div>
+            ))}
           </div>
         </div>
       </div>
