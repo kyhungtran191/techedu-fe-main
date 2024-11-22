@@ -10,7 +10,7 @@ export default function CourseSection({ children }: { children?: React.ReactNode
   const [isAtEnd, setIsAtEnd] = useState(false)
   const swiperRef = useRef<SwiperType | null>(null)
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['for-you-courses'],
     queryFn: () => GetForYouCourses(),
     select: (data) => data.data.value
@@ -22,9 +22,8 @@ export default function CourseSection({ children }: { children?: React.ReactNode
         {<div className='text-2xl font-bold text-neutral-black'>For you</div>}
         <NavigationButton swiperRef={swiperRef} isAtStart={isAtStart} isAtEnd={isAtEnd} />
       </div>
-      <Suspense fallback={<CourseListSkeleton></CourseListSkeleton>}>
-        <CourseList courses={data || []} swiperRef={swiperRef} setIsAtStart={setIsAtStart} setIsAtEnd={setIsAtEnd} />
-      </Suspense>
+      {isLoading && <CourseListSkeleton></CourseListSkeleton>}
+      <CourseList courses={data || []} swiperRef={swiperRef} setIsAtStart={setIsAtStart} setIsAtEnd={setIsAtEnd} />
     </div>
   )
 }

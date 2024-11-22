@@ -1,5 +1,6 @@
 import { string } from 'yup'
 import { CategoryAll, SubCategory } from '../category.type'
+import { TSectionCurriculum } from '../instructor/course/curriculumn'
 
 export type PrivateCourseQueryParams = {
   searchTerm?: string
@@ -43,16 +44,18 @@ export type ResponsePrivateCourseDetail = {
   courseId: string //check
   courseLandingPage: CourseLandingPage
   price: Price //check
-  courseOverView: CourseOverview 
+  courseOverview: CourseOverview
   instructor: Instructor //check
   totalResources: number //check
   totalVieoDuration: string // check
   totalSectionItems: number //check
   courseStatus: string //check
+  totalEnrolled?: string
   welcomeMessage: string
   congratulationMessage: string
   createdDatetime: string
   updatedDatetime: string
+  sections?: TSectionCurriculum[]
 }
 
 type Price = {

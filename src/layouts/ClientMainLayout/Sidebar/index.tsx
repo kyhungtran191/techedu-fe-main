@@ -8,6 +8,10 @@ import Navigate from '@/icons/Navigate'
 import CourseItem from '@/assets/course.png'
 import ClickOutside from '@/hooks/useClickOutside'
 import { ChevronsLeft } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { GetSimilarityCourse } from '@/services/publish-course'
+import SectionLoading from '@/components/Loading/SectionLoading'
+import { PublicCourse } from '@/@types/public-course.type'
 
 interface SidebarProps {
   sidebarOpen: boolean
@@ -139,8 +143,21 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   const isCourseLearningDetail = /\/courses\/\d+\/learn\/\d+/.test(pathname)
 
+  const courseCardLocationState = useLocation()
+  const state = courseCardLocationState.state
+  console.log('state', state)
+
   // Nếu không phải trang học tập, nhưng là trang chi tiết khóa học
   const isCourseDetail = !isCourseLearningDetail && /\/courses\/\d+/.test(pathname)
+
+  const { data: similarityData, isLoading: similarityLoading } = useQuery({
+    queryKey: ['get-similarity', isCourseDetail, state?.courseId, state?.instructorId],
+    queryFn: () => GetSimilarityCourse(state?.courseId, state?.instructorId),
+    enabled: Boolean(state?.courseId && state?.instructorId && isCourseDetail),
+    select: (data) => data.data.value
+  })
+
+  console.log('SimilaryData', similarityData)
 
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
@@ -248,25 +265,33 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             </Link>
             <div className='my-6'>
               <span className='text-neutral-silver-3'>Course</span>
-              <h3 className='mt-2 text-xl font-bold text-neutral-black'>Rapid prototyping in the Chrome Browser </h3>
-            </div>
-            <div>
-              <h3 className='text-2xl font-medium text-neutral-black'>
-                {isCourseDetail ? 'Similar courses' : 'My Courses'}
+              <h3 className='mt-2 text-xl font-bold text-neutral-black'>
+                {state?.courseName || 'Rapid prototyping in the Chrome Browser'}{' '}
               </h3>
-              {/* Course Card */}
-              {Array(5)
-                .fill(0)
-                .map((item) => (
-                  <div className='flex items-start my-6 gap-x-3'>
-                    <img src={CourseItem} alt='' className='w-[45px] h-[45px] object-cover rounded-2xl' />
-                    <div className='text-neutral-black'>
-                      <h3 className='text-[18px] font-medium line-clamp-1 text-ellipsis'>Lean UX</h3>
-                      <div className='text-sm font-light'>Amber Oralie</div>
-                    </div>
-                  </div>
-                ))}
             </div>
+            {similarityLoading && <SectionLoading className='z-99999'></SectionLoading>}
+            {isCourseDetail && state?.courseId && (similarityData as PublicCourse[])?.length > 0 && (
+              <div className='min-h-[200px] relative'>
+                <h3 className='text-2xl font-medium text-neutral-black'>Similar courses</h3>
+                {/* Course Card */}
+                {similarityData &&
+                  similarityData.map((item) => (
+                    <div className='flex items-start p-2 my-6 rounded-lg cursor-pointer gap-x-3 hover:bg-slate-50'>
+                      <img
+                        src={item?.courseThumbnailUrl}
+                        alt=''
+                        className='w-[45px] h-[45px] object-cover rounded-2xl'
+                      />
+                      <div className='text-neutral-black'>
+                        <h3 className='text-[18px] font-medium line-clamp-1 text-ellipsis'>
+                          {(item as any).courseName}
+                        </h3>
+                        <div className='text-sm font-light'>{item?.instructorName}</div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
         )}
       </aside>

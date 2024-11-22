@@ -6,6 +6,7 @@ export type PublicCourse = {
   level: string
   courseThumbnailUrl: string
   rating: number
+  instructorName: string
   viewers: number
   price: {
     currency: string
