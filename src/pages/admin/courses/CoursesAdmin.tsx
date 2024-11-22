@@ -19,6 +19,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import PaginationCustom from '@/components/Pagination'
 import { useNavigate } from 'react-router-dom'
 import AvatarPopover from '@/components/AvatarPopover'
+import { PrivateCourse, PrivateCourseQueryConfig, PrivateCourseQueryParams } from '@/@types/admin/courses.type'
+import useParamsVariables from '@/hooks/useParamsVariable'
+import { isUndefined, omitBy } from 'lodash'
+import { ApproveCourse, GetAllPrivateCourses, RejectCourse } from '@/services/admin/private-course.service'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { formatSystemDate } from '@/utils'
+import SectionLoading from '@/components/Loading/SectionLoading'
+import { COURSE_STATUS } from '@/constants/course'
+import SearchInput from '../components/Search'
+import FilterCourseStatus from './components/FilterCourseStatus'
+import FilterCourseLevel from './components/FilterCourseLevel'
+import Swal from 'sweetalert2'
+import { toast } from 'react-toastify'
+import { useState } from 'react'
 
 type ITypeCourseTable = {
   _id: string
@@ -31,51 +45,99 @@ type ITypeCourseTable = {
   createdAt: string
 }
 
-const mockData: ITypeCourseTable[] = [
-  {
-    _id: '1',
-    thumbnail: 'https://kyhungtran191.github.io/elearning-temp/assets/images/courses/4by3/09.jpg',
-    courseName: 'JavaScript: Full Understanding',
-    instructorName: 'Billy Vasquez',
-    instructorAvatar: 'https://kyhungtran191.github.io/elearning-temp/assets/images/avatar/04.jpg',
-    level: 'Beginner',
-    status: 0,
-    createdAt: new Date().toLocaleDateString('vi-VN')
-  },
-  {
-    _id: '2',
-    thumbnail: 'https://kyhungtran191.github.io/elearning-temp/assets/images/courses/4by3/09.jpg',
-    courseName: 'JavaScript: Full Understanding',
-    instructorName: 'Billy Vasquez',
-    instructorAvatar: 'https://kyhungtran191.github.io/elearning-temp/assets/images/avatar/04.jpg',
-    level: 'All level',
-    status: 1,
-    createdAt: new Date().toLocaleDateString('vi-VN')
-  },
-  {
-    _id: '3',
-    thumbnail: 'https://kyhungtran191.github.io/elearning-temp/assets/images/courses/4by3/09.jpg',
-    courseName: 'JavaScript: Full Understanding',
-    instructorName: 'Frances Guerrero',
-    instructorAvatar: 'https://kyhungtran191.github.io/elearning-temp/assets/images/avatar/04.jpg',
-    level: 'Beginner',
-    status: 2,
-    createdAt: new Date().toLocaleDateString('vi-VN')
-  },
-  {
-    _id: '4',
-    thumbnail: 'https://kyhungtran191.github.io/elearning-temp/assets/images/courses/4by3/09.jpg',
-    courseName: 'JavaScript: Full Understanding',
-    instructorName: 'Samuel Bishop',
-    instructorAvatar: 'https://kyhungtran191.github.io/elearning-temp/assets/images/avatar/04.jpg',
-    level: 'Intermediate',
-    status: 2,
-    createdAt: new Date().toLocaleDateString('vi-VN')
-  }
-]
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 
+import * as yup from 'yup'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { Textarea } from '@/components/ui/textarea'
+const schema = yup
+  .object({
+    reason: yup.string().required('Reason is required')
+  })
+  .required()
 export default function CoursesAdmin() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const queryParams: PrivateCourseQueryParams = useParamsVariables()
+  const queryConfig: PrivateCourseQueryConfig = omitBy(
+    {
+      pageIndex: queryParams.pageIndex || '1',
+      pageSize: queryParams.pageSize || '8',
+      courseStatus: queryParams.courseStatus,
+      searchTerm: queryParams.searchTerm,
+      level: queryParams.level
+    },
+    isUndefined
+  )
+  const [rejectDialog, setRejectDialog] = useState<{ courseId: string; instructorId: string } | null>(null)
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ['private-courses', queryConfig],
+    queryFn: () => GetAllPrivateCourses(queryConfig),
+    select: (res) => res?.data?.value
+  })
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm({
+    resolver: yupResolver(schema)
+  })
+
+  const handleNavigateViewDraftCourse = (courseId: string | number, instructorId: string | number) => {
+    navigate('/preview-draft-course', {
+      state: { courseId, instructorId }
+    })
+  }
+
+  const approveCourseMutation = useMutation({
+    mutationFn: ({ courseId, instructorId }: { courseId: string; instructorId: string }) =>
+      ApproveCourse(courseId, instructorId)
+  })
+
+  const rejectMutation = useMutation({
+    mutationFn: ({ courseId, instructorId, reason }: { courseId: string; instructorId: string; reason: string }) =>
+      RejectCourse(courseId, { userId: instructorId, reason })
+  })
+
+  const handleApprove = (courseId: string, instructorId: string) => {
+    Swal.fire({
+      title: 'Confirm Approve Course?',
+      text: 'Please confirm again to approve',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#588E58',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, approve it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        approveCourseMutation.mutate(
+          { courseId, instructorId },
+          {
+            onSuccess() {
+              toast.success('Approve course successfully!')
+              queryClient.invalidateQueries(['private-courses', queryConfig])
+              reset
+            },
+            onError(err: any) {
+              toast.error('Error when reject course', err)
+            }
+          }
+        )
+      }
+    })
+  }
 
   const columns = [
     {
@@ -84,8 +146,9 @@ export default function CoursesAdmin() {
       cell: ({ row }: { row: any }) => {
         return (
           <img
-            src={row.original.thumbnail}
-            alt={row.original.name}
+            src={row.original.thumbnailUrl}
+            alt={row.original.title}
+            loading='lazy'
             className='font-semibold w-[100px] h-[70px] object-cover mx-auto'
           />
         )
@@ -98,7 +161,7 @@ export default function CoursesAdmin() {
       id: 'courseName',
       header: () => <p className=''>Course Name</p>,
       cell: ({ row }: { row: any }) => {
-        return <p className='font-medium'>{row.original.courseName}</p>
+        return <p className='font-medium'>{row.original.title}</p>
       },
       enableSorting: false,
       enableHiding: false
@@ -110,11 +173,13 @@ export default function CoursesAdmin() {
         return (
           <div className='flex items-center justify-center'>
             <img
-              src={row.original.instructorAvatar}
+              src={row.original.instructor.avatarUrl}
               alt={''}
               className='flex-shrink-0 object-cover w-10 h-10 mr-1 rounded-full'
             />
-            <div className='w-[120px]'>{row.original.instructorName}</div>
+            <div className='w-[120px]'>
+              {row.original.instructor.firstName} {row.original.instructor.lastName}
+            </div>
           </div>
         )
       },
@@ -125,7 +190,7 @@ export default function CoursesAdmin() {
       id: 'created_date',
       header: () => <p className=''>Created date</p>,
       cell: ({ row }: { row: any }) => {
-        return <p className='font-medium'>{row.original.createdAt}</p>
+        return <p className='font-medium'>{formatSystemDate(row.original.createdDateTime)}</p>
       },
       enableSorting: false,
       enableHiding: false
@@ -145,17 +210,27 @@ export default function CoursesAdmin() {
       cell: ({ row }: { row: any }) => {
         return (
           <p
-            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == 0 ? 'bg-transparent text-neutral-black' : row.original.status == 1 ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-black'}`}
+            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == COURSE_STATUS.REJECT ? 'bg-red-500 text-white' : row.original.status == COURSE_STATUS.PUBLISH ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-white'}`}
           >
-            {row.original.status == 0 ? (
+            {row.original.status == COURSE_STATUS.REVIEW ? (
               <div className='flex items-center gap-x-2'>
-                <Button variant={'custom'}>Approve</Button>
-                <Button className='text-white bg-red-500 hover:bg-red-600'>Reject</Button>
+                <Button
+                  variant={'custom'}
+                  onClick={() => handleApprove(row.original.id, row.original.instructor.userId)}
+                >
+                  Approve
+                </Button>
+                <Button
+                  className='text-white bg-red-500 hover:bg-red-600'
+                  onClick={() =>
+                    setRejectDialog({ courseId: row.original.id, instructorId: row.original.instructor.userId })
+                  }
+                >
+                  Reject
+                </Button>
               </div>
-            ) : row.original.status == 1 ? (
-              'Published'
             ) : (
-              'Pending'
+              row.original.status
             )}
           </p>
         )
@@ -177,19 +252,19 @@ export default function CoursesAdmin() {
                 <ThreeDots></ThreeDots>
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end' className='rounded-xl min-w-[160px] py-2'>
-                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
+                <DropdownMenuItem
+                  className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                  onClick={() => handleNavigateViewDraftCourse(row.original.id, row.original.instructor.userId)}
+                >
                   Preview course as Student
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
                   onClick={() => {
-                    navigate('/admin/courses/1')
+                    navigate(`/admin/courses/${row.original.id}/${row.original.instructor.userId}`)
                   }}
                 >
                   View course detail
-                </DropdownMenuItem>
-                <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                  Disable
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -202,13 +277,66 @@ export default function CoursesAdmin() {
   ]
 
   const courseTable = useReactTable({
-    data: mockData,
+    data: (data?.items as any[]) || [],
     columns,
     getCoreRowModel: getCoreRowModel()
   })
 
+  const onSubmit = ({ reason }: { reason: string }) => {
+    if (rejectDialog?.courseId && rejectDialog.instructorId) {
+      rejectMutation.mutate(
+        { courseId: rejectDialog?.courseId, instructorId: rejectDialog?.instructorId, reason },
+        {
+          onSuccess() {
+            toast.success('Reject this course successfully!')
+            queryClient.invalidateQueries(['private-courses', queryConfig])
+            setRejectDialog(null)
+            reset({
+              reason: ''
+            })
+          }
+        }
+      )
+    } else {
+      toast.error('Not found courseId or instructorId')
+    }
+  }
+
   return (
     <Layout>
+      <Dialog
+        open={Boolean(rejectDialog?.courseId && rejectDialog.instructorId)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setRejectDialog(null)
+          }
+        }}
+      >
+        <DialogContent className='sm:max-w-[425px]'>
+          {rejectMutation.isLoading && <SectionLoading className='z-30'></SectionLoading>}
+          <DialogHeader>
+            <DialogTitle>Reason Reject this course</DialogTitle>
+            <DialogDescription>Please give the reason why you reject this courses</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className='grid gap-4 py-4'>
+              <Label htmlFor='reason' className='text-left'>
+                Reason Reject
+              </Label>
+              <Textarea
+                id='reason'
+                placeholder='Write here'
+                {...register('reason')} // Đăng ký trường name với react-hook-form
+                className='col-span-3'
+              />
+              {errors.reason && <span className='text-sm text-red-500'>{errors.reason.message}</span>}
+            </div>
+            <DialogFooter>
+              <Button type='submit'>Save</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
       <Layout.Header>
         <div className='flex items-center ml-auto space-x-4'>
           <AvatarPopover />
@@ -290,102 +418,62 @@ export default function CoursesAdmin() {
             </CardContent>
           </Card>
         </div>
-        <div className='grid gap-2 mt-4 xl:grid-cols-2'>
-          <div className='py-1 px-2 bg-white rounded-xl flex items-center gap-x-[10px] flex-1 max-w[50vw] border '>
-            <Search className='flex-shrink-0 w-4 h-4 '></Search>
-            <Input
-              className='px-0 py-0 text-sm bg-transparent border-none outline-none md:text-base '
-              placeholder='Search your courses'
-            ></Input>
-          </div>
+        <div className='grid items-center gap-2 mt-4 xl:grid-cols-2'>
+          <SearchInput queryConfig={queryConfig} path='/admin/courses' placeholder='Search in courses'></SearchInput>
           <div className='grid items-center grid-cols-2 gap-2 md:grid-cols-3'>
-            <Select>
-              <SelectTrigger className='font-medium rounded-lg text-neutral-black'>
-                <SelectValue placeholder='Sort by' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup className='text-base'>
-                  <SelectLabel></SelectLabel>
-                  <SelectItem value='popular'>Popular</SelectItem>
-                  <SelectItem value='highest-rated'>Highest rated</SelectItem>
-                  <SelectItem value='newest'>Newest</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-
+            <FilterCourseStatus path='/admin/courses' queryConfig={queryConfig}></FilterCourseStatus>
             {/* 2 */}
-            <Select>
-              <SelectTrigger className='font-medium rounded-lg text-neutral-black'>
-                <SelectValue placeholder='Sort by' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup className='text-base'>
-                  <SelectLabel></SelectLabel>
-                  <SelectItem value='popular'>Popular</SelectItem>
-                  <SelectItem value='highest-rated'>Highest rated</SelectItem>
-                  <SelectItem value='newest'>Newest</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-
-            <Select>
-              <SelectTrigger className='font-medium rounded-lg text-neutral-black'>
-                <SelectValue placeholder='Sort by' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup className='text-base'>
-                  <SelectLabel></SelectLabel>
-                  <SelectItem value='popular'>Popular</SelectItem>
-                  <SelectItem value='highest-rated'>Highest rated</SelectItem>
-                  <SelectItem value='newest'>Newest</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <FilterCourseLevel path='/admin/courses' queryConfig={queryConfig}></FilterCourseLevel>
           </div>
         </div>
-        <div className='mt-5 w-full overflow-auto h-[500px] rounded-lg no-scrollbar'>
-          <Table className='w-full h-full overflow-auto'>
-            <TableHeader className='sticky top-0 z-20 py-4 bg-white border-b tb:-top-3'>
-              {courseTable.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} className='font-bold text-center'>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
+        {approveCourseMutation.isLoading && <SectionLoading className='z-30'></SectionLoading>}
 
-            <TableBody className='h-[50px] overflow-y-auto'>
-              {courseTable?.getRowModel()?.rows?.length ? (
-                courseTable?.getRowModel()?.rows?.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    className={`cursor-pointer text-center border-none`}
-                    onClick={() => {
-                      // setSelectedRow(row.original)
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                    ))}
+        <div className='mt-5 w-full overflow-auto h-[500px] rounded-lg no-scrollbar'>
+          {!isLoading && (
+            <Table className='w-full h-full overflow-auto'>
+              <TableHeader className='sticky top-0 z-20 py-4 bg-white border-b tb:-top-3'>
+                {courseTable.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id} className='font-bold text-center'>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      )
+                    })}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns?.length} className='h-24 text-center '>
-                    {/* Loading section */}
-                    {/* <ComponentsLoading></ComponentsLoading> */}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableHeader>
+
+              <TableBody className='h-[50px] overflow-y-auto'>
+                {courseTable?.getRowModel()?.rows?.length ? (
+                  courseTable?.getRowModel()?.rows?.map((row) => (
+                    <TableRow key={row.id} className={`cursor-pointer text-center border-none`} onClick={() => {}}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns?.length} className='h-24 text-center'>
+                      No data
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
         </div>
-        <PaginationCustom totalPage={10} className='mt-3'></PaginationCustom>
+        {data?.items && data?.items?.length > 0 && (
+          <PaginationCustom
+            totalPage={data?.totalPage as number}
+            path='/admin/courses'
+            className='mt-3'
+          ></PaginationCustom>
+        )}
       </Layout.Body>
     </Layout>
   )

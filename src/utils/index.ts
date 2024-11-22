@@ -1,6 +1,7 @@
 import { Role } from '@/@types/admin/role.type'
 import moment from 'moment'
-
+import JSZip from 'jszip'
+import { saveAs } from 'file-saver'
 export const formatPathToTitle = (path: string, last = false): string => {
   // Remove leading and trailing slashes
   path = path.replace(/^\/|\/$/g, '')
@@ -43,7 +44,7 @@ export function formatCounterNumber(value: number): {
   } else {
     return {
       number: value,
-      text: '' // Trả về chuỗi rỗng nếu chưa vượt quá ngưỡng
+      text: ''
     }
   }
 }
@@ -64,4 +65,33 @@ export function formatRolesDisplay(roles: Role[]) {
 
 export function formatSystemDate(value: string) {
   return moment(value).format('DD/MM/YYYY')
+}
+
+export const createZipFromFile = async (filePath: string) => {
+  try {
+    const zip = new JSZip()
+
+    const fileName = filePath.split('/').pop()
+
+    const response = await fetch(filePath)
+    const blob = await response.blob()
+
+    zip.file(fileName as string, blob)
+
+    const zipContent = await zip.generateAsync({ type: 'blob' })
+
+    saveAs(zipContent, `${fileName}.zip`)
+  } catch (error) {
+    console.error('Error when create zip', error)
+  }
+}
+
+export function formatSecondsToTime(seconds: number) {
+  const totalSeconds = Math.max(0, Math.floor(seconds))
+
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const secs = totalSeconds % 60
+
+  return [String(hours).padStart(2, '0'), String(minutes).padStart(2, '0'), String(secs).padStart(2, '0')].join(':')
 }

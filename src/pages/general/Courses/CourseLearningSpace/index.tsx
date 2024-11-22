@@ -20,48 +20,35 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import ListContent from './components/ListContent'
+import { SectionItem } from '@/@types/instructor/course/curriculumn'
+import { useQuery } from '@tanstack/react-query'
+import { GetPublishSections } from '@/services/publish-course'
+import { toast } from 'react-toastify'
+import ContentLearningSpace from '../components/ContentLearningSpace'
+import SectionLoading from '@/components/Loading/SectionLoading'
 
 export default function CourseLearningSpace() {
-  const [playing, setPlaying] = useState(false)
-
-  // Toggle Playing Button
-  const togglePlaying = () => {
-    setPlaying(!playing)
-  }
-
+  const [currentItem, setCurrentItem] = useState<SectionItem | undefined>()
+  const { data, isLoading } = useQuery({
+    // sẽ change sau khi đã render dc courses
+    queryKey: ['publish-sections', '214c0095-80a1-4083-b9c9-f874c0e174a2', '091897e8-306f-45e5-984f-78f294f019ab'],
+    queryFn: () => GetPublishSections('d881d542-d2a6-46f6-bfed-06af73aaae82', '091897e8-306f-45e5-984f-78f294f019ab'),
+    select: (data) => data.data.value,
+    onSuccess(data) {
+      if (data) {
+        const firstSection = data && data[0]
+        setCurrentItem(firstSection.sectionItems[0])
+      }
+    },
+    onError(err) {
+      toast.error('Error when fetch sections' + err)
+    }
+  })
   return (
     <div className='relative z-0 grid h-full grid-cols-1 lg:grid-cols-[1fr_363px] gap-x-5'>
+      {isLoading && <SectionLoading></SectionLoading>}
       <div className='relative w-full h-full overflow-y-auto bg-white rounded-xl no-scrollbar'>
-        <div className='relative w-full height-video'>
-          <ReactPlayer
-            playing={playing}
-            controls={true}
-            url={`https://res.cloudinary.com/demo/video/upload/fl_splice,l_video:cld_opener_preroll_sd,so_0/what_is_cloudinary_sd.mp4`}
-            onProgress={(data) => {}}
-            onContextMenu={(e: any) => e.preventDefault()}
-            config={{
-              file: {
-                attributes: {
-                  controlsList: 'nodownload'
-                }
-              }
-            }}
-            width='100%'
-            height='100%'
-            onPlay={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
-          ></ReactPlayer>
-          <div
-            className={`absolute -translate-x-1/2 -translate-y-1/2 bg-black top-1/2 left-1/2 w-[70px] h-[70px] rounded-3xl p-[10px] bg-[rgba(50, 50, 50, 0.50)] bg-opacity-20 ${playing ? 'hidden' : 'flex'} items-center justify-center`}
-          >
-            <div
-              className='w-[50px] h-[50px] rounded-full bg-white flex items-center justify-center  cursor-pointer'
-              onClick={togglePlaying}
-            >
-              <Play fill='#666666' color='none' className='w-8 h-8' />
-            </div>
-          </div>
-        </div>
+        <ContentLearningSpace currentItem={currentItem}></ContentLearningSpace>
         <div className='relative'>
           <Tabs defaultValue='overview' className='w-full'>
             <TabsList className='hidden tb:grid h-full overflow-x-auto grid-cols-3 tb:grid-cols-5 p-3 rounded-b-none bg-primary-3 rounded-tl-xl rounded-tr-xl gap-[10px] sticky top-0 z-10  w-full mt-6'>
@@ -164,7 +151,12 @@ export default function CourseLearningSpace() {
             <div className='py-3 px-2 sm:py-[18px] sm:px-5'>
               {/* Overview */}
               <TabsContent value='course-content'>
-                <ListContent></ListContent>
+                <ListContent
+                  isLoading={isLoading}
+                  setCurrentItem={setCurrentItem}
+                  currentItem={currentItem}
+                  sections={data || []}
+                ></ListContent>
               </TabsContent>
               <TabsContent value='overview'>
                 <h3 className='mt-3 text-2xl font-medium text-neutral-black'>Instructor</h3>
@@ -399,7 +391,12 @@ export default function CourseLearningSpace() {
         </div>
       </div>
       <div className='hidden w-full h-full py-3 overflow-y-auto bg-white lg:block no-scrollbar rounded-xl'>
-        <ListContent></ListContent>
+        <ListContent
+          isLoading={isLoading}
+          setCurrentItem={setCurrentItem}
+          currentItem={currentItem}
+          sections={data || []}
+        ></ListContent>
       </div>
     </div>
   )

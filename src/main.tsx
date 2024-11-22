@@ -10,6 +10,7 @@ import { AxiosInterceptor } from './configs/axiosInstance'
 
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { GetCategoriesWithSubCategories } from './services/categories'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,6 +19,8 @@ const queryClient = new QueryClient({
     }
   }
 })
+
+queryClient.prefetchQuery(['categories-all'], GetCategoriesWithSubCategories)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <BrowserRouter>

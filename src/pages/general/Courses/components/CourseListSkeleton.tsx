@@ -1,15 +1,17 @@
 import SkeletonCard from '@/components/Courses/SkeletonCard'
 import React from 'react'
 
-export default function CourseListSkeleton() {
+type TProps = {
+  numberItems?: number
+}
+export default function CourseListSkeleton({ numberItems = 6 }: TProps) {
   return (
     <div className='grid grid-cols-3 gap-[18px]'>
-      <SkeletonCard></SkeletonCard>
-      <SkeletonCard></SkeletonCard>
-      <SkeletonCard></SkeletonCard>
-      <SkeletonCard></SkeletonCard>
-      <SkeletonCard></SkeletonCard>
-      <SkeletonCard></SkeletonCard>
+      {Array(numberItems)
+        .fill(0)
+        .map((item, index) => (
+          <SkeletonCard key={index}></SkeletonCard>
+        ))}
     </div>
   )
 }

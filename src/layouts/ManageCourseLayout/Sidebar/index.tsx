@@ -116,12 +116,11 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
   const handleSubmitCourse = () => {
     submitCourseMutation.mutate(undefined, {
       onSuccess(data) {
-        if (data?.data?.value?.courseValidationErrors) {
-          const errors = data?.data?.value?.courseValidationErrors
-          if (Object.keys(errors).length > 0) {
-            setErrors(errors)
-            setIsDialogOpen(true)
-          }
+        const errors = data?.data?.value?.courseValidationErrors as any
+        const checkIsError = Object.keys(errors).some((item) => errors[item].length > 0)
+        if (checkIsError) {
+          setErrors(errors)
+          setIsDialogOpen(true)
         } else {
           toast.success('Submit course for review successfully! Please wait the notification from system!')
         }

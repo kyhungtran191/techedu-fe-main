@@ -5,9 +5,10 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Swiper as SwiperType } from 'swiper'
 import { Navigation } from 'swiper/modules'
 import 'swiper/css'
+import { PublicCourse } from '@/@types/public-course.type'
 
 interface IProps {
-  courses?: unknown[]
+  courses: PublicCourse[]
   swiperRef: React.MutableRefObject<SwiperType | null>
   setIsAtStart: (value: boolean) => void
   setIsAtEnd: (value: boolean) => void
@@ -18,13 +19,14 @@ export default function CourseList({ courses, setIsAtEnd, setIsAtStart, swiperRe
     setIsAtStart(swiper.isBeginning)
     setIsAtEnd(swiper.isEnd)
   }
+  console.log('courses', courses)
 
   return (
     <>
       <div className='hidden xl:grid grid-cols-3 gap-x-[18px]'>
-        <CourseCard></CourseCard>
-        <CourseCard></CourseCard>
-        <CourseCard></CourseCard>
+        {courses.map((course) => (
+          <CourseCard courseInfo={course} key={course.courseId}></CourseCard>
+        ))}
       </div>
       <div className='block xl:hidden'>
         <Swiper
@@ -59,18 +61,11 @@ export default function CourseList({ courses, setIsAtEnd, setIsAtStart, swiperRe
             }
           }}
         >
-          <SwiperSlide>
-            <CourseCard></CourseCard>
-          </SwiperSlide>
-          <SwiperSlide>
-            <CourseCard></CourseCard>
-          </SwiperSlide>
-          <SwiperSlide>
-            <CourseCard></CourseCard>
-          </SwiperSlide>
-          <SwiperSlide>
-            <CourseCard></CourseCard>
-          </SwiperSlide>
+          {courses.map((course) => (
+            <SwiperSlide>
+              <CourseCard courseInfo={course}></CourseCard>
+            </SwiperSlide>
+          ))}
         </Swiper>
       </div>
     </>

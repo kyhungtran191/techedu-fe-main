@@ -1,3 +1,4 @@
+import { CategoryAll } from '@/@types/category.type'
 import { ResponseData } from '@/@types/response.type'
 import { URL } from '@/apis'
 import { CATEGORIES } from '@/apis/categories'
@@ -13,3 +14,6 @@ export const GetTopics = async () =>
       }[]
     >
   >(`${URL}/topics`)
+
+export const GetCategoriesWithSubCategories = async () =>
+  await axios.get<ResponseData<CategoryAll[]>>(`${CATEGORIES}/all`)

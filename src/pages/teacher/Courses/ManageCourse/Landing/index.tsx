@@ -168,7 +168,7 @@ export default function LandingPage() {
     const landingPageAddData: TAddUpdateCourseLandingPage = {
       categoryId: data.category,
       description: data.description,
-      language: data.language,
+      languge: data.language,
       level: data.level,
       shortDescription: data.shortDescription,
       subcategoryId: data.subcategory.toLowerCase(),
@@ -187,8 +187,6 @@ export default function LandingPage() {
       }
     })
   }
-  console.log(isValid)
-  console.log(currentValue)
   return (
     <div className='flex flex-col h-full'>
       <SystemNotification></SystemNotification>
@@ -330,7 +328,7 @@ export default function LandingPage() {
                 <div className='mb-8'>
                   <h3 className='text-xl font-medium'>Subcategory</h3>
                   <Select
-                    value={currentValue?.subcategory.toUpperCase()}
+                    value={currentValue?.subcategory?.toUpperCase()}
                     onValueChange={(value) => setValue('subcategory', value)}
                   >
                     <SelectTrigger className='flex items-center px-8 py-7 text-xl rounded-lg mt-[18px] w-full focus:outline-none '>
