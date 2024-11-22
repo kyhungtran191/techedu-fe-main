@@ -1,5 +1,5 @@
 import { Outlet, Route, Routes, useNavigate } from 'react-router-dom'
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 // Partial - Layout
 import BlankLayout from './layouts/BlankLayout'
 import ClientMainLayout from './layouts/ClientMainLayout'
@@ -26,6 +26,8 @@ import { APP_PERMISSIONS } from './constants/permissions'
 import NotFound from './pages/errors/NotFound'
 import Unauthorized from './pages/errors/Unauthorized'
 import { InstructorProfile } from './pages/teacher/main/profile'
+import { useQueryClient } from '@tanstack/react-query'
+import { useEditor } from '@tiptap/react'
 
 // Lazy loading for components
 const ResendEmail = lazy(() => import('./pages/general/resend-email'))
@@ -203,7 +205,7 @@ function App() {
           />
           <Route path='/checkout' element={<Checkout />} />
 
-          <Route path='/preview-draft-course/:id' element={<PreviewCourse />}></Route>
+          <Route path='/preview-draft-course' element={<PreviewCourse />}></Route>
 
           <Route
             path='/profile'
@@ -246,7 +248,7 @@ function App() {
             />
 
             <Route path='courses' element={<CoursesAdmin />} />
-            <Route path='courses/:id' element={<CourseDetailAdmin />} />
+            <Route path='courses/:id/:instructorId' element={<CourseDetailAdmin />} />
             <Route path='students' element={<Students />} />
             <Route path='categories' element={<Category />} />
             <Route path='private-users' element={<PrivateUserManage />} />

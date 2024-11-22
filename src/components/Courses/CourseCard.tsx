@@ -4,9 +4,10 @@ import PeopleIcon from '@/assets/people_alt.png'
 import { Button } from '../ui/button'
 import { Heart } from 'lucide-react'
 import { CourseInfo } from '@/@types/course.type'
+import { PublicCourse } from '@/@types/public-course.type'
 
 interface IProps {
-  courseInfo?: CourseInfo
+  courseInfo?: PublicCourse
   vertical?: boolean
   wrapperClass?: string
   isCartItem?: boolean
@@ -22,23 +23,22 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
           <Heart className=' text-primary-1'></Heart>
         </div>
       </div>
-      <div className={`  rounded-xl ${vertical ? 'w-auto px-2 py-4' : 'flex-1 px-2 sm:px-3   tb:px-5 py-2'}`}>
+      <div className={`rounded-xl ${vertical ? 'w-auto px-2 py-4' : 'flex-1 px-2 sm:px-3   tb:px-5 py-2'}`}>
         <div className='flex items-center justify-between text-sm'>
-          <div className=''>Beginner</div>
+          <div className=''>{courseInfo?.level}</div>
           <div className='flex items-center gap-x-3'>
             <div className='flex items-center'>
               <img src={PeopleIcon} className={`h-full w-full object-cover`} />
-              <span className='ml-1'>5.1k</span>
+              <span className='ml-1'>{courseInfo?.viewers}</span>
             </div>
             <div className='flex items-center'>
               <img src={StartIcon} className={`h-full w-full object-cover`} />
-              <span className='ml-1'>5</span>
+              <span className='ml-1'>{courseInfo?.rating}</span>
             </div>
           </div>
         </div>
         <h2 className='text-ellipsis line-clamp-2 h-[45px] sm:h-[55px] font-medium text-base sm:text-lg tb:text-xl mt-3'>
-          Rapid prototyping in the Chrome Browser Rapid prototyping in the Chrome Browser Rapid prototyping in the
-          Chrome Browser Rapid prototyping in the Chrome Browser
+          {courseInfo?.title}
         </h2>
         <div className='flex items-center mt-2 mb-3 text-xs text-center sm:text-sm'>
           <span>Pill Drake</span>
@@ -47,8 +47,8 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
         </div>
         <div className='flex items-center justify-between'>
           <div className='flex items-center'>
-            <span className='text-sm line-through text-neutral-silver-3'>$12</span>
-            <span className='ml-2 text-sm font-medium sm:text-xl sm:ml-3 text-neutral-black'>$10</span>
+            {/* <span className='text-sm line-through text-neutral-silver-3'>$12</span> */}
+            <span className='text-sm font-medium sm:text-xl text-neutral-black'>${courseInfo?.price?.amount}</span>
           </div>
           {!isCartItem && (
             <Button className='px-2 py-2 sm:py-3 sm:px-[18px]' variant={'custom'}>

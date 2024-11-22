@@ -14,6 +14,8 @@ import BecomeTeacherBtn from '@/components/BlankOptions/BecomeTeacherBtn'
 import { Button } from '@/components/ui/button'
 import Navigate from '@/icons/Navigate'
 import { useAppContext } from '@/hooks/useAppContext'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { GetCategoriesWithSubCategories } from '@/services/categories'
 const Header = ({
   setSidebarOpen,
   sidebarOpen
@@ -34,10 +36,10 @@ const Header = ({
 
   const { pathname } = location
   const isCourseDetail = /\/courses\/\d+/.test(pathname)
-
   const { isAuthenticated, setProfile, setIsAuthenticated, profile, setPermissions } = useAppContext()
 
   const navigate = useNavigate()
+
 
   return (
     <header className='z-30 flex w-full px-3 py-6 bg-white drop-shadow-1'>

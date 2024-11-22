@@ -32,6 +32,8 @@ export default function CourseManage() {
     select: (data) => data.data.value
   })
 
+  console.log(courseData)
+
   const navigate = useNavigate()
 
   const columns = [
@@ -41,7 +43,7 @@ export default function CourseManage() {
       cell: ({ row }: { row: any }) => {
         return (
           <img
-            src={row.original.thumbnailUrl || PlaceHolderIMG}
+            src={row.original.courseThumbnailUrl || PlaceHolderIMG}
             alt={row.original.title}
             className='font-semibold w-[120px] h-[100px] object-cover mx-auto'
           />

@@ -80,9 +80,9 @@ export default function Courses() {
               </div>
             </div>
             <div className=''>
+              {/* <CourseCard vertical={false} wrapperClass='my-5'></CourseCard>
               <CourseCard vertical={false} wrapperClass='my-5'></CourseCard>
-              <CourseCard vertical={false} wrapperClass='my-5'></CourseCard>
-              <CourseCard vertical={false} wrapperClass='my-5'></CourseCard>
+              <CourseCard vertical={false} wrapperClass='my-5'></CourseCard> */}
             </div>
             <PaginationCustom
               path='/'

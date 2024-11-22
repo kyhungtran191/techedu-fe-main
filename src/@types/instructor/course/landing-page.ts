@@ -4,7 +4,7 @@ export type TAddUpdateCourseLandingPage = {
   description: string
   categoryId: string
   subcategoryId: string
-  language: string
+  languge: string
   level: string
   thumbnailFilePath: string
   videoPromotionFilePath: string
