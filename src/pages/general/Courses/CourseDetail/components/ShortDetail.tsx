@@ -1,3 +1,4 @@
+import { ResponsePrivateCourseDetail } from '@/@types/admin/courses.type'
 import { Button } from '@/components/ui/button'
 import Certificate from '@/icons/CourseDetail/Certificate'
 import Clock from '@/icons/CourseDetail/Clock'
@@ -6,7 +7,13 @@ import FolderNLine from '@/icons/CourseDetail/FolderNLine'
 import { Heart } from 'lucide-react'
 import React from 'react'
 
-export default function ShortDetail({ className }: { className?: string }) {
+export default function ShortDetail({
+  className,
+  courseData
+}: {
+  className?: string
+  courseData?: ResponsePrivateCourseDetail | null
+}) {
   //
   return (
     <div className={`${className}`}>
@@ -14,15 +21,15 @@ export default function ShortDetail({ className }: { className?: string }) {
       <div>
         <div className='flex items-center mb-6'>
           <Clock className='text-neutral-black'></Clock>
-          <span className='ml-[10px] font-medium'>58 hours on-demand video</span>
+          <span className='ml-[10px] font-medium'>{courseData?.totalVieoDuration} on-demand video</span>
         </div>
         <div className='flex items-center mb-6'>
           <Document className='text-neutral-black'></Document>
-          <span className='ml-[10px] font-medium'>80 lessons</span>
+          <span className='ml-[10px] font-medium'>{courseData?.totalSectionItems} lessons</span>
         </div>
         <div className='flex items-center mb-6'>
           <FolderNLine className='text-neutral-black'></FolderNLine>
-          <span className='ml-[10px] font-medium'>519 downloadable resources</span>
+          <span className='ml-[10px] font-medium'>{courseData?.totalResources} downloadable resources</span>
         </div>
         <div className='flex items-center mb-6'>
           <Certificate className='text-neutral-black'></Certificate>
@@ -30,9 +37,9 @@ export default function ShortDetail({ className }: { className?: string }) {
         </div>
       </div>
       <div className='flex items-center gap-x-3'>
-        <span className='text-2xl line-through text-neutral-silver-3'>$12</span>
-        <span className='text-[32px]'>$10</span>
-        <div className='p-2 rounded-md bg-[#F30000] text-center text-white uppercase'>20% OFF</div>
+        {/* <span className='text-2xl line-through text-neutral-silver-3'>${courseData?.price}</span> */}
+        <span className='text-[32px]'>$ {courseData?.price?.amount}</span>
+        {/* <div className='p-2 rounded-md bg-[#F30000] text-center text-white uppercase'>20% OFF</div> */}
       </div>
       <div className='flex items-center gap-x-[18px] my-[18px]'>
         <Button className='flex-1 px-4 !py-7 text-xl text-white bg-primary-1' variant={'custom'}>

@@ -5,6 +5,7 @@ import { Button } from '../ui/button'
 import { Heart } from 'lucide-react'
 import { CourseInfo } from '@/@types/course.type'
 import { PublicCourse } from '@/@types/public-course.type'
+import { useNavigate } from 'react-router-dom'
 
 interface IProps {
   courseInfo?: PublicCourse
@@ -12,9 +13,23 @@ interface IProps {
   wrapperClass?: string
   isCartItem?: boolean
 }
+
 export default function CourseCard({ courseInfo, vertical = true, wrapperClass = '', isCartItem = false }: IProps) {
+  const navigate = useNavigate()
+
+  const handleOnClickCard = (courseId: string, instructorId: string, courseName: string) => {
+    navigate(`/courses/${courseId}`, {
+      state: { courseId, instructorId, courseName }
+    })
+  }
+
   return (
-    <div className={`flex ${vertical ? 'flex-col' : 'flex-row'} w-full ${wrapperClass} bg-primary-3`}>
+    <div
+      className={`flex ${vertical ? 'flex-col' : 'flex-row'} w-full ${wrapperClass} bg-primary-3 cursor-pointer`}
+      onClick={() => {
+        handleOnClickCard(courseInfo?.courseId as string, courseInfo?.userId as string, courseInfo?.title as string)
+      }}
+    >
       <div
         className={` ${vertical ? 'h-[200px] w-full' : 'w-[30%] h-[30%] sm:w-[250px] tb:w-[300px] sm:h-[200px]'} relative `}
       >
@@ -41,7 +56,7 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
           {courseInfo?.title}
         </h2>
         <div className='flex items-center mt-2 mb-3 text-xs text-center sm:text-sm'>
-          <span>Pill Drake</span>
+          <span>{courseInfo?.instructorName}</span>
           <span className='w-[1px] h-4 bg-black sm:mx-2 mx-1'></span>
           <span className='text-primary-1'>Latest update in 2024</span>
         </div>

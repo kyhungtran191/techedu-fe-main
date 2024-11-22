@@ -36,10 +36,12 @@ const Header = ({
 
   const { pathname } = location
   const isCourseDetail = /\/courses\/\d+/.test(pathname)
+  const isCourseLearningDetail = /\/courses\/\d+\/learn\/\d+/.test(pathname)
   const { isAuthenticated, setProfile, setIsAuthenticated, profile, setPermissions } = useAppContext()
 
   const navigate = useNavigate()
-
+  const courseCardLocationState = useLocation()
+  const state = courseCardLocationState.state
 
   return (
     <header className='z-30 flex w-full px-3 py-6 bg-white drop-shadow-1'>
@@ -57,9 +59,14 @@ const Header = ({
             <Navigate></Navigate>
             <span className='ml-1 text-sm font-medium'>Back</span>
           </Link>
-          <div ref={titleRef} className='text-[18px] sm:text-[32px] font-medium tb:w-full capitalize'>
-            Course
-          </div>
+          {!isCourseDetail ? (
+            <div ref={titleRef} className='text-[18px] sm:text-[32px] font-medium tb:w-full capitalize'>
+              Course
+            </div>
+          ) : (
+            <div className='text-[18px] sm:text-[32px] font-medium tb:w-full capitalize'>{state.courseName}</div>
+          )}
+
           <CategoriesMenu className='hidden sm:block'></CategoriesMenu>
         </div>
 

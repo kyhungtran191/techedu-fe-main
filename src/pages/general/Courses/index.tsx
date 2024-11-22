@@ -53,7 +53,6 @@ export default function Courses() {
           {/* Popular Section */}
           <CourseSection></CourseSection>
           {/* Skeleton Loading */}
-          {/* <CourseListSkeleton></CourseListSkeleton> */}
           <div className='my-6'>
             <div className='flex flex-wrap items-center justify-between'>
               <h4 className='text-2xl  mb-[18px] font-bold'>Explore</h4>
@@ -80,9 +79,9 @@ export default function Courses() {
               </div>
             </div>
             <div className=''>
-              {/* <CourseCard vertical={false} wrapperClass='my-5'></CourseCard>
               <CourseCard vertical={false} wrapperClass='my-5'></CourseCard>
-              <CourseCard vertical={false} wrapperClass='my-5'></CourseCard> */}
+              <CourseCard vertical={false} wrapperClass='my-5'></CourseCard>
+              <CourseCard vertical={false} wrapperClass='my-5'></CourseCard>
             </div>
             <PaginationCustom
               path='/'

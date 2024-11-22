@@ -22,6 +22,7 @@ import { useQuery } from '@tanstack/react-query'
 import SectionLoading from '@/components/Loading/SectionLoading'
 import PlaceHolderIMG from '@/assets/placeholder.jpg'
 import { formatSystemDate } from '@/utils'
+import { COURSE_STATUS } from '@/constants/course'
 
 // End
 
@@ -77,9 +78,9 @@ export default function CourseManage() {
       cell: ({ row }: { row: any }) => {
         return (
           <p
-            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.isPublish ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-black'}`}
+            className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == COURSE_STATUS.REJECT ? 'bg-red-500 text-white' : row.original.status == COURSE_STATUS.PUBLISH ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-white'}`}
           >
-            {row.original.isPublish ? 'Publish' : 'Draft'}
+            {row.original.status}
           </p>
         )
       },

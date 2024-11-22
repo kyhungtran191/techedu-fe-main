@@ -1,7 +1,7 @@
 import { Layout } from '@/components/custom/layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Blocks, Languages } from 'lucide-react'
+import { Blocks, Check, Languages } from 'lucide-react'
 
 import 'swiper/css'
 import Instructor from '@/assets/instructor.jfif'
@@ -105,7 +105,6 @@ export default function CourseDetailAdmin() {
                       </div>
                     ))}
                   </div>
-
                   <div className='mt-5'>
                     <div className=''>
                       <h3 className='mt-5 text-2xl font-medium text-neutral-black'>Instructor</h3>
@@ -128,7 +127,7 @@ export default function CourseDetailAdmin() {
                         </Button>
                       </div>
                     </div>
-                    <h3 className='mb-3 text-2xl font-medium'>Course Include</h3>
+                    <h3 className='my-4 text-2xl font-bold'>Course Include</h3>
                     <div className='grid grid-cols-2 gap-5'>
                       <div>
                         <div className='flex items-center mb-6'>
@@ -163,67 +162,97 @@ export default function CourseDetailAdmin() {
                         </div>
                       </div>
                     </div>
+                    <h3 className='my-4 text-2xl font-bold'>Description</h3>
+                    <div
+                      className='mb-6'
+                      dangerouslySetInnerHTML={{ __html: data?.courseLandingPage.description || '' }}
+                    ></div>
+                    <h3 className='my-4 text-2xl font-bold'>What you'll learn</h3>
+                    <div className='grid grid-cols-2 gap-10 p-5 mb-6'>
+                      {data?.courseOverview?.highlights?.map((item) => (
+                        <div className='flex items-center gap-4 p-4 shadow-custom-shadow'>
+                          <Check className='w-5 h-5'></Check>
+                          <p className='font-medium'>{item.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <h3 className='my-4 text-2xl font-bold'>Requirement</h3>
+                    <div>{data?.courseOverview.requirements[0].text}</div>
+                    <h3 className='my-4 text-2xl font-bold'>Who This Course Is For</h3>
+                    <div>{data?.courseOverview.intendedLearners[0].text}</div>
+                    <h3 className='my-4 text-2xl font-bold'>Welcome Message</h3>
+                    <div
+                      className='p-4 mb-6 shadow-custom-shadow min-h-[150px]'
+                      dangerouslySetInnerHTML={{ __html: data?.welcomeMessage || '' }}
+                    ></div>
+                    <h3 className='my-4 text-2xl font-bold'>Congratulation Message</h3>
+                    <div
+                      className='p-4 mb-6 shadow-custom-shadow min-h-[150px]'
+                      dangerouslySetInnerHTML={{ __html: data?.congratulationMessage || '' }}
+                    ></div>
                   </div>
                 </div>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
-                <CardTitle className='text-sm font-medium'>Total course earning</CardTitle>
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  viewBox='0 0 24 24'
-                  fill='none'
-                  stroke='currentColor'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth='2'
-                  className='w-4 h-4 text-muted-foreground'
-                >
-                  <rect width='20' height='14' x='2' y='5' rx='2' />
-                  <path d='M2 10h20' />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className='text-2xl font-bold'>+12,234</div>
-                <p className='text-xs text-muted-foreground'>+19% from last month</p>
-                <ChartContainer config={chartConfig} className='min-h-[200px] w-full'>
-                  <BarChart accessibilityLayer data={chartData}>
-                    <CartesianGrid vertical={false} />
-                    <Bar dataKey='desktop' fill='var(--color-desktop)' radius={4} />
-                    <Bar dataKey='mobile' fill='var(--color-mobile)' radius={4} />
-                  </BarChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
-                <CardTitle className='text-sm font-medium'>New Enrollment This Month</CardTitle>
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  viewBox='0 0 24 24'
-                  fill='none'
-                  stroke='currentColor'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth='2'
-                  className='w-4 h-4 text-muted-foreground'
-                >
-                  <path d='M22 12h-4l-3 9L9 3l-3 9H2' />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className='text-2xl font-bold'>+573</div>
-                <p className='text-xs text-muted-foreground'>+201 since last hour</p>
-                <ChartContainer config={chartConfig} className='min-h-[200px] w-full'>
-                  <BarChart accessibilityLayer data={chartData}>
-                    <CartesianGrid vertical={false} />
-                    <Bar dataKey='desktop' fill='var(--color-desktop)' radius={4} />
-                    <Bar dataKey='mobile' fill='var(--color-mobile)' radius={4} />
-                  </BarChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
+            <div>
+              <Card>
+                <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
+                  <CardTitle className='text-sm font-medium'>Total course earning</CardTitle>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='2'
+                    className='w-4 h-4 text-muted-foreground'
+                  >
+                    <rect width='20' height='14' x='2' y='5' rx='2' />
+                    <path d='M2 10h20' />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className='text-2xl font-bold'>+12,234</div>
+                  <p className='text-xs text-muted-foreground'>+19% from last month</p>
+                  <ChartContainer config={chartConfig} className='min-h-[200px] w-full'>
+                    <BarChart accessibilityLayer data={chartData}>
+                      <CartesianGrid vertical={false} />
+                      <Bar dataKey='desktop' fill='var(--color-desktop)' radius={4} />
+                      <Bar dataKey='mobile' fill='var(--color-mobile)' radius={4} />
+                    </BarChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+              <Card className='mt-5'>
+                <CardHeader className='flex flex-row items-center justify-between pb-2 space-y-0'>
+                  <CardTitle className='text-sm font-medium'>New Enrollment This Month</CardTitle>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='2'
+                    className='w-4 h-4 text-muted-foreground'
+                  >
+                    <path d='M22 12h-4l-3 9L9 3l-3 9H2' />
+                  </svg>
+                </CardHeader>
+                <CardContent>
+                  <div className='text-2xl font-bold'>+573</div>
+                  <p className='text-xs text-muted-foreground'>+201 since last hour</p>
+                  <ChartContainer config={chartConfig} className='min-h-[200px] w-full'>
+                    <BarChart accessibilityLayer data={chartData}>
+                      <CartesianGrid vertical={false} />
+                      <Bar dataKey='desktop' fill='var(--color-desktop)' radius={4} />
+                      <Bar dataKey='mobile' fill='var(--color-mobile)' radius={4} />
+                    </BarChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+            </div>
           </div>
           <div className='mt-5'>
             <h2 className='text-2xl font-bold tracking-tight'>Students</h2>
