@@ -16,7 +16,7 @@ export default function ShortDetail({
 }) {
   //
   return (
-    <div className={`${className}`}>
+    <div className={`${className} min-h-[300px]`}>
       <h3 className='mb-3 text-2xl font-medium'>Course Include</h3>
       <div>
         <div className='flex items-center mb-6'>
