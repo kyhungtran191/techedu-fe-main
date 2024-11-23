@@ -4,19 +4,22 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import RatingStars from '@/components/RatingStars'
 import Filter from '@/icons/Filter'
-import { QueryConfig } from '@/@types/course.type'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import { isUndefined, omit, omitBy } from 'lodash'
+import { CourseListConfig } from '@/@types/course.type'
 
 interface IProps {
-  queryConfig: QueryConfig
+  queryConfig: CourseListConfig
 }
 export default function FilterMain({ queryConfig }: IProps) {
   const navigate = useNavigate()
 
   const handleSelectFilter = (key: string, value: string) => {
+    if (key === 'level' && value == 'all') {
+      value = ''
+    }
     return navigate({
-      pathname: '/courses',
+      pathname: '/',
       search: createSearchParams({
         ...queryConfig,
         [key]: value
@@ -29,14 +32,14 @@ export default function FilterMain({ queryConfig }: IProps) {
     const defaultLimit = '8'
 
     // Use lodash to omit the specific filters
-    const updatedQuery = omit(queryConfig, ['ratings', 'level', 'duration'])
+    const updatedQuery = omit(queryConfig, ['rating', 'level', 'videoDurationInSeconds', 'categoryId', 'subCategoryId'])
 
     return navigate({
-      pathname: '/courses',
+      pathname: '/',
       search: createSearchParams({
         ...updatedQuery,
-        page: defaultPage,
-        limit: defaultLimit
+        pageIndex: defaultPage,
+        pageSize: defaultLimit
       }).toString()
     })
   }
@@ -62,9 +65,9 @@ export default function FilterMain({ queryConfig }: IProps) {
           <AccordionContent className='mt-0'>
             {/* On selection */}
             <RadioGroup
-              value={queryConfig.ratings || ''}
+              value={queryConfig.rating || ''}
               className=''
-              onValueChange={(value) => handleSelectFilter('ratings', value)}
+              onValueChange={(value) => handleSelectFilter('rating', value)}
             >
               <div className='flex items-center mb-4'>
                 <RadioGroupItem value='5' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
@@ -89,42 +92,34 @@ export default function FilterMain({ queryConfig }: IProps) {
           <Separator className='w-full mb-4 bg-primary-2' orientation='horizontal' />
           <AccordionContent className='mt-0'>
             <RadioGroup
-              value={queryConfig.duration || ''}
-              onValueChange={(value) => handleSelectFilter('duration', value)}
+              value={queryConfig.videoDurationInSeconds || ''}
+              onValueChange={(value) => handleSelectFilter('videoDurationInSeconds', value)}
             >
               <div className='flex items-center mb-4'>
-                <RadioGroupItem value='1' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
+                <RadioGroupItem value='3600' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
                 <Label className='flex items-center text-xl'>
                   0-1 Hour
                   <span className='ml-2 text-base text-neutral-silver-3'>(10)</span>
                 </Label>
               </div>
               <div className='flex items-center mb-4'>
-                <RadioGroupItem value='4' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
+                <RadioGroupItem value='7200' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
                 <Label className='flex items-center text-xl'>
-                  1-4 Hours
+                  0-2 Hours
                   <span className='ml-2 text-base text-neutral-silver-3'>(10)</span>
                 </Label>
               </div>
               <div className='flex items-center mb-4'>
-                <RadioGroupItem value='8' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
+                <RadioGroupItem value='10800' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
                 <Label className='flex items-center text-xl'>
-                  4-8 Hours
+                  0-3 Hours
                   <span className='ml-2 text-base text-neutral-silver-3'>(10)</span>
                 </Label>
               </div>
-              <div className='flex items-center mb-4'>
-                <RadioGroupItem value='12' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
+              <div className='flex items-center mb-0'>
+                <RadioGroupItem value='14400' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
                 <Label className='flex items-center text-xl'>
-                  8-12 Hours
-                  <span className='ml-2 text-base text-neutral-silver-3'>(10)</span>
-                </Label>
-              </div>
-
-              <div className='flex items-center '>
-                <RadioGroupItem value='13' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
-                <Label className='flex items-center text-xl'>
-                  12+ Hours
+                  0-4 Hours
                   <span className='ml-2 text-base text-neutral-silver-3'>(10)</span>
                 </Label>
               </div>
@@ -140,28 +135,36 @@ export default function FilterMain({ queryConfig }: IProps) {
           <Separator className='w-full mb-4 bg-primary-2' orientation='horizontal' />
           <AccordionContent className='mt-0'>
             <RadioGroup
-              value={queryConfig.level || 'all'}
+              value={queryConfig.level || ''}
               className=''
               onValueChange={(value) => handleSelectFilter('level', value)}
             >
               <div className='flex items-center mb-4'>
-                <RadioGroupItem value='all' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
+                <RadioGroupItem value='' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
                 <Label className='text-xl'>For all</Label>
               </div>
               <div className='flex items-center mb-4'>
                 <RadioGroupItem
-                  value='beginner'
+                  value='Beginner'
                   id='half-five'
                   className='w-6 h-6 border-2 border-primary-2 mr-[18px]'
                 />
                 <Label className='text-xl'>Beginner</Label>
               </div>
               <div className='flex items-center mb-4'>
-                <RadioGroupItem value='senior' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
+                <RadioGroupItem
+                  value='Immediately'
+                  id='half-five'
+                  className='w-6 h-6 border-2 border-primary-2 mr-[18px]'
+                />
+                <Label className='text-xl'>Immediately</Label>
+              </div>
+              <div className='flex items-center mb-4'>
+                <RadioGroupItem value='Senior' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
                 <Label className='text-xl'>Senior</Label>
               </div>
               <div className='flex items-center'>
-                <RadioGroupItem value='expert' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
+                <RadioGroupItem value='Expert' id='half-five' className='w-6 h-6 border-2 border-primary-2 mr-[18px]' />
                 <Label className='text-xl'>Expert</Label>
               </div>
             </RadioGroup>

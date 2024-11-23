@@ -11,7 +11,7 @@ type TProps = {
 }
 export default function ListContent({ isLoading, setCurrentItem, currentItem, sections }: TProps) {
   return (
-    <div className='relative'>
+    <div className='relative min-h-[700px]'>
       {isLoading && <SectionLoading></SectionLoading>}
       <h2 className='px-3 text-2xl font-medium text-neutral-black'>Content</h2>
       <div className='mt-[18px]'>

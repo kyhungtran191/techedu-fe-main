@@ -48,7 +48,7 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
             </div>
             <div className='flex items-center'>
               <img src={StartIcon} className={`h-full w-full object-cover`} />
-              <span className='ml-1'>{courseInfo?.rating}</span>
+              <span className='ml-1'>{courseInfo?.rating || (courseInfo as any)?.courseReview?.rating}</span>
             </div>
           </div>
         </div>

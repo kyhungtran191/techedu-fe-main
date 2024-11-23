@@ -1,3 +1,5 @@
+import { PublicCourse } from './public-course.type'
+
 export type CourseInfo = {
   image: string
   title: string
@@ -30,21 +32,29 @@ export type TAddSection = {
   title: string
 }
 
-export interface CourseListConfig {
-  page?: number | string
-  limit?: number | string
-  order?: 'desc' | 'asc'
-  sort_by?: 'createdAt' | 'view' | 'sold' | 'price'
-  category?: number | string
-  ratings?: number | string
-  price_max?: number | string
-  price_min?: number | string
-  search?: string
-  duration?: string | number
+export interface CourseListParams {
+  categoryId?: string
+  subCategoryId?: string
   level?: string
+  language?: string
+  videoDurationInSeconds?: number | string
+  searchTerm?: string
+  pageIndex?: number | string
+  pageSize?: number | string
+  rating?: number | string
+  sort_by?: 'createdAt' | 'view' | 'sold' | 'price'
 }
 
-export type QueryConfig = {
-  [key in keyof CourseListConfig]: string
+export type CourseListConfig = {
+  [key in keyof CourseListParams]: string
 }
 
+export type ResponseListCourses = {
+  items: PublicCourse[]
+  pageIndex: number
+  pageSize: number
+  totalCount: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+  totalPage: number
+}

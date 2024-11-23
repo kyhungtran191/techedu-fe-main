@@ -150,14 +150,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   // Nếu không phải trang học tập, nhưng là trang chi tiết khóa học
   const isCourseDetail = !isCourseLearningDetail && /\/courses\/\d+/.test(pathname)
 
-  const { data: similarityData, isLoading: similarityLoading } = useQuery({
+  const {
+    data: similarityData,
+    isLoading: similarityLoading,
+    status,
+    isFetching,
+    isPaused
+  } = useQuery({
     queryKey: ['get-similarity', isCourseDetail, state?.courseId, state?.instructorId],
     queryFn: () => GetSimilarityCourse(state?.courseId, state?.instructorId),
     enabled: Boolean(state?.courseId && state?.instructorId && isCourseDetail),
     select: (data) => data.data.value
   })
 
-  console.log('SimilaryData', similarityData)
+  const isDisabled = !(state?.courseId && state?.instructorId && isCourseDetail)
 
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
@@ -269,7 +275,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 {state?.courseName || 'Rapid prototyping in the Chrome Browser'}{' '}
               </h3>
             </div>
-            {similarityLoading && <SectionLoading className='z-99999'></SectionLoading>}
+            {!isDisabled && similarityLoading && <SectionLoading className='z-99999'></SectionLoading>}
             {isCourseDetail && state?.courseId && (similarityData as PublicCourse[])?.length > 0 && (
               <div className='min-h-[200px] relative'>
                 <h3 className='text-2xl font-medium text-neutral-black'>Similar courses</h3>

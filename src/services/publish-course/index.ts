@@ -1,5 +1,5 @@
 import { ResponsePrivateCourseDetail } from '@/@types/admin/courses.type'
-import { TSection } from '@/@types/course.type'
+import { CourseListConfig, ResponseListCourses, TSection } from '@/@types/course.type'
 import { TSectionCurriculum } from '@/@types/instructor/course/curriculumn'
 import { PublicCourse } from '@/@types/public-course.type'
 import { ResponseData } from '@/@types/response.type'
@@ -11,6 +11,12 @@ export const GetPublishSections = async (courseId: string, instructorId: string)
   return await instanceAxios.get<ResponseData<TSectionCurriculum[]>>(
     `${URL}courses/${courseId}/instructors/${instructorId}/sections`
   )
+}
+
+export const GetFilterCourses = async (params: CourseListConfig) => {
+  return await axios.get<ResponseData<ResponseListCourses>>(`${URL}courses`, {
+    params
+  })
 }
 
 export const GetForYouCourses = async () => {
