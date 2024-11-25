@@ -28,6 +28,8 @@ import Unauthorized from './pages/errors/Unauthorized'
 import { InstructorProfile } from './pages/teacher/main/profile'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEditor } from '@tiptap/react'
+import { useAppContext } from './hooks/useAppContext'
+import GlobalLoading from '@/components/Loading'
 
 // Lazy loading for components
 const ResendEmail = lazy(() => import('./pages/general/resend-email'))
@@ -68,6 +70,7 @@ const InstructorDetail = lazy(() => import('./pages/admin/users/instructors/Inst
 const PreviewCourse = lazy(() => import('./pages/general/Courses/preview-draft'))
 
 function App() {
+  const { isLoading } = useAppContext()
   return (
     <Suspense fallback={<Loading></Loading>}>
       <Routes>

@@ -1,4 +1,5 @@
 import { User } from '@/@types/auth.type'
+import { CartResponse } from '@/@types/cart.type'
 import { Profile } from '@/@types/user.type'
 
 export const LocalStorageEventTarget = new EventTarget()
@@ -82,6 +83,7 @@ export const clearLS = () => {
   clearAccessTokenFromLS()
   clearUserFromLS()
   clearPermissions()
+  clearCart()
 }
 
 // End
@@ -119,5 +121,30 @@ export const getUserFromLS = () => {
     return user ? JSON.parse(user) : {}
   } catch (err) {
     console.log('Error when get user information in LS', err)
+  }
+}
+// cart
+export const getCartFromLS = () => {
+  try {
+    const cart = localStorage.getItem('cart')
+    return cart ? JSON.parse(cart) : {}
+  } catch (err) {
+    console.log('Error when get cart in LS', err)
+  }
+}
+
+export const clearCart = () => {
+  try {
+    localStorage.removeItem('cart')
+  } catch (error) {
+    console.error('Error deleting cart from local storage', error)
+  }
+}
+
+export const saveCartToLocalStorage = (cart: CartResponse) => {
+  try {
+    localStorage.setItem('cart', JSON.stringify(cart))
+  } catch (err) {
+    console.log('Error when saving cart information to LS', err)
   }
 }

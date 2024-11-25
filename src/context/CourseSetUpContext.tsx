@@ -29,7 +29,7 @@ export interface ICourseSetUp {
   handleResetData: () => void
 }
 
-const initState: ICourseSetUp = {
+export const initState: ICourseSetUp = {
   step: 1,
   setStep: () => {},
   isHavingValues: false,
@@ -69,9 +69,9 @@ export const CourseSetUpContextProvider = ({ children }: { children: React.React
   async function handleResetData() {
     setLocalStorageData({
       courseData: initState.courseData,
-      step: initState.step
+      step: 1
     })
-    setStep(initState.step)
+    setStep(1)
     setCourseData(initState.courseData)
   }
 
