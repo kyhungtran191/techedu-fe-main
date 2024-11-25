@@ -10,7 +10,7 @@ import { useMutation } from '@tanstack/react-query'
 import { CreateDraftCourse } from '@/services/instructor/draft-course.service'
 import { TAddDraftCourse, TUploadData } from '@/@types/instructor/course/draft'
 import { toast } from 'react-toastify'
-import { TCourseSetUpData } from '@/context/CourseSetUpContext'
+import { initState, TCourseSetUpData } from '@/context/CourseSetUpContext'
 import GlobalLoading from '@/components/Loading'
 import { useNavigate } from 'react-router-dom'
 
@@ -41,10 +41,10 @@ export default function Screen4() {
 
   const createCourseMutation = useMutation({
     mutationFn: (data: TAddDraftCourse) => CreateDraftCourse(data),
-    onSuccess() {
+    async onSuccess() {
       toast.success(`Create course ${courseData.title} successfully!`)
-      handleResetData()
-      navigate('/teacher/courses')
+      localStorage.removeItem('courseData')
+    navigate('/teacher/courses')
     },
     onError(err) {
       console.log('Error when create draft course ' + err)

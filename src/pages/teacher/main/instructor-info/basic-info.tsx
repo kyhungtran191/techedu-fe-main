@@ -82,6 +82,8 @@ export default function BasicInfo() {
     })
   }
 
+  console.log(errors.headline)
+
   return (
     <form className='' onSubmit={handleSubmit(handleSubmitValue)}>
       {updateMeMutation.isLoading && <SectionLoading className='z-30'></SectionLoading>}

@@ -12,4 +12,8 @@ export type PublicCourse = {
     currency: string
     amount: number
   }
+  courseReview?: {
+    rating?: number
+  }
+  courseThumbnailFilePath?: string
 }

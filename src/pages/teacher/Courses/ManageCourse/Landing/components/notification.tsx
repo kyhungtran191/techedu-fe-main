@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 
 export default function Notification() {
   const { profile } = useAppContext()
-  if (profile?.avatar && profile?.bio && profile?.firstName && profile?.lastName && profile?.headline) return <></>
+  console.log(profile)
+  if (profile?.avatar && profile?.bio && profile?.firstName && profile?.lastName && profile?.headline) return
   return (
     <div className='flex items-start p-3 mb-6 font-medium text-white bg-red-500'>
       <svg

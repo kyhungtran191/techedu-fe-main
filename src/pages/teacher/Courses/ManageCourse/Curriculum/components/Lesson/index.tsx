@@ -169,7 +169,7 @@ export default function Lesson({ courseId, items, sections, updateSection }: TLe
               <div>Quiz</div>
             )}
             <div className='text-[18px] text-neutral-black'>
-              <span>Lesson {sectionItem?.position ? sectionItem?.position + 1 : 0}.</span> {sectionItem?.title}
+              <span>Lesson. </span> {sectionItem?.title}
             </div>
           </div>
           <div className='flex items-center gap-x-6'>

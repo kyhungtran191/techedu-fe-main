@@ -5,25 +5,14 @@ import { Button } from '@/components/ui/button'
 import AvatarPopover from '@/components/AvatarPopover'
 import SignUp from '@/components/AuthBtn/SignUp'
 import Login from '@/components/AuthBtn/Login'
+import { useAppContext } from '@/hooks/useAppContext'
 export default function Header({ headerOption }: { headerOption?: React.ReactNode }) {
   const isLogin = useMatch('/login')
   const isSignUp = useMatch('/signup')
 
   // Check isAuthContext
-  const isAuth = false
   const headerRef = useRef<null | HTMLDivElement>(null)
-  const AuthComponent =
-    !isLogin && !isSignUp ? (
-      <>
-        <Login></Login>
-        <SignUp></SignUp>
-      </>
-    ) : !isLogin ? (
-      <Login></Login>
-    ) : (
-      <SignUp></SignUp>
-    )
-
+  const { isAuthenticated } = useAppContext()
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 100) {
@@ -39,6 +28,7 @@ export default function Header({ headerOption }: { headerOption?: React.ReactNod
       window.removeEventListener('scroll', handleScroll)
     }
   }, [])
+
   return (
     <div
       className='w-full transition-all duration-300 ease-in-out flex items-center justify-between h-[76px] text-white container-fluid z-50 relative'
@@ -50,9 +40,8 @@ export default function Header({ headerOption }: { headerOption?: React.ReactNod
       <div className='flex items-center gap-x-3 sm:gap-x-8'>
         {/* Extends */}
         {headerOption}
-        {!isAuth && AuthComponent}
         {/* Check is Auth or not */}
-        {isAuth && <AvatarPopover></AvatarPopover>}
+        {isAuthenticated && <AvatarPopover></AvatarPopover>}
       </div>
     </div>
   )
