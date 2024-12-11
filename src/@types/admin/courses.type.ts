@@ -55,6 +55,8 @@ export type ResponsePrivateCourseDetail = {
   congratulationMessage: string
   createdDatetime: string
   updatedDatetime: string
+  rating?:number
+  viewers?:number
   sections?: TSectionCurriculum[]
 }
 

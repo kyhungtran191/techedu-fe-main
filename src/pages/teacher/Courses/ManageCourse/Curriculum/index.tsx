@@ -15,11 +15,14 @@ import { GetSections } from '@/services/instructor/manage/curriculumn.service'
 import SectionLoading from '@/components/Loading/SectionLoading'
 import { handleFormatReorderCurriculum } from '@/utils/course'
 import { useHandleOrderSectionItemMutation } from '@/mutations/useHandleOrderSectionItemMutation'
+import { useAppContext } from '@/hooks/useAppContext'
 
 // Mock section Data
 
 export default function Curriculum() {
   const [sections, setSections] = useState<TSectionCurriculum[]>([])
+  
+  const {profile} = useAppContext()
   // Get course id
   const { id } = useParams()
   if (!id) {
@@ -130,7 +133,12 @@ export default function Curriculum() {
                 <p>0 min of video content uploaded</p>
                 <DropdownMenu>
                   <DropdownMenuTrigger
-                    onClick={() => navigate(`/preview-draft-course/${id}`)}
+                    onClick={() => navigate(`/preview-draft-course`, {
+                      state:{
+                        courseId:id,
+                        instructorId: profile?.userId
+                      }
+                    })}
                     className='flex items-center text-white bg-primary-1 py-3 px-[18px] rounded-lg'
                   >
                     <Play></Play>

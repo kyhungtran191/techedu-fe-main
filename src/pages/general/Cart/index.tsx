@@ -7,7 +7,7 @@ import { useAppContext } from '@/hooks/useAppContext'
 import { useMemo, useState } from 'react'
 import PlaceHolder from '@/assets/placeholder.jpg'
 import { CartItem } from '@/@types/cart.type'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useIsFetching, useMutation, useQueryClient } from '@tanstack/react-query'
 import { DeleteCartItem } from '@/services/client/cart.service'
 import { toast } from 'react-toastify'
 import SectionLoading from '@/components/Loading/SectionLoading'
@@ -15,7 +15,8 @@ import { useNavigate } from 'react-router-dom'
 export default function Cart() {
   const [isEdit, setIsEdit] = useState<boolean>(false)
   const { cart, isAuthenticated, isLoading } = useAppContext()
-  const [checkedItem, setCheckedItem] = useState<CartItem[]>([])
+  // const [checkedItem, setCheckedItem] = useState<CartItem[]>([])
+  const queryClient = useQueryClient()
 
   // const handleClickCheckedItem = (cartItem: CartItem) => {
   //   const isChecked = checkedItem.some((item) => item.id === cartItem.id)
@@ -27,7 +28,6 @@ export default function Cart() {
   //     setCheckedItem(newArr)
   //   }
   // }
-  const queryClient = useQueryClient()
 
   // const handleIsChecked = (cartItem: CartItem) => {
   //   return checkedItem.some((item) => item.id === cartItem.id)
@@ -47,14 +47,15 @@ export default function Cart() {
     deleteCartItemMutation.mutate(
       { basketId, itemId },
       {
-        onSuccess() {
-          queryClient.invalidateQueries(['my-cart', isAuthenticated])
+        async onSuccess() {
+          await queryClient.invalidateQueries(['my-cart', isAuthenticated])
           toast.success('Remove item from cart successfully!')
         }
       }
     )
   }
   const navigate = useNavigate()
+
   const handleCheckoutWithPayment = () => {
     return navigate('/checkout', {
       state: {
@@ -63,10 +64,10 @@ export default function Cart() {
       }
     })
   }
-
+  const isFetching = useIsFetching(['my-cart', isAuthenticated])
   return (
     <div className='relative z-0 grid h-full grid-cols-1 lg:grid-cols-[1fr_30vw] gap-x-4 overflow-auto no-scrollbar'>
-      {deleteCartItemMutation.isLoading && <SectionLoading className='z-30'></SectionLoading>}
+      {(isFetching || deleteCartItemMutation.isLoading) && <SectionLoading className='z-30'></SectionLoading>}
       <div className='min-h-[400px] w-full xl:min-h-auto h-full px-3 pb-6 overflow-y-auto bg-white rounded-xl no-scrollbar '>
         <div className='sticky top-0 z-10 flex items-center justify-between pt-6 bg-white pb-[18px]'>
           <div className='text-[32px] font-medium text-neutral-black '>

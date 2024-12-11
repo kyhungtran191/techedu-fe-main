@@ -26,7 +26,7 @@ export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?:
       setPermissions(undefined)
       setCart(undefined)
       toast.success('Log out successfully !')
-      navigate('/')
+      navigate('/login')
     },
     onError: () => {
       toast.error('Error when logging out')

@@ -127,7 +127,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }
   })
 
-  const isLoading = cartLoading || fetchMeLoading
+  const isLoading = isAuthenticated && (cartLoading || fetchMeLoading)
   // GetMyCart
   return (
     <AppContext.Provider

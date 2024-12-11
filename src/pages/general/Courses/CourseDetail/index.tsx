@@ -37,10 +37,8 @@ import { toast } from 'react-toastify'
 import { GetPublicDetailCourse } from '@/services/publish-course'
 import SectionLoading from '@/components/Loading/SectionLoading'
 import { COURSE_TYPE } from '@/constants/course'
-import Video from '@/icons/Video'
 import Document2 from '@/icons/CourseDetail/Document2'
 import PlayBtn from '@/icons/CourseDetail/PlayBtn'
-import { useAppContext } from '@/hooks/useAppContext'
 export default function CourseDetail() {
 
   const [playing, setPlaying] = useState(false)
@@ -72,7 +70,7 @@ export default function CourseDetail() {
             playing={playing}
             controls={true}
             url={data?.courseLandingPage.videoPromotionUrl}
-            // Sau này add note hay gì đó ở đây
+
             onProgress={(data) => {}}
             width='100%'
             height={'100%'}

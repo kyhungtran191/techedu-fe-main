@@ -185,7 +185,7 @@ export default function CourseManage() {
       </div>
       <div className='flex-grow px-6 py-3 mt-4 overflow-y-auto bg-white rounded-xl no-scrollbar'>
         <Table className='w-full h-full overflow-auto'>
-          {isLoading && <SectionLoading></SectionLoading>}
+          {isLoading && <SectionLoading className='z-30'></SectionLoading>}
           <TableHeader className='sticky z-20 py-4 bg-white border-b -top-3'>
             {courseTable.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -200,7 +200,7 @@ export default function CourseManage() {
             ))}
           </TableHeader>
           <TableBody>
-            {courseTable?.getRowModel()?.rows?.length ? (
+            {!isLoading && courseTable?.getRowModel()?.rows?.length ? (
               courseTable?.getRowModel()?.rows?.map((row) => (
                 <TableRow
                   key={row.id}
