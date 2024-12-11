@@ -3,16 +3,15 @@ import StartIcon from '@/assets/star.png'
 import PeopleIcon from '@/assets/people_alt.png'
 import { Button } from '../ui/button'
 import { Heart } from 'lucide-react'
-import { CourseInfo } from '@/@types/course.type'
 import { PublicCourse } from '@/@types/public-course.type'
 import { useNavigate } from 'react-router-dom'
 import { useAppContext } from '@/hooks/useAppContext'
-import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { AddItemToCart } from '@/services/client/cart.service'
 import { TItemAddCart } from '@/@types/cart.type'
 import { toast } from 'react-toastify'
 import SectionLoading from '../Loading/SectionLoading'
-import { useMemo } from 'react'
+import { useState } from 'react'
 
 interface IProps {
   courseInfo?: PublicCourse
@@ -24,6 +23,9 @@ interface IProps {
 export default function CourseCard({ courseInfo, vertical = true, wrapperClass = '', isCartItem = false }: IProps) {
   const navigate = useNavigate()
   const { isAuthenticated, cart } = useAppContext()
+  const queryClient = useQueryClient()
+
+  const isCourseInCart = cart?.items?.some((item) => item.courseId === courseInfo?.courseId)
 
   const handleOnClickCard = (courseId: string, instructorId: string, courseName: string) => {
     navigate(`/courses/${courseId}`, {
@@ -32,24 +34,19 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
   }
 
   const addToCartMutation = useMutation({
-    mutationFn: (item: TItemAddCart) => AddItemToCart(item)
+    mutationFn: (item: TItemAddCart) => AddItemToCart(item),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['my-cart', isAuthenticated])
+      toast.success('Add to Cart Successfully!')
+    }
   })
-
-   const isHavingCourseCart = useMemo(() => {
-    if (!isAuthenticated || !cart?.id) return
-    return cart.items.some((item) => {
-      return item.courseId === courseInfo?.courseId
-    })
-  }, [cart])
-
-  const queryClient = useQueryClient()
 
   const handleCourseCart = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation()
     if (!isAuthenticated || !cart?.id) {
       return navigate('/login')
     }
-    if (isHavingCourseCart) return navigate('/my-cart')
+    if (isCourseInCart) return navigate('/my-cart')
     if (courseInfo) {
       const itemAdd: TItemAddCart = {
         basketId: cart?.id as string,
@@ -64,15 +61,9 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
         instructorName: courseInfo.instructorName,
         level: courseInfo?.level,
         viewers: courseInfo?.viewers,
-        // Doi An release update courseThumbnailFilePath
         courseThumbnailFilePath: 'dqwdwqdwqdwqdwdqdqw'
       }
-      addToCartMutation.mutate(itemAdd, {
-        onSuccess() {
-          queryClient.invalidateQueries(['my-cart', isAuthenticated])
-          toast.success('Add to Cart Successfully!')
-        }
-      })
+      addToCartMutation.mutate(itemAdd)
     }
   }
 
@@ -127,14 +118,14 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
             </div>
             {!isCartItem && (
               <Button
-                className='px-2 py-2 sm:py-3 sm:px-[18px] z-30 relative'
+                className='px-2 py-2 sm:py-3 sm:px-[18px] z-10 relative'
                 type='button'
                 variant={'custom'}
                 onClick={(e) => {
                   handleCourseCart(e)
                 }}
               >
-                {isHavingCourseCart ? 'Go to cart' : 'Add to Cart'}
+                {isCourseInCart ? 'Go to cart' : 'Add to Cart'}
               </Button>
             )}
           </div>

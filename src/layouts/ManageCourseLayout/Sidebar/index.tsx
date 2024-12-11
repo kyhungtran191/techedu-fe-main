@@ -7,11 +7,13 @@ import { Button } from '@/components/ui/button'
 import ClickOutside from '@/hooks/useClickOutside'
 import { Checkbox } from '@/components/ui/checkbox'
 import Navigate from '@/icons/Navigate'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { SubmitReviewCourse } from '@/services/instructor/submit-course.service'
 import { toast } from 'react-toastify'
 import ErrorAlertDialog from '@/components/ErrorAlert'
 import SectionLoading from '@/components/Loading/SectionLoading'
+import { useAppContext } from '@/hooks/useAppContext'
+import { GetPrivateDetailCourse } from '@/services/admin/private-course.service'
 
 interface SidebarManageProps {
   sidebarOpen: boolean
@@ -36,7 +38,6 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
   const { id } = useParams()
   const [errors, setErrors] = useState<Record<string, string[]> | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [courseInfo, setCourseInfo] = useState(null)
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -74,6 +75,10 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
     mutationFn: (_) => SubmitReviewCourse(id)
   })
 
+  const { profile } = useAppContext()
+
+  console.log('course detail data')
+
   const sidebarOptions: sideBarOption[] = [
     {
       parent: 'Create your course',
@@ -82,10 +87,6 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
           link: `/teacher/course/${id}/manage/curriculum`,
           title: 'Curriculum'
         }
-        // {
-        //   link: '/webinars',
-        //   title: 'Caption'
-        // }
       ]
     },
     {

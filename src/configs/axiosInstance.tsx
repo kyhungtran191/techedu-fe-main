@@ -120,7 +120,7 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
       const status = error.response?.status
       if ((status === 403 || status === 401) && !isShowToast) {
         isShowToast = true
-        toast.error(status === 401 ? 'Unauthorize! Please Login again' : 'Your account has been banned', {
+        toast.error(status === 401 ? 'Unauthorize! Please Login again' : 'This is forbidden ', {
           onClose: () => {
             isShowToast = false
           }

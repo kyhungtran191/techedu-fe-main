@@ -101,10 +101,6 @@ export default function Lesson({ courseId, items, sections, updateSection }: TLe
     })
   }
 
-  const deleteAssetMutation = useMutation({
-    mutationFn: (id: number) => DeleteAsset(courseId, items?.sectionId, items?.id, id)
-  })
-
   // const handleOnDelete
   const handleOnDeleteAsset = (id: number) => {
     Swal.fire({
@@ -157,8 +153,8 @@ export default function Lesson({ courseId, items, sections, updateSection }: TLe
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <div className='pb-6 border-b border-neutral-black'>
-        <div className='flex items-center justify-between mt-6'>
+      <div className='p-6 border-b border-neutral-black bg-neutral-silver'>
+        <div className='flex items-center justify-between'>
           <div className='flex items-center'>
             <Drag className='w-9 h-9 text-neutral-silver-3'></Drag>
             {sectionItem?.primaryAsset?.type == COURSE_TYPE.VIDEO ? (

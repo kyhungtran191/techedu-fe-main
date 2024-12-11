@@ -11,6 +11,7 @@ import { AxiosInterceptor } from './configs/axiosInstance'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { GetCategoriesWithSubCategories } from './services/categories'
+import AppLoading from './components/global/loading'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AppProvider>
         <AxiosInterceptor>
+          <AppLoading></AppLoading>
           <App />
         </AxiosInterceptor>
       </AppProvider>
