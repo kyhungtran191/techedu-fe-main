@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { Heart, Play } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import ReactPlayer from 'react-player'
 import Instructor from '@/assets/instructor.jfif'
 import { Button } from '@/components/ui/button'
@@ -40,7 +40,9 @@ import { COURSE_TYPE } from '@/constants/course'
 import Video from '@/icons/Video'
 import Document2 from '@/icons/CourseDetail/Document2'
 import PlayBtn from '@/icons/CourseDetail/PlayBtn'
+import { useAppContext } from '@/hooks/useAppContext'
 export default function CourseDetail() {
+
   const [playing, setPlaying] = useState(false)
   // Toggle Playing Button
   const togglePlaying = () => {
@@ -60,7 +62,6 @@ export default function CourseDetail() {
     select: (data) => data.data.value
   })
 
-  console.log('data', data)
 
   return (
     <div className='relative z-0 grid h-full grid-cols-1 xl:grid-cols-[1fr_363px] gap-x-5'>

@@ -32,10 +32,8 @@ export default function Curriculum() {
   const handleDragAndDrop = async (results: DropResult) => {
     const { source, destination, type } = results
 
-    // If there's no destination, just return
     if (!destination) return
 
-    // If the source and destination are the same, no need to do anything
     if (source.droppableId === destination.droppableId && source.index === destination.index) return
 
     if (type === 'group') {

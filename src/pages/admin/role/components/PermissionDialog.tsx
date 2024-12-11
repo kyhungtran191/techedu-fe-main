@@ -1,5 +1,6 @@
 import { ResponsePermission, RolePermission } from '@/@types/admin/role.type'
 import LoadingCircle from '@/components/Loading/LoadingCircle'
+import SectionLoading from '@/components/Loading/SectionLoading'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import Drag from '@/icons/Drag'
@@ -157,21 +158,19 @@ export default function PermissionDialog({ roleId }: { roleId: string }) {
   })
 
   const handleOnClickChecked = (itemId: string, sectionId: string) => {
-    // Check if the selected item section matches the clicked section
     if (selectedItem.sectionId === sectionId) {
       // Toggle the selection state
       const newArr = new Set(selectedItem.items)
       if (newArr.has(itemId)) {
-        newArr.delete(itemId) // If it's already selected, remove it
+        newArr.delete(itemId)
       } else {
-        newArr.add(itemId) // Otherwise, add it
+        newArr.add(itemId)
       }
       setSelectedItem((prev) => ({
         ...prev,
         items: newArr
       }))
     } else {
-      // If a different section is clicked, update selectedItem
       setSelectedItem({ sectionId, items: new Set([itemId]) })
     }
   }
@@ -193,14 +192,14 @@ export default function PermissionDialog({ roleId }: { roleId: string }) {
                 const permission = permissions.find((p) => p.id === itemId)
                 return permission ? { ...permission, selected: true } : null
               })
-              .filter(Boolean) // Filter valid permissions
+              .filter(Boolean)
           ]
         }
       }
     })
 
     setSections(newSections as any)
-    setSelectedItem({ sectionId: '', items: new Set() }) // Reset selected items
+    setSelectedItem({ sectionId: '', items: new Set() })
   }
 
   return (
@@ -210,9 +209,10 @@ export default function PermissionDialog({ roleId }: { roleId: string }) {
         Authorize
       </DialogTrigger>
       <DialogContent
-        className='flex flex-col w-full max-w-[80vw] h-[80vh] overflow-y-auto '
+        className='flex flex-col w-full max-w-[80vw] h-[80vh] overflow-y-auto relative'
         onCloseAutoFocus={handleResetDialog}
       >
+        {isLoading && <SectionLoading className='z-30'></SectionLoading>}
         <DialogHeader>
           <DialogTitle>Authorize Role Permission</DialogTitle>
         </DialogHeader>

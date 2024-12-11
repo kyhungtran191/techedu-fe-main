@@ -16,6 +16,7 @@ let isRefreshing = false
 let refreshQueue: any[] = []
 
 const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
+  let isShowToast = false
   const navigate = useNavigate()
   const { setProfile, setIsAuthenticated, setPermissions } = useAppContext()
   const queryClient = useQueryClient()
@@ -116,8 +117,14 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
       return response
     },
     (error) => {
-      if (error.response.status === 403 || error.response.status === 401) {
-        toast.error(error.response.status === 401 ? 'Unauthorize ! Please Login again' : 'Your account has been banned')
+      const status = error.response?.status
+      if ((status === 403 || status === 401) && !isShowToast) {
+        isShowToast = true
+        toast.error(status === 401 ? 'Unauthorize! Please Login again' : 'Your account has been banned', {
+          onClose: () => {
+            isShowToast = false
+          }
+        })
         clearLS()
         setProfile(undefined)
         setIsAuthenticated(false)

@@ -153,19 +153,21 @@ export default function Role() {
                 ) : (
                   <DropdownMenuContent className='rounded-xl min-w-[160px]'>
                     {UPDATE && (
-                      <DropdownMenuItem
-                        className='flex items-center w-full p-3 mb-2 text-sm text-center rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none gap-x-[18px]'
-                        onSelect={() => {
-                          setEditRole(row.original?.roleId)
-                          setOpenDialog(true)
-                        }}
-                      >
-                        <Edit className='w-5 h-5'></Edit>
-                        Update role
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem
+                          className='flex items-center w-full p-3 mb-2 text-sm text-center rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none gap-x-[18px]'
+                          onSelect={() => {
+                            setEditRole(row.original?.roleId)
+                            setOpenDialog(true)
+                          }}
+                        >
+                          <Edit className='w-5 h-5'></Edit>
+                          Update role
+                        </DropdownMenuItem>
+                        <Separator className='mb-2'></Separator>
+                        <PermissionDialog roleId={row.original.roleId}></PermissionDialog>
+                      </>
                     )}
-                    <Separator className='mb-2'></Separator>
-                    <PermissionDialog roleId={row.original.roleId}></PermissionDialog>
                   </DropdownMenuContent>
                 )}
               </DropdownMenu>

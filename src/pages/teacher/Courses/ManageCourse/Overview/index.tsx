@@ -22,12 +22,6 @@ const validationSchema = Yup.object().shape({
   intendedLearners: Yup.array().of(Yup.string())
 })
 
-type TFormData = {
-  highlights: string[]
-  requirements: string[]
-  intendedLearners: string[]
-}
-
 export default function Overview() {
   const { id } = useParams()
   if (!id) {
@@ -39,7 +33,6 @@ export default function Overview() {
     control,
     watch,
     formState: { errors, isValid, isDirty },
-    setValue,
     reset
   } = useForm({
     resolver: yupResolver(validationSchema),

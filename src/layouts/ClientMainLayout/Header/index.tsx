@@ -26,18 +26,25 @@ const Header = ({
   const location = useLocation()
   const titleRef = useRef<HTMLDivElement | null>(null)
   // const navigate = useNavigate()
-
+  const { pathname } = location
+  const pageState = location.state
+  const isCourseLearningDetail = /\/courses\/\d+\/learn\/\d+/.test(pathname)
+  const isCourseDetail = !isCourseLearningDetail && /\/courses\/[\w-]+/.test(pathname)
   useEffect(() => {
     const currentTitle: HTMLDivElement | null = titleRef.current
     if (currentTitle) {
-      currentTitle.textContent = location.pathname !== '/' ? formatPathToTitle(location.pathname, true) : 'Courses'
+      currentTitle.textContent =
+        location.pathname !== '/'
+          ? isCourseDetail
+            ? pageState.courseName
+            : formatPathToTitle(location.pathname, true)
+          : 'Courses'
     }
   }, [location.pathname])
 
-  const { pathname } = location
-  const isCourseDetail = /\/courses\/\d+/.test(pathname)
-  const isCourseLearningDetail = /\/courses\/\d+\/learn\/\d+/.test(pathname)
-  const { isAuthenticated, setProfile, setIsAuthenticated, profile, setPermissions } = useAppContext()
+  console.log(isCourseDetail)
+
+  const { isAuthenticated, cart } = useAppContext()
 
   const navigate = useNavigate()
   const courseCardLocationState = useLocation()
@@ -83,10 +90,12 @@ const Header = ({
 
         <div className='flex items-center gap-x-2 tb:gap-x-4 xl:gap-x-6 2xl:gap-x-9'>
           <Popover>
-            <PopoverTrigger>
+            <PopoverTrigger onClick={() => navigate('/my-cart')} className='relative'>
+              <div className='absolute flex items-center justify-center w-5 h-5 text-sm text-white bg-red-500 rounded-full -top-2 -right-1'>
+                {cart?.items && cart?.items?.length > 0 ? cart?.items?.length : 0}
+              </div>
               <Cart className='text-neutral-black'></Cart>
             </PopoverTrigger>
-            <PopoverContent>Place content for the popover here.</PopoverContent>
           </Popover>
           <Separator orientation='vertical' className='h-[24px]'></Separator>
           {/* Login */}

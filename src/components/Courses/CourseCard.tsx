@@ -24,6 +24,7 @@ interface IProps {
 export default function CourseCard({ courseInfo, vertical = true, wrapperClass = '', isCartItem = false }: IProps) {
   const navigate = useNavigate()
   const { isAuthenticated, cart } = useAppContext()
+
   const handleOnClickCard = (courseId: string, instructorId: string, courseName: string) => {
     navigate(`/courses/${courseId}`, {
       state: { courseId, instructorId, courseName }
@@ -34,14 +35,12 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
     mutationFn: (item: TItemAddCart) => AddItemToCart(item)
   })
 
-  const isHavingCourseCart = useMemo(() => {
+   const isHavingCourseCart = useMemo(() => {
     if (!isAuthenticated || !cart?.id) return
     return cart.items.some((item) => {
       return item.courseId === courseInfo?.courseId
     })
   }, [cart])
-
-  console.log(isHavingCourseCart)
 
   const queryClient = useQueryClient()
 

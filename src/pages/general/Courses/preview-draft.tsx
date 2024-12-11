@@ -23,7 +23,9 @@ export default function PreviewDraft() {
   const state = location.state
   if (!state.courseId || !state.instructorId) {
     toast.error('No courseID or instructorId found !')
+    return
   }
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data, isLoading } = useQuery({
     queryKey: ['publish-sections', state.courseId, state.instructorId],
     queryFn: () => GetPublishSections(state.courseId, state.instructorId),
@@ -40,14 +42,11 @@ export default function PreviewDraft() {
     }
   })
 
-  console.log(data)
-
   return (
     <>
       {isLoading && <SectionLoading className='z-30'></SectionLoading>}
       <div className='w-full transition-all duration-300 ease-in-out flex items-center justify-between h-[76px] text-black container-fluid z-50 relative'>
         <h1 className='text-3xl font-semibold'>Preview Course</h1>
-        <div className='flex-1 text-2xl font-semibold text-center'>Course Name Of User</div>
         <div onClick={() => navigate(-1)} className='flex items-center gap-2 cursor-pointer'>
           <Navigate></Navigate>
           Back

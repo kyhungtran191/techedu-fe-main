@@ -141,14 +141,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     }
   ]
 
-  const isCourseLearningDetail = /\/courses\/\d+\/learn\/\d+/.test(pathname)
-
+  
   const courseCardLocationState = useLocation()
   const state = courseCardLocationState.state
-  console.log('state', state)
-
-  // Nếu không phải trang học tập, nhưng là trang chi tiết khóa học
-  const isCourseDetail = !isCourseLearningDetail && /\/courses\/\d+/.test(pathname)
+  
+  const isCourseLearningDetail = /\/courses\/\d+\/learn\/\d+/.test(pathname)
+  const isCourseDetail = !isCourseLearningDetail && /\/courses\/[\w-]+/.test(pathname)
 
   const {
     data: similarityData,
@@ -164,7 +162,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   })
 
   const isDisabled = !(state?.courseId && state?.instructorId && isCourseDetail)
-
+  console.log(isCourseDetail)
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
       <div
@@ -192,114 +190,117 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           </div>
         </div>
         {/* <!-- SIDEBAR HEADER --> */}
-        {!isCourseDetail && !isCourseLearningDetail && (
-          <div className='flex flex-col duration-300 ease-linear no-scrollbar'>
-            {/* <!-- Sidebar Menu --> */}
-            <nav className='mt-5'>
-              {sidebarOptions.map((item: sideBarOption, index) => (
-                <div key={index}>
-                  {item?.parent && (
-                    <h3 className='mb-4 text-sm font-semibold text-neutral-black text-opacity-70'>{item?.parent}</h3>
-                  )}
-                  <ul className='flex flex-col gap-6 mb-6'>
-                    {item?.groupOptions &&
-                      item.groupOptions.map((option, index) => (
-                        <li key={index}>
-                          <NavLink
-                            to={option?.link}
-                            className={`group  flex items-center gap-4 rounded-sm py-2 px-4 font-medium text-neutral-black duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 relative justify-start ${
-                              pathname === option?.link && 'bg-primary-3'
-                            }`}
-                          >
-                            <div>{option?.icon}</div>
-                            <div className='block'> {option?.title}</div>
-                            {option.title === 'Messages' && (
-                              <div className='flex items-center justify-center w-8 h-8 ml-5 text-white bg-red-600 rounded-full'>
-                                1
-                              </div>
-                            )}
-                          </NavLink>
-                        </li>
-                      ))}
+        {!isCourseDetail &&
+          !isCourseLearningDetail && (
+            <div className='flex flex-col duration-300 ease-linear no-scrollbar'>
+              {/* <!-- Sidebar Menu --> */}
+              <nav className='mt-5'>
+                {sidebarOptions.map((item: sideBarOption, index) => (
+                  <div key={index}>
+                    {item?.parent && (
+                      <h3 className='mb-4 text-sm font-semibold text-neutral-black text-opacity-70'>{item?.parent}</h3>
+                    )}
+                    <ul className='flex flex-col gap-6 mb-6'>
+                      {item?.groupOptions &&
+                        item.groupOptions.map((option, index) => (
+                          <li key={index}>
+                            <NavLink
+                              to={option?.link}
+                              className={`group  flex items-center gap-4 rounded-sm py-2 px-4 font-medium text-neutral-black duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 relative justify-start ${
+                                pathname === option?.link && 'bg-primary-3'
+                              }`}
+                            >
+                              <div>{option?.icon}</div>
+                              <div className='block'> {option?.title}</div>
+                              {option.title === 'Messages' && (
+                                <div className='flex items-center justify-center w-8 h-8 ml-5 text-white bg-red-600 rounded-full'>
+                                  1
+                                </div>
+                              )}
+                            </NavLink>
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                ))}
+                <div className='flex flex-col items-start justify-center w-full '>
+                  <img src={Ads} alt='ads' className='w-[170px] h-[140px] object-cover mx-auto' />
+                  <p className='text-center mt-6 mb-[10px]'>Unlimited courses with premium account</p>
+                  <Button className='w-full text-white bg-primary-1 max-w-[170px] mx-auto'>Upgrade</Button>
+                </div>
+                {/* <!-- Others Group --> */}
+                <div>
+                  <ul className='flex flex-col mt-6'>
+                    <li>
+                      <NavLink
+                        to={'/help'}
+                        className={`group  flex items-center gap-4 rounded-sm py-2 px-4 font-medium text-neutral-black duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 relative justify-start ${
+                          pathname.includes('/help') && 'bg-primary-2'
+                        }`}
+                      >
+                        <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'>
+                          <g clipPath='url(#clip0_2067_543)'>
+                            <path
+                              d='M11 18H13V16H11V18ZM12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM12 6C9.79 6 8 7.79 8 10H10C10 8.9 10.9 8 12 8C13.1 8 14 8.9 14 10C14 12 11 11.75 11 15H13C13 12.75 16 12.5 16 10C16 7.79 14.21 6 12 6Z'
+                              fill='#444444'
+                            />
+                          </g>
+                          <defs>
+                            <clipPath id='clip0_2067_543'>
+                              <rect width='24' height='24' fill='white' />
+                            </clipPath>
+                          </defs>
+                        </svg>
+                        <div className='block'>Help</div>
+                      </NavLink>
+                    </li>
                   </ul>
                 </div>
-              ))}
-              <div className='flex flex-col items-start justify-center w-full '>
-                <img src={Ads} alt='ads' className='w-[170px] h-[140px] object-cover mx-auto' />
-                <p className='text-center mt-6 mb-[10px]'>Unlimited courses with premium account</p>
-                <Button className='w-full text-white bg-primary-1 max-w-[170px] mx-auto'>Upgrade</Button>
-              </div>
-              {/* <!-- Others Group --> */}
-              <div>
-                <ul className='flex flex-col mt-6'>
-                  <li>
-                    <NavLink
-                      to={'/help'}
-                      className={`group  flex items-center gap-4 rounded-sm py-2 px-4 font-medium text-neutral-black duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 relative justify-start ${
-                        pathname.includes('/help') && 'bg-primary-2'
-                      }`}
-                    >
-                      <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'>
-                        <g clipPath='url(#clip0_2067_543)'>
-                          <path
-                            d='M11 18H13V16H11V18ZM12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM12 6C9.79 6 8 7.79 8 10H10C10 8.9 10.9 8 12 8C13.1 8 14 8.9 14 10C14 12 11 11.75 11 15H13C13 12.75 16 12.5 16 10C16 7.79 14.21 6 12 6Z'
-                            fill='#444444'
-                          />
-                        </g>
-                        <defs>
-                          <clipPath id='clip0_2067_543'>
-                            <rect width='24' height='24' fill='white' />
-                          </clipPath>
-                        </defs>
-                      </svg>
-                      <div className='block'>Help</div>
-                    </NavLink>
-                  </li>
-                </ul>
-              </div>
-            </nav>
-            {/* <!-- Sidebar Menu --> */}
-          </div>
-        )}
-        {(isCourseDetail || isCourseLearningDetail) && (
-          <div className='mt-6'>
-            <Link to='/' className='flex items-center group'>
-              <Navigate className='transition-transform duration-150 ease-in-out group-hover:-translate-x-1'></Navigate>
-              <span className='ml-3 text-neutral-black group-hover:text-black group-hover:font-medium'>
-                Back to courses
-              </span>
-            </Link>
-            <div className='my-6'>
-              <span className='text-neutral-silver-3'>Course</span>
-              <h3 className='mt-2 text-xl font-bold text-neutral-black'>
-                {state?.courseName || 'Rapid prototyping in the Chrome Browser'}{' '}
-              </h3>
+              </nav>
+              {/* <!-- Sidebar Menu --> */}
             </div>
-            {!isDisabled && similarityLoading && <SectionLoading className='z-99999'></SectionLoading>}
-            {isCourseDetail && state?.courseId && (similarityData as PublicCourse[])?.length > 0 && (
-              <div className='min-h-[200px] relative'>
-                <h3 className='text-2xl font-medium text-neutral-black'>Similar courses</h3>
-                {/* Course Card */}
-                {similarityData &&
-                  similarityData.map((item) => (
-                    <div className='flex items-start p-2 my-6 rounded-lg cursor-pointer gap-x-3 hover:bg-slate-50'>
-                      <img
-                        src={item?.courseThumbnailUrl}
-                        alt=''
-                        className='w-[45px] h-[45px] object-cover rounded-2xl'
-                      />
-                      <div className='text-neutral-black'>
-                        <h3 className='text-[18px] font-medium line-clamp-1 text-ellipsis'>
-                          {(item as any).courseName}
-                        </h3>
-                        <div className='text-sm font-light'>{item?.instructorName}</div>
-                      </div>
-                    </div>
-                  ))}
+          )}
+
+        {(isCourseDetail ||
+          isCourseLearningDetail)&& (
+            <div className='relative z-30 mt-6'>
+              <Link to='/' className='flex items-center group'>
+                <Navigate className='transition-transform duration-150 ease-in-out group-hover:-translate-x-1'></Navigate>
+                <span className='ml-3 text-neutral-black group-hover:text-black group-hover:font-medium'>
+                  Back to courses
+                </span>
+              </Link>
+              <div className='my-6'>
+                <span className='text-neutral-silver-3'>Course</span>
+                <h3 className='mt-2 text-xl font-bold text-neutral-black'>
+                  {state?.courseName || 'Rapid prototyping in the Chrome Browser'}{' '}
+                </h3>
               </div>
-            )}
-          </div>
-        )}
+              {!isDisabled && similarityLoading && <SectionLoading className='z-99999'></SectionLoading>}
+              {isCourseDetail && state?.courseId && (similarityData as PublicCourse[])?.length > 0 && (
+                <div className='min-h-[200px] relative'>
+                  <h3 className='text-2xl font-medium text-neutral-black'>Similar courses</h3>
+                  {/* Course Card */}
+                  {similarityData &&
+                    similarityData.map((item) => (
+                      <div className='flex items-start p-2 my-6 rounded-lg cursor-pointer gap-x-3 hover:bg-slate-50'>
+                        <img
+                          src={item?.courseThumbnailUrl}
+                          alt=''
+                          className='w-[45px] h-[45px] object-cover rounded-2xl'
+                        />
+                        <div className='text-neutral-black'>
+                          <h3 className='text-[18px] font-medium line-clamp-1 text-ellipsis'>
+                            {(item as any).courseName}
+                          </h3>
+                          <div className='text-sm font-light'>{item?.instructorName}</div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          )}
       </aside>
     </ClickOutside>
   )

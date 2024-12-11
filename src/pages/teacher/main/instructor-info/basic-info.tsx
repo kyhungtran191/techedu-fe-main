@@ -32,18 +32,6 @@ export default function BasicInfo() {
   const { profile, isAuthenticated } = useAppContext()
   if (!profile) return
 
-  useEffect(() => {
-    if (profile) {
-      const { firstName, lastName, bio, headline } = profile
-      reset({
-        firstName,
-        biography: bio,
-        headline,
-        lastName
-      })
-    }
-  }, [profile])
-
   const {
     handleSubmit,
     control,
@@ -59,6 +47,18 @@ export default function BasicInfo() {
       biography: ''
     }
   })
+
+  useEffect(() => {
+    if (profile) {
+      const { firstName, lastName, bio, headline } = profile
+      reset({
+        firstName,
+        biography: bio,
+        headline: headline || '',
+        lastName
+      })
+    }
+  }, [profile, reset])
 
   const updateMeMutation = useMutation({
     mutationFn: (data: { firstName: string; lastName: string; headline: string; bio: string }) => updateMe(data)
@@ -127,7 +127,7 @@ export default function BasicInfo() {
           </div>
           <div className='mb-6'>
             <Label className='mb-[18px] block text-xl'>Headline</Label>
-            <div className='relative w-full p-3 border rounded-lg border-neutral-black'>
+            <div className='relative z-10 w-full p-3 border rounded-lg border-neutral-black'>
               {/* Title input */}
               <Controller
                 control={control}

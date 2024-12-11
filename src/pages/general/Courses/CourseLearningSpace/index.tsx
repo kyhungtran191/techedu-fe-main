@@ -31,8 +31,8 @@ export default function CourseLearningSpace() {
   const [currentItem, setCurrentItem] = useState<SectionItem | undefined>()
   const { data, isLoading } = useQuery({
     // sẽ change sau khi đã render dc courses
-    queryKey: ['publish-sections', '214c0095-80a1-4083-b9c9-f874c0e174a2', '091897e8-306f-45e5-984f-78f294f019ab'],
-    queryFn: () => GetPublishSections('d881d542-d2a6-46f6-bfed-06af73aaae82', '091897e8-306f-45e5-984f-78f294f019ab'),
+    queryKey: ['publish-sections', 'eee6c380-e93e-4722-8dce-75f0056406cf', '4e9090ed-f35d-4eff-b794-97923428801f'],
+    queryFn: () => GetPublishSections('eee6c380-e93e-4722-8dce-75f0056406cf', '4e9090ed-f35d-4eff-b794-97923428801f'),
     select: (data) => data.data.value,
     onSuccess(data) {
       if (data) {

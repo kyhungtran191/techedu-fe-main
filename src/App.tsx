@@ -1,5 +1,5 @@
-import { Outlet, Route, Routes, useNavigate } from 'react-router-dom'
-import { Suspense, lazy, useEffect } from 'react'
+import { Outlet, Route, Routes } from 'react-router-dom'
+import { Suspense, lazy } from 'react'
 // Partial - Layout
 import BlankLayout from './layouts/BlankLayout'
 import ClientMainLayout from './layouts/ClientMainLayout'
@@ -26,10 +26,6 @@ import { APP_PERMISSIONS } from './constants/permissions'
 import NotFound from './pages/errors/NotFound'
 import Unauthorized from './pages/errors/Unauthorized'
 import { InstructorProfile } from './pages/teacher/main/profile'
-import { useQueryClient } from '@tanstack/react-query'
-import { useEditor } from '@tiptap/react'
-import { useAppContext } from './hooks/useAppContext'
-import GlobalLoading from '@/components/Loading'
 
 // Lazy loading for components
 const ResendEmail = lazy(() => import('./pages/general/resend-email'))
@@ -68,9 +64,8 @@ const PrivateUserManage = lazy(() => import('./pages/admin/private-users'))
 const CourseDetailAdmin = lazy(() => import('./pages/admin/courses/CourseDetailAdmin'))
 const InstructorDetail = lazy(() => import('./pages/admin/users/instructors/InstructorDetail'))
 const PreviewCourse = lazy(() => import('./pages/general/Courses/preview-draft'))
-
+const Chat = lazy(() => import('./pages/admin/chats'))
 function App() {
-  const { isLoading } = useAppContext()
   return (
     <Suspense fallback={<Loading></Loading>}>
       <Routes>
@@ -250,19 +245,57 @@ function App() {
               }
             />
 
-            <Route path='courses' element={<CoursesAdmin />} />
-            <Route path='courses/:id/:instructorId' element={<CourseDetailAdmin />} />
-            <Route path='students' element={<Students />} />
-            <Route path='categories' element={<Category />} />
-            <Route path='private-users' element={<PrivateUserManage />} />
+            <Route
+              path='courses'
+              element={
+                <PermissionsGuard permissions={[APP_PERMISSIONS.COURSES.VIEW as string]}>
+                  <CoursesAdmin />
+                </PermissionsGuard>
+              }
+            />
+
+            <Route
+              path='courses/:id/:instructorId'
+              element={
+                <PermissionsGuard permissions={[APP_PERMISSIONS.COURSES.VIEW as string]}>
+                  <CourseDetailAdmin />
+                </PermissionsGuard>
+              }
+            />
+
+            <Route
+              path='private-users'
+              element={
+                <PermissionsGuard permissions={[APP_PERMISSIONS.PRIVATE_USER.VIEW as string]}>
+                  <PrivateUserManage />
+                </PermissionsGuard>
+              }
+            />
+            <Route
+              path='accounts'
+              element={
+                <PermissionsGuard permissions={[APP_PERMISSIONS.USER.VIEW as string]}>
+                  <Accounts />
+                </PermissionsGuard>
+              }
+            />
+            <Route
+              path='role'
+              element={
+                <PermissionsGuard permissions={[APP_PERMISSIONS.ROLE.VIEW as string]}>
+                  <Role />
+                </PermissionsGuard>
+              }
+            />
+            <Route path='chats' element={<Chat />} />
             <Route path='instructors' element={<Instructors />} />
             <Route path='instructors/:id' element={<InstructorDetail />} />
-            <Route path='accounts' element={<Accounts />} />
-            <Route path='role' element={<Role />} />
+            <Route path='students' element={<Students />} />
+            <Route path='categories' element={<Category />} />
           </Route>
         </Route>
         {/* Error Route */}
-        <Route path='/501' element={<Unauthorized></Unauthorized>}></Route>
+        <Route path='/401' element={<Unauthorized></Unauthorized>}></Route>
         <Route path='*' element={<NotFound />} />
       </Routes>
     </Suspense>

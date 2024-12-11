@@ -23,6 +23,9 @@ import { formatRolesDisplay, formatSystemDate } from '@/utils'
 import { USER_STATUS } from '@/constants'
 import { toast } from 'react-toastify'
 import { useToggleBlockUserMutation } from '@/mutations/useToggleBlockUserMutation'
+import { useAppContext } from '@/hooks/useAppContext'
+import { APP_PERMISSIONS } from '@/constants/permissions'
+import { BASIC_ROLE } from '@/constants/role'
 
 export default function PrivateUserManage() {
   const queryParams: PrivateUserQueryParams = useParamsVariables()
@@ -40,9 +43,11 @@ export default function PrivateUserManage() {
   // check user permission
   const { CREATE, DELETE, UPDATE, VIEW } = usePermission('PRIVATE_USER', ['VIEW', 'CREATE', 'DELETE', 'UPDATE'])
 
+  console.log('CREATE - DELETE - UPDATE - VIEW', CREATE, DELETE, UPDATE, VIEW)
+  
   const [openDialog, setOpenDialog] = useState<boolean>(false)
   const [editUser, setEditUser] = useState<undefined | string>(undefined)
-
+  const { permissions, profile } = useAppContext()
   const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['private-users', queryConfig],
     queryFn: () => GetAllPrivateUsers(queryConfig),
@@ -143,25 +148,26 @@ export default function PrivateUserManage() {
                     >
                       Update Member
                     </DropdownMenuItem>
-                    <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
-                      {row.original.userStatus == USER_STATUS.INACTIVE ? 'Activated Member' : 'Inactivate Member'}
-                    </DropdownMenuItem>
                   </>
                 )}
                 <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
                   Activity logs
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
-                  onSelect={() => {
-                    toggleBlock({
-                      userId: row.original.userId,
-                      isBlock: row.original.userStatus !== USER_STATUS.BANNED
-                    })
-                  }}
-                >
-                  {row.original.userStatus === USER_STATUS.BANNED ? 'Un ban this account' : 'Ban this account'}
-                </DropdownMenuItem>
+                {(permissions?.includes(APP_PERMISSIONS?.PRIVATE_USER?.BLOCK as string) ||
+                  profile?.roles.includes(BASIC_ROLE.DIRECTOR)) && (
+                  <DropdownMenuItem
+                    className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                    onSelect={() => {
+                      toggleBlock({
+                        userId: row.original.userId,
+                        isBlock: row.original.userStatus !== USER_STATUS.BANNED
+                      })
+                    }}
+                  >
+                    {row.original.userStatus === USER_STATUS.BANNED ? 'Un ban this account' : 'Ban this account'}
+                  </DropdownMenuItem>
+                )}
+
                 {row.original.userStatus == USER_STATUS.INACTIVE && (
                   <DropdownMenuItem
                     className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'

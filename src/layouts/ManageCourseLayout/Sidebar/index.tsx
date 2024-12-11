@@ -10,13 +10,22 @@ import Navigate from '@/icons/Navigate'
 import { useMutation } from '@tanstack/react-query'
 import { SubmitReviewCourse } from '@/services/instructor/submit-course.service'
 import { toast } from 'react-toastify'
-import { formatErrorMessagesSubmitCourse } from '@/utils/course'
 import ErrorAlertDialog from '@/components/ErrorAlert'
 import SectionLoading from '@/components/Loading/SectionLoading'
 
 interface SidebarManageProps {
   sidebarOpen: boolean
   setSidebarOpen: (arg: boolean) => void
+}
+
+type GroupOption = {
+  link: string
+  title: string
+}
+
+type sideBarOption = {
+  parent?: string
+  groupOptions: GroupOption[]
 }
 
 const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
@@ -27,6 +36,7 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
   const { id } = useParams()
   const [errors, setErrors] = useState<Record<string, string[]> | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [courseInfo, setCourseInfo] = useState(null)
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -53,19 +63,16 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
     return
   }
 
+  // Get Course Name with Status
+
+  const navigationState = location.state
+
+  // if (!navigationState?.courseName || !navigationState?.courseStatus) {
+  //   toast.error('No courseName or courseStatus')
+  // }
   const submitCourseMutation = useMutation({
     mutationFn: (_) => SubmitReviewCourse(id)
   })
-
-  type GroupOption = {
-    link: string
-    title: string
-  }
-
-  type sideBarOption = {
-    parent?: string
-    groupOptions: GroupOption[]
-  }
 
   const sidebarOptions: sideBarOption[] = [
     {
@@ -164,8 +171,8 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
           </span>
         </Link>
         <div className='flex items-center gap-2'>
-          <h2 className='mt-2 mb-1 text-xl font-bold bg-white text-neutral-black'>UI animation for UX/UI Designers</h2>
-          <div className='px-3 py-2 rounded-lg bg-neutral-silver-1'>Draft</div>
+          <h2 className='mt-2 mb-1 text-xl font-bold bg-white text-neutral-black'>{navigationState?.courseName}</h2>
+          <div className='px-3 py-2 rounded-lg bg-neutral-silver-1'>{navigationState?.courseStatus}</div>
         </div>
 
         <div className='flex flex-col h-full overflow-y-scroll duration-300 ease-linear no-scrollbar'>

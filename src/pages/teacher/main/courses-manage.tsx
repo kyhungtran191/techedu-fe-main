@@ -23,6 +23,7 @@ import SectionLoading from '@/components/Loading/SectionLoading'
 import PlaceHolderIMG from '@/assets/placeholder.jpg'
 import { formatSystemDate } from '@/utils'
 import { COURSE_STATUS } from '@/constants/course'
+import { useAppContext } from '@/hooks/useAppContext'
 
 // End
 
@@ -32,10 +33,25 @@ export default function CourseManage() {
     queryFn: GetAllInstructorCourse,
     select: (data) => data.data.value
   })
-
-  console.log(courseData)
-
+  const { profile } = useAppContext()
   const navigate = useNavigate()
+  const handleNavigateWithState = (courseId: string, courseName: string, courseStatus: string) => {
+    return navigate(`/teacher/course/${courseId}/manage/curriculum`, {
+      state: {
+        courseName,
+        courseStatus
+      }
+    })
+  }
+
+  const handlePreviewCourse = (courseId: string) => {
+    return navigate(`/preview-draft-course`, {
+      state: {
+        courseId,
+        instructorId: profile?.userId
+      }
+    })
+  }
 
   const columns = [
     {
@@ -103,13 +119,15 @@ export default function CourseManage() {
               <DropdownMenuContent align='end' className='rounded-xl min-w-[160px] py-2'>
                 <DropdownMenuItem
                   className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
-                  onClick={() => navigate(`/preview-draft-course/${row.original.courseId}`)}
+                  onClick={() => handlePreviewCourse(row.original.courseId)}
                 >
                   Preview course
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
-                  onClick={() => navigate(`/teacher/course/${row.original.courseId}/manage/curriculum`)}
+                  onClick={() =>
+                    handleNavigateWithState(row.original.courseId, row.original.title, row.original.status)
+                  }
                 >
                   Edit Course
                 </DropdownMenuItem>

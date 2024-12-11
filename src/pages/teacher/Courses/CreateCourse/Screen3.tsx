@@ -28,6 +28,7 @@ export default function Screen3() {
   useEffect(() => {
     if (file) {
       handleUpload()
+      setLoading(true)
     }
   }, [file])
 
@@ -123,7 +124,6 @@ export default function Screen3() {
   }
 
   useEffect(() => {
-    console.log(courseData.thumbnail.courseThumbnailFileUrl)
     if (courseData.thumbnail.courseThumbnailFileUrl) {
       setCheckedOption(1)
       setPreviewURL(courseData?.thumbnail?.courseThumbnailFileUrl)
@@ -193,13 +193,13 @@ export default function Screen3() {
               className={`rounded-b-lg overflow-hidden  ${checkedOption == 1 ? 'p-6 border-x border-b' : 'p-0 border-0'}`}
             >
               <div
-                className={`w-full border-2 border-dashed rounded-lg   ${checkedOption == 1 ? 'h-[180px]  opacity-100' : 'h-0  opacity-0'} transition-all duration-300`}
+                className={`w-full border-2 border-dashed rounded-lg   ${checkedOption == 1 ? 'h-[180px]  opacity-100' : 'h-0  opacity-0'} transition-all duration-300 relative`}
               >
+                {loading && <SectionLoading className='z-30'></SectionLoading>}
                 {previewURL ? (
                   <img src={previewURL} className='object-cover w-full h-full'></img>
                 ) : (
                   <div className='relative'>
-                    {loading && <SectionLoading></SectionLoading>}
                     <ImageDropUpload onSetFile={setFile}></ImageDropUpload>
                   </div>
                 )}

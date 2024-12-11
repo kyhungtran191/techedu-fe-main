@@ -20,10 +20,6 @@ import { jwtDecode } from 'jwt-decode'
 import { saveAccessTokenToLS, savePermissions, saveRefreshTokenToLS, saveUserToLS } from '@/utils/auth'
 import SectionLoading from '@/components/Loading/SectionLoading'
 export default function Login() {
-  type TDefaultValue = {
-    email: string
-    password: string
-  }
 
   const schema = yup.object().shape({
     email: yup.string().required('Email is required').matches(EMAIL_REG, 'Email Format Error'),

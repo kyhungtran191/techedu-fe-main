@@ -92,7 +92,6 @@ export const SetupProfileContextProvider = ({ children }: { children: React.Reac
     }
   }
 
-  // Reset dữ liệu chỉ khi gõ URL mới
   useEffect(() => {
     if (performance.navigation.type === performance.navigation.TYPE_NAVIGATE) {
       handleResetData()
