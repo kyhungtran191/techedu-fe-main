@@ -21,6 +21,10 @@ import { useGetListRoles } from '@/queries/role'
 import { Role } from '@/@types/admin/role.type'
 import { TPrivateUserAdd, TPrivateUserUpdate } from '@/@types/admin/private-user.type'
 import { AddNewPrivateUser, GetDetailPrivateUser, UpdatePrivateUser } from '@/services/admin/private-users.service'
+import { useAppContext } from '@/hooks/useAppContext'
+import { BASIC_ROLE } from '@/constants/role'
+import { APP_PERMISSIONS } from '@/constants/permissions'
+import { usePermission } from '@/hooks/usePermissions'
 
 interface TCreateEditUser {
   open: boolean
@@ -51,6 +55,10 @@ export default function EditAddUserDialog({
   idUser,
   CREATE_PERMISSION
 }: TCreateEditUser) {
+  const { profile, permissions } = useAppContext()
+
+  
+
   const schema = yup.object().shape({
     email: yup.string().required('Email is required').matches(EMAIL_REG, 'Format email error'),
     password: yup.string().nullable(), // Allow null values
@@ -290,6 +298,10 @@ export default function EditAddUserDialog({
                 onValueChange={(value) => {
                   setValue('roleId', value)
                 }}
+                disabled={
+                  !profile?.roles.includes(BASIC_ROLE.DIRECTOR) &&
+                  !permissions?.includes(APP_PERMISSIONS.PRIVATE_USER.AUTHORIZE as string)
+                }
               >
                 <SelectTrigger className=''>
                   <SelectValue placeholder='Select User Role' />

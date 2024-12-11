@@ -34,17 +34,6 @@ import Swal from 'sweetalert2'
 import { toast } from 'react-toastify'
 import { useState } from 'react'
 
-type ITypeCourseTable = {
-  _id: string
-  thumbnail: string
-  courseName: string
-  instructorName: string
-  instructorAvatar: string
-  level: string
-  status: number
-  createdAt: string
-}
-
 import {
   Dialog,
   DialogContent,
@@ -60,12 +49,16 @@ import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Textarea } from '@/components/ui/textarea'
+import { useAppContext } from '@/hooks/useAppContext'
+import { BASIC_ROLE } from '@/constants/role'
+import { APP_PERMISSIONS } from '@/constants/permissions'
 const schema = yup
   .object({
     reason: yup.string().required('Reason is required')
   })
   .required()
 export default function CoursesAdmin() {
+  const { permissions, profile } = useAppContext()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const queryParams: PrivateCourseQueryParams = useParamsVariables()
@@ -213,22 +206,26 @@ export default function CoursesAdmin() {
             className={`w-fit mx-auto px-3 py-2 tex  rounded-lg ${row.original.status == COURSE_STATUS.REJECT ? 'bg-red-500 text-white' : row.original.status == COURSE_STATUS.PUBLISH ? 'bg-primary-1 text-white' : 'bg-[#F0D355] text-white'}`}
           >
             {row.original.status == COURSE_STATUS.REVIEW ? (
-              <div className='flex items-center gap-x-2'>
-                <Button
-                  variant={'custom'}
-                  onClick={() => handleApprove(row.original.id, row.original.instructor.userId)}
-                >
-                  Approve
-                </Button>
-                <Button
-                  className='text-white bg-red-500 hover:bg-red-600'
-                  onClick={() =>
-                    setRejectDialog({ courseId: row.original.id, instructorId: row.original.instructor.userId })
-                  }
-                >
-                  Reject
-                </Button>
-              </div>
+              profile?.roles?.includes(BASIC_ROLE.DIRECTOR) || permissions?.includes(APP_PERMISSIONS.COURSES.REVIEW) ? (
+                <div className='flex items-center gap-x-2'>
+                  <Button
+                    variant={'custom'}
+                    onClick={() => handleApprove(row.original.id, row.original.instructor.userId)}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    className='text-white bg-red-500 hover:bg-red-600'
+                    onClick={() =>
+                      setRejectDialog({ courseId: row.original.id, instructorId: row.original.instructor.userId })
+                    }
+                  >
+                    Reject
+                  </Button>
+                </div>
+              ) : (
+                <span>Reviewing</span>
+              )
             ) : (
               row.original.status
             )}

@@ -83,9 +83,6 @@ export default function EditAddAccount({ open, setEditUser, setOpenDialog, idUse
 
   return (
     <Dialog open={open} onOpenChange={setOpenDialog}>
-      <DialogTrigger asChild>
-        <Button variant='outline'>Edit Profile</Button>
-      </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>

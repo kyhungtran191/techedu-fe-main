@@ -96,6 +96,7 @@ export default function ResourcesUpload({
                 if (res && res.data && res?.data?.value) {
                   const filtered = res?.data?.value.filter((item) => !item.isPrimary)
                   handleUpdateSupplementAssets(filtered as SupplementaryAssetItem[])
+                  setUploadResource(false)
                 }
               }
             }

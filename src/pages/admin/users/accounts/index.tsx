@@ -23,6 +23,9 @@ import { USER_STATUS } from '@/constants'
 import LoadingCircle from '@/components/Loading/LoadingCircle'
 import EditAddAccount from './components/EditAddAccount'
 import { useToggleBlockUserMutation } from '@/mutations/useToggleBlockUserMutation'
+import { useAppContext } from '@/hooks/useAppContext'
+import { BASIC_ROLE } from '@/constants/role'
+import { APP_PERMISSIONS } from '@/constants/permissions'
 
 export default function Accounts() {
   const queryParams: PrivateUserQueryParams = useParamsVariables()
@@ -44,6 +47,8 @@ export default function Accounts() {
     queryFn: () => GetAllAccounts(queryConfig),
     select: (res) => res.data.value
   })
+
+  const { profile, permissions } = useAppContext()
 
   const { mutate: toggleBlock } = useToggleBlockUserMutation(refetch)
 
@@ -126,17 +131,20 @@ export default function Accounts() {
                 >
                   View Member
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
-                  onSelect={() => {
-                    toggleBlock({
-                      userId: row.original.userId,
-                      isBlock: row.original.userStatus !== USER_STATUS.BANNED
-                    })
-                  }}
-                >
-                  {row.original.userStatus === USER_STATUS.BANNED ? 'Un ban this account' : 'Ban this account'}
-                </DropdownMenuItem>
+                {(profile?.roles.includes(BASIC_ROLE.DIRECTOR) ||
+                  permissions?.includes(APP_PERMISSIONS.USER.BLOCK as string)) && (
+                  <DropdownMenuItem
+                    className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                    onSelect={() => {
+                      toggleBlock({
+                        userId: row.original.userId,
+                        isBlock: row.original.userStatus !== USER_STATUS.BANNED
+                      })
+                    }}
+                  >
+                    {row.original.userStatus === USER_STATUS.BANNED ? 'Un ban this account' : 'Ban this account'}
+                  </DropdownMenuItem>
+                )}
 
                 <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
                   Activity logs

@@ -20,7 +20,7 @@ export default function VideoPromotion({ videoPromotion, setVideoPromotion }: TU
   const [file, setFile] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const { id } = useParams()
-
+  console.log('videoPromotionFilePath' + videoPromotion?.videoPromotionFilePath)
   useEffect(() => {
     if (file) {
       setVideoPromotion(null)
@@ -105,7 +105,7 @@ export default function VideoPromotion({ videoPromotion, setVideoPromotion }: TU
       {isLoading && <SectionLoading></SectionLoading>}
       <div className='flex items-center justify-between'>
         <h3 className='text-xl font-medium'>Promotional video</h3>
-        {videoPromotion?.videoPromotionFilePath && (
+        {videoPromotion?.videoPromotionFileUrl && (
           <Label
             className='bg-transparent border py-3 px-[18px] rounded-lg cursor-pointer block border-neutral-black text-neutral-black hover:text-inherit hover:bg-inherit'
             htmlFor='promotion-video'

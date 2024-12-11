@@ -14,8 +14,6 @@ interface AclGuardProps {
 }
 
 const PermissionsGuard = (props: AclGuardProps) => {
-  //user app context
-
   // ** Props
   const { children, permissions } = props
 
@@ -23,14 +21,6 @@ const PermissionsGuard = (props: AclGuardProps) => {
   const { isAuthenticated, permissions: userPermissions, profile } = useAppContext()
 
   let ability: any
-  //   const router = useRouter();
-  const navigate = useNavigate()
-  // manage user permissions
-  // const permissionUser = user?.role?.permissions
-  //   ? user?.role?.permissions?.includes(PERMISSIONS.BASIC)
-  //     ? [PERMISSIONS.DASHBOARD]
-  //     : user?.role?.permissions
-  //   : []
 
   if (isAuthenticated && !ability && userPermissions) {
     ability = buildAbilityFor(userPermissions, permissions)
@@ -46,6 +36,6 @@ const PermissionsGuard = (props: AclGuardProps) => {
   } else if (ability && isAuthenticated && ability.can(aclAbilities.action, aclAbilities.subject)) {
     return <>{children}</>
   }
-  return <Navigate to={'/501'}></Navigate>
+  return <Navigate to={'/401'}></Navigate>
 }
 export default PermissionsGuard

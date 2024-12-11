@@ -13,6 +13,7 @@ import useCourseSetUp from '@/hooks/useCourseSetUp'
 import Navigate from '@/icons/Navigate'
 import { useGetListCategories } from '@/queries/category'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useQueryClient } from '@tanstack/react-query'
 import { Controller, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
@@ -48,7 +49,14 @@ export default function Screen2() {
     setStep((step) => step + 1)
   }
 
-  const { data } = useGetListCategories({ cacheTime: Infinity, staleTime: Infinity, select: (data) => data.data.value })
+  const queryClient = useQueryClient()
+  const { data } = useGetListCategories({
+    initialData: () => queryClient.getQueryData(['categories-all']),
+    cacheTime: Infinity,
+    staleTime: Infinity,
+    select: (data) => data.data.value
+  })
+
   return (
     <form className='flex flex-col h-full' onSubmit={handleSubmit(handleUpdateField)}>
       <div className='absolute inset-0 w-full h-full opacity-40 bg-gradient-to-b from-transparent via-primary-3 to-parent'></div>

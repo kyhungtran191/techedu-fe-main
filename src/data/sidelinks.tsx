@@ -67,7 +67,7 @@ export const sidelinks: SideLink[] = [
     title: 'Accounts',
     href: '/admin/accounts',
     icon: <UserRoundCheck />,
-    permission: APP_PERMISSIONS.ACCOUNTS.VIEW as string,
+    permission: APP_PERMISSIONS.USER.VIEW as string,
     isHidden: false
   },
   {

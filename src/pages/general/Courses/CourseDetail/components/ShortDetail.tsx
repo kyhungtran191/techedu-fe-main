@@ -1,11 +1,12 @@
 import { ResponsePrivateCourseDetail } from '@/@types/admin/courses.type'
 import { Button } from '@/components/ui/button'
+import { useAppContext } from '@/hooks/useAppContext'
 import Certificate from '@/icons/CourseDetail/Certificate'
 import Clock from '@/icons/CourseDetail/Clock'
 import Document from '@/icons/CourseDetail/Document'
 import FolderNLine from '@/icons/CourseDetail/FolderNLine'
 import { Heart } from 'lucide-react'
-import React from 'react'
+import React, { useMemo } from 'react'
 
 export default function ShortDetail({
   className,
@@ -15,6 +16,15 @@ export default function ShortDetail({
   courseData?: ResponsePrivateCourseDetail | null
 }) {
   //
+  const { cart, isAuthenticated } = useAppContext()
+
+  const isHavingCourseCart = useMemo(() => {
+    if (!isAuthenticated || !cart?.id) return
+    return cart.items.some((item) => {
+      return item.courseId === courseData?.courseId
+    })
+  }, [courseData])
+  if (!courseData) return
   return (
     <div className={`${className} min-h-[300px]`}>
       <h3 className='mb-3 text-2xl font-medium'>Course Include</h3>
@@ -43,7 +53,7 @@ export default function ShortDetail({
       </div>
       <div className='flex items-center gap-x-[18px] my-[18px]'>
         <Button className='flex-1 px-4 !py-7 text-xl text-white bg-primary-1' variant={'custom'}>
-          Add To Cart
+          {isHavingCourseCart ? 'Go to Cart' : 'Add To Cart'}
         </Button>
         <div className=' flex items-center justify-center w-[60px] h-[60px] rounded-xl bg-white shadow-md cursor-pointer'>
           <Heart className=' text-primary-1'></Heart>

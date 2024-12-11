@@ -85,7 +85,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           phoneNumber,
           roles: roles.map((item: Role) => item.name)
         })
-        savePermissions(permisisons)
+        const permissionConvert = permisisons.map((item: any) => `${item.function}.${item.command}`)
+        savePermissions(permissionConvert)
         setProfile({
           email,
           firstName,
@@ -98,7 +99,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           phoneNumber,
           roles: roles.map((item: Role) => item.name)
         })
-        setPermissions(permissions)
+        setPermissions(permissionConvert)
       }
     },
     onError: (err) => {

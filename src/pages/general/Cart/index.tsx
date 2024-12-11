@@ -11,32 +11,33 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { DeleteCartItem } from '@/services/client/cart.service'
 import { toast } from 'react-toastify'
 import SectionLoading from '@/components/Loading/SectionLoading'
+import { useNavigate } from 'react-router-dom'
 export default function Cart() {
   const [isEdit, setIsEdit] = useState<boolean>(false)
   const { cart, isAuthenticated, isLoading } = useAppContext()
   const [checkedItem, setCheckedItem] = useState<CartItem[]>([])
 
-  const handleClickCheckedItem = (cartItem: CartItem) => {
-    const isChecked = checkedItem.some((item) => item.id === cartItem.id)
-    if (isChecked) {
-      const newArr = checkedItem.filter((item) => item.id !== cartItem.id)
-      setCheckedItem(newArr)
-    } else {
-      const newArr = [...checkedItem, cartItem]
-      setCheckedItem(newArr)
-    }
-  }
+  // const handleClickCheckedItem = (cartItem: CartItem) => {
+  //   const isChecked = checkedItem.some((item) => item.id === cartItem.id)
+  //   if (isChecked) {
+  //     const newArr = checkedItem.filter((item) => item.id !== cartItem.id)
+  //     setCheckedItem(newArr)
+  //   } else {
+  //     const newArr = [...checkedItem, cartItem]
+  //     setCheckedItem(newArr)
+  //   }
+  // }
   const queryClient = useQueryClient()
 
-  const handleIsChecked = (cartItem: CartItem) => {
-    return checkedItem.some((item) => item.id === cartItem.id)
-  }
+  // const handleIsChecked = (cartItem: CartItem) => {
+  //   return checkedItem.some((item) => item.id === cartItem.id)
+  // }
 
   const countPrice = useMemo(() => {
-    return checkedItem.reduce((res, item) => {
+    return (cart?.items || []).reduce((res, item) => {
       return res + item.currentPrice.amount
     }, 0)
-  }, [checkedItem])
+  }, [cart?.items])
 
   const deleteCartItemMutation = useMutation({
     mutationFn: ({ basketId, itemId }: { basketId: string; itemId: number }) => DeleteCartItem(basketId, itemId)
@@ -52,6 +53,15 @@ export default function Cart() {
         }
       }
     )
+  }
+  const navigate = useNavigate()
+  const handleCheckoutWithPayment = () => {
+    return navigate('/checkout', {
+      state: {
+        totalPrice: countPrice,
+        orderItems: cart?.items
+      }
+    })
   }
 
   return (
@@ -76,7 +86,7 @@ export default function Cart() {
             cart.items.length > 0 &&
             cart.items.map((item) => (
               <div className='flex items-center mb-[18px]'>
-                <div
+                {/* <div
                   className={`transition-all duration-300 ease-in-out ${
                     isEdit ? 'w-0 h-0 opacity-0 mr-0' : 'w-9 h-9 opacity-100 mr-[15px]'
                   } flex-shrink-0`}
@@ -86,7 +96,7 @@ export default function Cart() {
                     onClick={() => handleClickCheckedItem(item)}
                     checked={handleIsChecked(item)}
                   />
-                </div>
+                </div> */}
                 <div className='flex flex-1'>
                   <CourseCard
                     vertical={false}
@@ -134,7 +144,9 @@ export default function Cart() {
             </div>
             <Button
               className='w-full px-4 text-xl text-white rounded-lg py-7 bg-primary-1 my-[18px]'
-              disabled={checkedItem.length <= 0}
+              variant={'custom'}
+              disabled={!cart?.items || cart?.items?.length <= 0}
+              onClick={handleCheckoutWithPayment}
             >
               Payment
             </Button>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Logo from '@/assets/logo.png'
 import Ads from '@/assets/benefits.png'
 import { Button } from '@/components/ui/button'
@@ -8,8 +8,22 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import Stripe from '@/assets/stripe.png'
 import { Separator } from '@/components/ui/separator'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { Item } from '@radix-ui/react-menubar'
+import { CartItem } from '@/@types/cart.type'
 
 export default function Checkout() {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const pageState = location.state
+
+  useEffect(() => {
+    if (!pageState?.totalPrice || !pageState?.orderItems) {
+      toast.error('Invalid Basket')
+      return navigate('/my-cart')
+    }
+  }, [pageState?.totalPrice, pageState?.orderItems])
   return (
     <div className='w-screen grid sm:grid-cols-[357px_1fr] h-screen max-h-screen'>
       <div className='flex flex-col h-screen px-6 py-12 overflow-y-auto no-scrollbar bg-primary-3'>
@@ -29,7 +43,6 @@ export default function Checkout() {
         </div>
       </div>
 
-      {/* Phần bên phải có thể cuộn */}
       <div className='pt-[100px] pb-[60px] px-[70px] w-full h-full overflow-y-auto no-scrollbar responsive-padding'>
         <h2 className='text-[32px] font-medium'>Billing Information</h2>
         {/* <div className='my-6'>
@@ -68,33 +81,25 @@ export default function Checkout() {
         <div>
           <h3 className='my-6 text-xl font-semibold'>
             Order details
-            <span className='font-light'> (10 courses)</span>{' '}
+            <span className='font-light'> ({pageState?.orderItems?.length} courses)</span>{' '}
           </h3>
           <div className='max-h-[300px]  overflow-y-auto max-w-[640px]'>
-            {Array(10)
-              .fill(0)
-              .map((item) => (
-                <div className='flex items-start max-w-[600px] py-2'>
-                  <div className='flex items-start flex-1'>
-                    <img
-                      src='https://img-c.udemycdn.com/course/100x100/3406816_0ea7_10.jpg'
-                      alt=''
-                      className='flex-shrink-0 object-cover w-12 h-12 mr-2'
-                    />
-                    <h2 className='text-sm font-semibold max-w-[400px]'>
-                      JavaScript Data Structures & Algorithms + LEETCODE Exercises
-                    </h2>
-                  </div>
-                  <div className='font-medium'>$60</div>
+            {pageState?.orderItems.map((item: CartItem) => (
+              <div className='flex items-start max-w-[600px] py-2'>
+                <div className='flex items-start flex-1'>
+                  <img src={item.courseThumbnailFileUrl} alt='' className='flex-shrink-0 object-cover w-12 h-12 mr-2' />
+                  <h2 className='text-sm font-semibold max-w-[400px]'>{item.courseName}</h2>
                 </div>
-              ))}
+                <div className='font-medium'>${item.currentPrice.amount}</div>
+              </div>
+            ))}
           </div>
         </div>
         <Separator className='my-4'></Separator>
         <div className='text-xl underline text-primary-1'>Review order details</div>
         <div className='flex items-center my-8'>
           <span className='text-[32px] font-medium'>Total:</span>
-          <span className='ml-6 text-4xl font-medium text-primary-1'>$64</span>
+          <span className='ml-6 text-4xl font-medium text-primary-1'>${pageState?.totalPrice}</span>
         </div>
         <Button variant={'custom'} className='w-full !py-7 text-xl max-w-[500px]'>
           Checkout

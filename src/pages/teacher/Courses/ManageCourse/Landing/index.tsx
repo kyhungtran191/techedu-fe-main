@@ -106,6 +106,7 @@ export default function LandingPage() {
   const { data: categoryData, isLoading: categoryLoading } = useGetListCategories({
     select: (data) => data.data.value
   })
+
   // Get subcategories
   const categoryId = watch('category')
   const subCategoriesData = useQuery({
@@ -350,7 +351,13 @@ export default function LandingPage() {
                     <h3 className='text-xl font-medium'>Topics</h3>
                     <Info className='text-primary-1'></Info>
                   </div>
-                  <MultiSelect name='Topics' options={options} selected={selected} onChange={setSelected}></MultiSelect>
+                  <MultiSelect
+                    classNameWrapper='px-8 text-xl rounded-lg py-7'
+                    name='Topics'
+                    options={options}
+                    selected={selected}
+                    onChange={setSelected}
+                  ></MultiSelect>
                 </div>
                 <Button
                   className={`min-w-[300px] py-8 text-xl mt-4`}

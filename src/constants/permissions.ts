@@ -3,16 +3,20 @@ type Permissions = {
   CREATE?: string
   UPDATE?: string
   DELETE?: string
+  BLOCK?: string
+  AUTHORIZE?: string
 }
 
 type APPPermissionsType = {
   ADMIN: string
   DASHBOARD: Permissions
-  COURSES: Permissions
+  COURSES: Permissions & {
+    REVIEW: string
+  }
   STUDENT: Permissions
   PRIVATE_USER: Permissions
   INSTRUCTORS: Permissions
-  ACCOUNTS: Permissions
+  USER: Permissions
   ROLE: Permissions
   CATEGORY: Permissions
 }
@@ -31,21 +35,24 @@ export const APP_PERMISSIONS: APPPermissionsType = {
   },
   PRIVATE_USER: {
     CREATE: 'PRIVATE_USER.CREATE',
-    UPDATE: 'PRIVATE_USER.UPDATE',
+    UPDATE: 'PRIVATE_USER.EDIT',
     VIEW: 'PRIVATE_USER.VIEW',
-    DELETE: 'PRIVATE_USER.DELETE'
+    DELETE: 'PRIVATE_USER.DELETE',
+    BLOCK: 'PRIVATE_USER.BLOCK',
+    AUTHORIZE: 'PRIVATE_USER.AUTHORIZE'
   },
   ROLE: {
     CREATE: 'ROLE.CREATE',
-    UPDATE: 'ROLE.UPDATE',
+    UPDATE: 'ROLE.EDIT',
     VIEW: 'ROLE.VIEW',
     DELETE: 'ROLE.DELETE'
   },
-  ACCOUNTS: {
-    CREATE: 'ACCOUNTS.CREATE',
-    UPDATE: 'ACCOUNTS.UPDATE',
-    VIEW: 'ACCOUNTS.VIEW',
-    DELETE: 'ACCOUNTS.DELETE'
+  USER: {
+    CREATE: 'USER.CREATE',
+    UPDATE: 'USER.EDIT',
+    VIEW: 'USER.VIEW',
+    DELETE: 'USER.DELETE',
+    BLOCK: 'USER.BLOCK'
   },
   INSTRUCTORS: {
     CREATE: 'INSTRUCTORS.CREATE',
@@ -57,7 +64,8 @@ export const APP_PERMISSIONS: APPPermissionsType = {
     VIEW: 'COURSE.VIEW',
     CREATE: 'COURSE.CREATE',
     UPDATE: 'COURSE.UPDATE',
-    DELETE: 'COURSE.DELETE'
+    DELETE: 'COURSE.DELETE',
+    REVIEW: 'COURSE.REVIEW'
   },
   CATEGORY: {
     VIEW: 'CATEGORY.VIEW',

@@ -20,12 +20,14 @@ interface IProps {
 }
 export default function CategoriesMenu({ className }: IProps) {
   const queryClient = useQueryClient()
+  
   const { data: categories, isLoading } = useQuery(['categories-all'], GetCategoriesWithSubCategories, {
     initialData: () => queryClient.getQueryData(['categories-all']),
     select: (data) => data.data.value,
     staleTime: Infinity,
     cacheTime: Infinity
   })
+  
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const handleOnNavigateCateSubCategory = (category: any) => {
