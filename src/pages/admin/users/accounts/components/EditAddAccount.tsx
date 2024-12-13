@@ -85,8 +85,7 @@ export default function EditAddAccount({ open, setEditUser, setOpenDialog, idUse
     <Dialog open={open} onOpenChange={setOpenDialog}>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-          <DialogDescription>Make changes to your profile here. Click save when you're done.</DialogDescription>
+          <DialogTitle>Account Profile</DialogTitle>
         </DialogHeader>
         <div className='grid gap-4 py-4'>
           <div>
@@ -95,7 +94,7 @@ export default function EditAddAccount({ open, setEditUser, setOpenDialog, idUse
               control={control}
               name='firstName'
               render={({ field }) => (
-                <Input className='px-4 py-6 text-sm outline-none' placeholder='First Name' {...field}></Input>
+                <Input className='px-4 py-6 text-sm outline-none' placeholder='First Name' disabled {...field}></Input>
               )}
             />
             <div className='text-sm font-medium text-red-500 '>{errors?.firstName && errors?.firstName?.message}</div>
@@ -106,7 +105,7 @@ export default function EditAddAccount({ open, setEditUser, setOpenDialog, idUse
               control={control}
               name='lastName'
               render={({ field }) => (
-                <Input className='px-4 py-6 text-sm outline-none' placeholder='last Name' {...field}></Input>
+                <Input className='px-4 py-6 text-sm outline-none' placeholder='Last Name' disabled {...field} ></Input>
               )}
             />
             <div className='text-sm font-medium text-red-500 '>{errors?.lastName && errors?.firstName?.message}</div>
@@ -117,7 +116,7 @@ export default function EditAddAccount({ open, setEditUser, setOpenDialog, idUse
               control={control}
               name='email'
               render={({ field }) => (
-                <Input className='px-4 py-6 text-sm outline-none' placeholder='First Name' {...field}></Input>
+                <Input className='px-4 py-6 text-sm outline-none' placeholder='Email' {...field} disabled></Input>
               )}
             />
             <div className='text-sm font-medium text-red-500 '>{errors?.firstName && errors?.firstName?.message}</div>
@@ -128,7 +127,7 @@ export default function EditAddAccount({ open, setEditUser, setOpenDialog, idUse
               control={control}
               name='role'
               render={({ field }) => (
-                <Input className='px-4 py-6 text-sm outline-none' placeholder='Role' {...field}></Input>
+                <Input className='px-4 py-6 text-sm outline-none' placeholder='Role' {...field} disabled></Input>
               )}
             />
             <div className='text-sm font-medium text-red-500 '>{errors?.firstName && errors?.firstName?.message}</div>
@@ -139,15 +138,12 @@ export default function EditAddAccount({ open, setEditUser, setOpenDialog, idUse
               control={control}
               name='userStatus'
               render={({ field }) => (
-                <Input className='px-4 py-6 text-sm outline-none' placeholder='Status' {...field}></Input>
+                <Input className='px-4 py-6 text-sm outline-none' placeholder='Status' {...field} disabled></Input>
               )}
             />
             <div className='text-sm font-medium text-red-500 '>{errors?.firstName && errors?.firstName?.message}</div>
           </div>
         </div>
-        <DialogFooter>
-          <Button type='submit'>Save changes</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

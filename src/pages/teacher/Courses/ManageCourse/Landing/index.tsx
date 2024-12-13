@@ -19,7 +19,6 @@ import Language from '@/icons/CourseDetail/Language'
 import Info from '@/icons/Info'
 import Description from '@/pages/general/Courses/CourseDetail/components/Description'
 import Instructor from '@/assets/instructor.jfif'
-import { Plus, Trash } from 'lucide-react'
 import ThreeDots from '@/icons/ThreeDots'
 import Tiptap from '@/components/TipTap'
 import SystemNotification from '../components/SystemNotification'
@@ -40,7 +39,8 @@ import { TAddUpdateCourseLandingPage, VideoLandingPageAsset } from '@/@types/ins
 import { MultiSelect, OptionType, SelectedType } from '@/components/MultiSelect'
 import Notification from './components/notification'
 import { toast } from 'react-toastify'
-
+import { useAppContext } from '@/hooks/useAppContext'
+import parse from 'html-react-parser'
 type FormData = {
   thumbnailFilePath?: string
   title: string
@@ -56,7 +56,7 @@ export default function LandingPage() {
   const [videoPromotion, setVideoPromotion] = useState<VideoLandingPageAsset | null>(null)
   const [selected, setSelected] = useState<SelectedType[]>([])
   const [options, setOptions] = useState<OptionType[]>([])
-
+  const { profile } = useAppContext()
   const { id } = useParams()
   if (!id) {
     return
@@ -191,10 +191,11 @@ export default function LandingPage() {
   return (
     <div className='flex flex-col h-full'>
       <SystemNotification></SystemNotification>
-      {landingPageData?.isLoading || updateLandingPageMutation.isLoading ? (
-        <SectionLoading></SectionLoading>
+      {landingPageData?.isLoading ? (
+        <SectionLoading className='z-30'></SectionLoading>
       ) : (
         <div className='flex-grow p-6 mt-4 overflow-y-auto bg-white rounded-xl no-scrollbar text-neutral-black'>
+          {updateLandingPageMutation.isLoading && <SectionLoading className='z-30'></SectionLoading>}
           <Notification></Notification>
           <form className='grid grid-cols-12 gap-3' onSubmit={handleSubmit(submitForm)}>
             <div className='col-span-7 '>
@@ -382,27 +383,36 @@ export default function LandingPage() {
               {/* Block 3 */}
               <div className='px-3 py-6 bg-white shadow-custom-shadow rounded-xl mt-[18px]'>
                 <h3 className='text-xl font-medium'>Instructors</h3>
-                <div className='my-[18px]'>
-                  <div className='flex items-start justify-between'>
-                    <div className='flex flex-wrap items-start'>
-                      <img
-                        className='w-[50px] h-[50px] rounded-xl object-cover'
-                        src={Instructor}
-                        alt='instructor-avatar'
-                      />
-                      <div className='ml-3 '>
-                        <h2 className='text-xl font-medium text-neutral-black'>Rowan Kenelm</h2>
-                        <div>15-year UX + Design Veteran</div>
+                {profile?.avatar && profile?.firstName && profile?.lastName && profile?.headline && profile?.bio && (
+                  <div className='my-[18px]'>
+                    <div className='flex items-start justify-between'>
+                      <div className='flex flex-wrap items-start'>
+                        <img
+                          className='w-[50px] h-[50px] rounded-xl object-cover'
+                          src={profile?.avatar || Instructor}
+                          alt='instructor-avatar'
+                        />
+                        <div className='ml-3 '>
+                          <h2 className='text-xl font-medium text-neutral-black'>
+                            {profile.firstName} {profile.lastName}
+                          </h2>
+                          <div>{profile?.headline || '15-year UX + Design Veteran'}</div>
+                        </div>
                       </div>
+                      <ThreeDots className='cursor-pointer'></ThreeDots>
                     </div>
-                    <ThreeDots className='cursor-pointer'></ThreeDots>
+                    <Description
+                      lineclamp={2}
+                      height='50px'
+                      wrapperClass='mt-3'
+                      content={parse(profile.bio) as string}
+                    ></Description>
                   </div>
-                  <Description lineclamp={2} height='50px' wrapperClass='mt-3'></Description>
-                </div>
-                <div className='flex items-center cursor-pointer w-fit text-primary-1'>
+                )}
+                {/* <div className='flex items-center cursor-pointer w-fit text-primary-1'>
                   <Plus className='mr-[10px]'></Plus>
                   <p>Add instructor</p>
-                </div>
+                </div> */}
               </div>
             </div>
           </form>

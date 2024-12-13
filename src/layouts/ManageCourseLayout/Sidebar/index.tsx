@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from 'react'
-import { Link, NavLink, useLocation, useParams } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Logo from '@/assets/logo.png'
 import { Button } from '@/components/ui/button'
 import ClickOutside from '@/hooks/useClickOutside'
@@ -13,7 +13,6 @@ import { toast } from 'react-toastify'
 import ErrorAlertDialog from '@/components/ErrorAlert'
 import SectionLoading from '@/components/Loading/SectionLoading'
 import { useAppContext } from '@/hooks/useAppContext'
-import { GetPrivateDetailCourse } from '@/services/admin/private-course.service'
 
 interface SidebarManageProps {
   sidebarOpen: boolean
@@ -38,6 +37,8 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
   const { id } = useParams()
   const [errors, setErrors] = useState<Record<string, string[]> | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const navigate = useNavigate()
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -64,20 +65,11 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
     return
   }
 
-  // Get Course Name with Status
-
   const navigationState = location.state
 
-  // if (!navigationState?.courseName || !navigationState?.courseStatus) {
-  //   toast.error('No courseName or courseStatus')
-  // }
   const submitCourseMutation = useMutation({
     mutationFn: (_) => SubmitReviewCourse(id)
   })
-
-  const { profile } = useAppContext()
-
-  console.log('course detail data')
 
   const sidebarOptions: sideBarOption[] = [
     {
@@ -131,6 +123,7 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
           setIsDialogOpen(true)
         } else {
           toast.success('Submit course for review successfully! Please wait the notification from system!')
+          navigate('/teacher/courses')
         }
       }
     })

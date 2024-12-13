@@ -65,7 +65,7 @@ export default function ConfirmEmail() {
   }
   return (
     <div className='relative flex flex-col items-center justify-center h-screen'>
-      {(isLoadingActive || isLoading) && <SectionLoading></SectionLoading>}
+      {(isLoadingActive || isLoading) && <SectionLoading className='z-30'></SectionLoading>}
       {isSuccess && !isSuccessActive && (
         <form className='container max-w-[1000px]' onSubmit={handleSubmit(onSubmit)}>
           <div className='absolute inset-0 w-full h-full opacity-40 bg-gradient-to-b from-transparent via-primary-3 to-parent'></div>

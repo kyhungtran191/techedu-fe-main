@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { FILE_CHUNK_SIZE } from '@/constants'
 import { useAppContext } from '@/hooks/useAppContext'
 import { UploadAvatar } from '@/services/user.services'
-import { useQueryClient } from '@tanstack/react-query'
+import { useIsFetching, useQueryClient } from '@tanstack/react-query'
 import React, { useEffect, useState } from 'react'
 
 export default function Photo() {
@@ -14,7 +14,6 @@ export default function Photo() {
   const [previewURL, setPreviewURL] = useState<string>('')
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
-
   useEffect(() => {
     if (profile?.avatar) {
       setPreviewURL(profile?.avatar)
@@ -35,7 +34,7 @@ export default function Photo() {
   }
 
   const queryClient = useQueryClient()
-
+  const isFetchingProfile = useIsFetching(['me', isAuthenticated])
   useEffect(() => {
     if (file) {
       handleUpload()
@@ -65,6 +64,7 @@ export default function Photo() {
           .then((data) => {
             if (chunkIndex === totalChunks - 1) {
               queryClient.prefetchQuery(['me', isAuthenticated])
+              console.log(data)
             }
           })
           .catch((error) => {
@@ -80,7 +80,7 @@ export default function Photo() {
       <div className='mb-2 font-bold'>Image preview </div>
       <div className='text-sm font-light'>Minimum 200x200 pixels, Maximum 6000x6000 pixels</div>
       <div className={`mt-5 w-full  rounded-lg  h-[180px] opacity-100 transition-all duration-300 bg-white`}>
-        {loading && <SectionLoading></SectionLoading>}
+        {(isFetchingProfile || loading) && <SectionLoading className='z-30'></SectionLoading>}
         {previewURL ? (
           <div className='flex flex-col items-center justify-center w-full h-full rounded-lg'>
             <div className='relative p-2'>

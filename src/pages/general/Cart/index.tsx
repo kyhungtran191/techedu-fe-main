@@ -34,9 +34,10 @@ export default function Cart() {
   // }
 
   const countPrice = useMemo(() => {
-    return (cart?.items || []).reduce((res, item) => {
+    const total = (cart?.items || []).reduce((res, item) => {
       return res + item.currentPrice.amount
     }, 0)
+    return Number(total.toFixed(2))
   }, [cart?.items])
 
   const deleteCartItemMutation = useMutation({

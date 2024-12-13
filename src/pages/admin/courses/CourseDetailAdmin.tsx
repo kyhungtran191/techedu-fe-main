@@ -107,6 +107,14 @@ export default function CourseDetailAdmin() {
                   </div>
                   <div className='mt-5'>
                     <div className=''>
+                      <h3 className='mt-3 text-2xl font-medium text-neutral-black'>Video Promotion</h3>
+                      <video
+                        src={data?.courseLandingPage?.videoPromotionUrl}
+                        controls
+                        className='w-full h-[400px] mt-6'
+                      ></video>
+                    </div>
+                    <div className=''>
                       <h3 className='mt-5 text-2xl font-medium text-neutral-black'>Instructor</h3>
                       <div className='flex items-start justify-between ms:items-center my-[18px]'>
                         <div className='flex items-start '>

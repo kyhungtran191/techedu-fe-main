@@ -19,11 +19,10 @@ export default function CourseList({ courses, setIsAtEnd, setIsAtStart, swiperRe
     setIsAtStart(swiper.isBeginning)
     setIsAtEnd(swiper.isEnd)
   }
-  console.log('courses', courses)
 
   return (
     <>
-      <div className='hidden xl:grid grid-cols-3 gap-x-[18px]'>
+      <div className='hidden xl:grid grid-cols-3 gap-[18px]'>
         {courses.map((course) => (
           <CourseCard courseInfo={course} key={course.courseId}></CourseCard>
         ))}

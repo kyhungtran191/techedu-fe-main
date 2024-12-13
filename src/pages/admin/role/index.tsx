@@ -207,7 +207,7 @@ export default function Role() {
             CREATE_PERMISSION={CREATE}
           ></EditAddRoleDialog>
         </div>
-        {isFetching && <LoadingCircle></LoadingCircle>}
+        {isFetching && <SectionLoading className='z-30'></SectionLoading>}
         {data && data.items && (
           <Table className='border'>
             <TableHeader>
