@@ -88,7 +88,7 @@ function PurchaseTable({ data, type }: { data: any[]; type: 'courses' | 'subscri
               <Accordion type='single' collapsible className='w-full'>
                 <AccordionItem value='item-1' className='border-0'>
                   <AccordionTrigger>View all courses</AccordionTrigger>
-                  <AccordionContent >
+                  <AccordionContent>
                     <div className='flex items-center justify-between mt-4'>
                       <span className='flex flex-col font-medium'>
                         Course name 1<div className='mt-1 text-sm cursor-pointer text-primary-1'>Request a refund</div>
@@ -96,8 +96,9 @@ function PurchaseTable({ data, type }: { data: any[]; type: 'courses' | 'subscri
                       <span>$40</span>
                     </div>
                     <div className='flex items-center justify-between mt-4'>
-                      <span className='flex flex-col font-medium'>
-                        Course name 1<div className='mt-1 text-sm cursor-pointer text-primary-1'>Request a refund</div>
+                      <span className='flex flex-col'>
+                        <span className='text-base font-semibold'>ReactJS</span>
+                        <div className='mt-1 text-sm cursor-pointer text-primary-1'>Request a refund</div>
                       </span>
                       <span>$40</span>
                     </div>
