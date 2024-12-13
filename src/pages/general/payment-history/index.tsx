@@ -84,7 +84,7 @@ function PurchaseTable({ data, type }: { data: any[]; type: 'courses' | 'subscri
         {data.map((item) => (
           <TableRow key={item.id}>
             <TableCell className='flex flex-col'>
-              {item.name}
+              <span className='text-base font-bold'>{item.name}</span>
               <Accordion type='single' collapsible className='w-full'>
                 <AccordionItem value='item-1' className='border-0'>
                   <AccordionTrigger>View all courses</AccordionTrigger>
