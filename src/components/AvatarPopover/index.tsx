@@ -76,6 +76,9 @@ export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?:
               <Link to='/enrolled-courses' className=''>
                 My Course
               </Link>
+              <Link to='/payment-history' className='flex items-center justify-between'>
+                Payment History
+              </Link>
               <Link to='' className='flex items-center justify-between'>
                 Wishlist
                 <div className='w-[22px] h-[22px] rounded-full bg-secondary-1 flex items-center justify-center text-white'>

@@ -29,6 +29,7 @@ import { InstructorProfile } from './pages/teacher/main/profile'
 
 // Lazy loading for components
 const ResendEmail = lazy(() => import('./pages/general/resend-email'))
+const PaymentHistory = lazy(() => import('./pages/general/payment-history'))
 const Photo = lazy(() => import('./pages/teacher/main/instructor-info/photo'))
 const BasicInfo = lazy(() => import('./pages/teacher/main/instructor-info/basic-info'))
 const ConfirmPassword = lazy(() => import('./pages/general/confirm-password'))
@@ -182,7 +183,14 @@ function App() {
               <Route index path='photo' element={<Photo />} />
             </Route>
           </Route>
-
+          <Route
+            path='/payment-history'
+            element={
+              <ClientMainLayout>
+                <PaymentHistory />
+              </ClientMainLayout>
+            }
+          ></Route>
           {/* Learning Space */}
           <Route
             path='/courses/:slug/learn/:lecture'
