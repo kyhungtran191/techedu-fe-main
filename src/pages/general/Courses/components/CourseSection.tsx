@@ -15,7 +15,6 @@ export default function CourseSection({ children }: { children?: React.ReactNode
     queryFn: () => GetForYouCourses(),
     select: (data) => data.data.value
   })
-  console.log('your-courses', data)
   return (
     <div className='my-6'>
       <div className='flex items-center justify-between mb-[18px]'>

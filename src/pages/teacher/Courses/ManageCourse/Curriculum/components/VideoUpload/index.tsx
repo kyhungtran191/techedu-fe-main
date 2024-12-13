@@ -22,7 +22,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onUpload, onSetFile, isAddNew
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'video/mp4': [] // Accept only MP4 files
+      'video/mp4': []
     }
   })
 

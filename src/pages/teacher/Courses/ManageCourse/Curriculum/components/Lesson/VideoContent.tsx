@@ -63,7 +63,7 @@ export default function VideoContent({
   }, [file])
 
   const shouldRenderVideoUpload =
-    isEdit || (isAddNewContent && !isLoading && !primaryAsset?.fileUrl && primaryAsset?.status == 'Initial')
+    isEdit || ( isAddNewContent && !isLoading && !primaryAsset?.fileUrl && primaryAsset?.status == 'Initial')
 
   const handleUpload = async () => {
     if (!file) return
@@ -126,12 +126,12 @@ export default function VideoContent({
     <>
       {shouldRenderVideoUpload && (
         <>
-          {!isAddFromLibrary && (
+          {!isLoading&& !isAddFromLibrary && (
             <VideoUpload onSetFile={setFile} onUpload={handleUpload} isAddNewContent={isAddNewContent}></VideoUpload>
           )}
           <div className='flex items-center justify-between font-light text-[18px] mt-6'>
             <div className='font-normal'>Notes: Files should be at least 720p and less than 4.0 GB.</div>
-            {!isAddFromLibrary && isEdit && (
+            {!isLoading && !isAddFromLibrary && isEdit && (
               <div className='text-base font-medium cursor-pointer text-primary-1' onClick={() => setIsEdit(false)}>
                 Cancel Edit
               </div>

@@ -136,7 +136,7 @@ export default function ResourcesUpload({
         </>
       )}
       {file && isLoading && (
-        <UploadStatus onRemove={() => {}} filename={file?.name as string} progress={progress}></UploadStatus>
+        <UploadStatus onRemove={() => {}} filename={file?.name as string} type={file.type} progress={progress}></UploadStatus>
       )}
     </div>
   )

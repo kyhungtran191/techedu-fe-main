@@ -2,7 +2,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { AlignJustify, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -11,6 +11,7 @@ import CircularProgressBar from '@/components/CircularProgressBar'
 import Share from '@/icons/Share'
 import AvatarPopover from '@/components/AvatarPopover'
 import { useAppContext } from '@/hooks/useAppContext'
+import ShareButton from '@/pages/general/Courses/CourseLearningSpace/components/ShareButton'
 
 const LearningSpaceHeader = (props: {
   sidebarOpen: string | boolean | undefined
@@ -20,9 +21,9 @@ const LearningSpaceHeader = (props: {
   const titleRef = useRef<HTMLDivElement | null>(null)
   // const navigate = useNavigate()
   const params = useParams()
-
+  const [open, setOpen] = useState(false)
   const { isAuthenticated } = useAppContext()
-
+  const { slug } = useParams()
   return (
     <header className='sticky top-0 flex w-full px-3 py-6 bg-white z-[30] drop-shadow-1'>
       <div className='flex items-center gap-x-3 h-[48px] flex-wrap justify-between w-full'>
@@ -49,13 +50,7 @@ const LearningSpaceHeader = (props: {
         <div className='flex items-center'>
           <CircularProgressBar percentage={50}></CircularProgressBar>
           <Separator orientation='vertical' className='hidden h-6 mx-2 bg-black sm:mx-6 xs:block'></Separator>
-          <Button
-            className='hidden xs:flex text-sm sm:text-base text-neutral-black mx-3 px-[18px] py-3 rounded-lg h-10 sm:h-[48px] border-neutral-black'
-            variant={'outline'}
-          >
-            <Share className='w-4 h-4 sm:w-6 sm:h-6'></Share>
-            <span className='ml-[10px] '>Share</span>
-          </Button>
+          <ShareButton courseId={slug as string} isOpen={open} onClose={()=>setOpen(false)} onOpenChange={setOpen}></ShareButton>
           {isAuthenticated && <AvatarPopover></AvatarPopover>}
         </div>
       </div>

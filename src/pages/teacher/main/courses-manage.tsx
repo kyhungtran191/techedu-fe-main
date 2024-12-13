@@ -123,14 +123,16 @@ export default function CourseManage() {
                 >
                   Preview course
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
-                  onClick={() =>
-                    handleNavigateWithState(row.original.courseId, row.original.title, row.original.status)
-                  }
-                >
-                  Edit Course
-                </DropdownMenuItem>
+                {row.original.status != COURSE_STATUS.REVIEW && (
+                  <DropdownMenuItem
+                    className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'
+                    onClick={() =>
+                      handleNavigateWithState(row.original.courseId, row.original.title, row.original.status)
+                    }
+                  >
+                    Edit Course
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem className='flex items-center w-full p-3 mb-2 text-sm rounded-lg cursor-pointer hover:bg-neutral-silver focus:outline-none'>
                   Delete Course
                 </DropdownMenuItem>

@@ -8,7 +8,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import ThreeDots from '@/icons/ThreeDots'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import PaginationCustom from '@/components/Pagination'
-import { MultiSelect, OptionType, SelectedType } from '@/components/MultiSelect'
 import SearchInput from '../../components/Search'
 import { isUndefined, omitBy } from 'lodash'
 import useParamsVariables from '@/hooks/useParamsVariable'
@@ -299,9 +298,8 @@ export default function Accounts() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={columns?.length} className='h-24 text-center '>
-                      {/* Loading section */}
-                      {/* <ComponentsLoading></ComponentsLoading> */}
+                    <TableCell colSpan={columns?.length} className='h-24 font-semibold text-center'>
+                      No data
                     </TableCell>
                   </TableRow>
                 )}
@@ -309,7 +307,11 @@ export default function Accounts() {
             </Table>
           )}
         </div>
-        <PaginationCustom totalPage={data?.totalPage as number} className='mt-3'></PaginationCustom>
+        <PaginationCustom
+          totalPage={data?.totalPage as number}
+          queryConfig={queryConfig}
+          className='mt-3'
+        ></PaginationCustom>
       </Layout.Body>
     </Layout>
   )

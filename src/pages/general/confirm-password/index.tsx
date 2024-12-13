@@ -72,7 +72,7 @@ export default function ConfirmPassword() {
   }
   return (
     <div className='container flex flex-col items-center justify-center h-[80vh]'>
-      {(isLoading || isLoadingActive) && <SectionLoading></SectionLoading>}
+      {(isLoading || isLoadingActive) && <SectionLoading className='z-30'></SectionLoading>}
       {isSuccess && !isSuccessActive && (
         <form className='container max-w-[1000px] ' onSubmit={handleSubmit(onSubmit)}>
           <div className='absolute inset-0 w-full h-full opacity-40 bg-gradient-to-b from-transparent via-primary-3 to-parent'></div>

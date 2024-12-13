@@ -59,7 +59,7 @@ export default function EditAddRoleDialog({
     resolver: yupResolver(schema)
   })
 
-  const { isFetching } = useQuery({
+  const { isLoading, isFetching } = useQuery({
     queryKey: ['role-detail', idRole],
     queryFn: () => GetDetailRole(idRole as string),
     enabled: idRole !== undefined,
@@ -111,7 +111,7 @@ export default function EditAddRoleDialog({
   }
 
   return (
-    <div>
+    <>
       <Dialog defaultOpen={open} open={open} onOpenChange={setOpenDialog}>
         {CREATE_PERMISSION && (
           <DialogTrigger
@@ -131,12 +131,13 @@ export default function EditAddRoleDialog({
             })
           }}
         >
+          {((idRole && isLoading) || createRoleMutation.isLoading || updateRoleMutation) && (
+            <SectionLoading className='z-30'></SectionLoading>
+          )}
           <DialogHeader>
             <DialogTitle className='text-center'>{idRole ? 'Update role' : 'Add new role'}</DialogTitle>
           </DialogHeader>
-          {/* Loading component when fetching user data */}
-          {/* {userDetailData.isLoading && idUser && <ComponentsLoading></ComponentsLoading>} */}
-          {/* {(!userDetailData.isLoading || !idUser) && */}
+
           {!isFetching && (
             <form className='grid gap-2 py-4' onSubmit={handleSubmit(handleForm)}>
               <div>
@@ -199,9 +200,8 @@ export default function EditAddRoleDialog({
               </DialogFooter>
             </form>
           )}
-          {isFetching && <SectionLoading className='h-full bg-none'></SectionLoading>}
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   )
 }

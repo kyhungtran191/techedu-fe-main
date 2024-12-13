@@ -1,17 +1,7 @@
 import { Layout } from '@/components/custom/layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Search } from 'lucide-react'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
+
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import ThreeDots from '@/icons/ThreeDots'
@@ -62,6 +52,7 @@ export default function CoursesAdmin() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const queryParams: PrivateCourseQueryParams = useParamsVariables()
+  console.log('query Params', queryParams)
   const queryConfig: PrivateCourseQueryConfig = omitBy(
     {
       pageIndex: queryParams.pageIndex || '1',
@@ -72,6 +63,7 @@ export default function CoursesAdmin() {
     },
     isUndefined
   )
+
   const [rejectDialog, setRejectDialog] = useState<{ courseId: string; instructorId: string } | null>(null)
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ['private-courses', queryConfig],
@@ -426,6 +418,7 @@ export default function CoursesAdmin() {
         {approveCourseMutation.isLoading && <SectionLoading className='z-30'></SectionLoading>}
 
         <div className='mt-5 w-full overflow-auto h-[500px] rounded-lg no-scrollbar'>
+          {isLoading && <SectionLoading className='z-30'></SectionLoading>}
           {!isLoading && (
             <Table className='w-full h-full overflow-auto'>
               <TableHeader className='sticky top-0 z-20 py-4 bg-white border-b tb:-top-3'>
@@ -468,6 +461,7 @@ export default function CoursesAdmin() {
           <PaginationCustom
             totalPage={data?.totalPage as number}
             path='/admin/courses'
+            queryConfig={queryConfig}
             className='mt-3'
           ></PaginationCustom>
         )}

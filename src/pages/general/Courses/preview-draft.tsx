@@ -34,7 +34,7 @@ export default function PreviewDraft() {
     onSuccess(data) {
       if (data) {
         const firstSection = data && data[0]
-        setCurrentItem(firstSection.sectionItems[0])
+        setCurrentItem(firstSection?.sectionItems[0])
       }
     },
     onError(err) {

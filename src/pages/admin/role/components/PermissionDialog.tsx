@@ -209,7 +209,7 @@ export default function PermissionDialog({ roleId }: { roleId: string }) {
         Authorize
       </DialogTrigger>
       <DialogContent
-        className='flex flex-col w-full max-w-[80vw] h-[80vh] overflow-y-auto relative'
+        className='flex flex-col w-full max-w-[80vw] h-[80vh] overflow-y-auto'
         onCloseAutoFocus={handleResetDialog}
       >
         {isLoading && <SectionLoading className='z-30'></SectionLoading>}
