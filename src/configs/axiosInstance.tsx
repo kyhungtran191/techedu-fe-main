@@ -23,12 +23,16 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
 
   instanceAxios.interceptors.request.use(async function (config) {
     const accessToken = getAccessTokenFromLS()
+
     console.log(accessToken)
+
     const { refreshToken, refreshTokenExpiryTime } = getRefreshToken()
+
     if (accessToken) {
       const decoded = jwtDecode(accessToken)
       if ((decoded.exp as number) > Date.now() / 1000) {
         config.headers.authorization = ` Bearer ${accessToken}`
+
         return config
       } else {
         if (refreshToken && refreshTokenExpiryTime > Date.now() / 1000) {
@@ -54,9 +58,6 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
                       refreshTokenExpiryTime
                     } = responseData
 
-                    console.log('new Access token', newAccessToken)
-                    console.log('new Refresh token', newRefreshToken)
-
                     if (newRefreshToken && refreshTokenExpiryTime) {
                       const newRefreshTokenExpiryTime = Math.floor(
                         new Date(refreshTokenExpiryTime as string).getTime() / 1000
@@ -78,9 +79,6 @@ const AxiosInterceptor = ({ children }: { children: React.ReactNode }) => {
                 return config
               })
               .catch((error) => {
-                console.log('error when refresh token', error)
-                console.log('accessToken when call new refresh token', accessToken)
-                console.log('refreshToken when call new refresh token', refreshToken)
                 toast.error('Refresh Token Timeout!')
                 clearLS()
                 setProfile(undefined)

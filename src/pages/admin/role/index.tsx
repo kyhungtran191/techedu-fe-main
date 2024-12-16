@@ -77,6 +77,7 @@ export default function Role() {
     queryFn: () => GetAllRoles(queryConfig),
     select: (data) => data?.data?.value
   })
+
   // Table Columns
   const columns = [
     {

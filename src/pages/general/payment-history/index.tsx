@@ -90,8 +90,9 @@ function PurchaseTable({ data, type }: { data: any[]; type: 'courses' | 'subscri
                   <AccordionTrigger>View all courses</AccordionTrigger>
                   <AccordionContent>
                     <div className='flex items-center justify-between mt-4'>
-                      <span className='flex flex-col font-medium'>
-                        Course name 1<div className='mt-1 text-sm cursor-pointer text-primary-1'>Request a refund</div>
+                      <span className='flex flex-col'>
+                        <span className='text-base font-semibold'>ReactJS</span>
+                        <div className='mt-1 text-sm cursor-pointer text-primary-1'>Request a refund</div>
                       </span>
                       <span>$40</span>
                     </div>

@@ -126,6 +126,7 @@ export default function PermissionDialog({ roleId }: { roleId: string }) {
         command: item.command,
         selected: true
       }))
+
     const newSectionUnselected =
       sections &&
       sections[0].permissions.map((item) => ({
@@ -133,6 +134,7 @@ export default function PermissionDialog({ roleId }: { roleId: string }) {
         command: item.command,
         selected: false
       }))
+
     updatePermission(
       { id: roleId, permissions: [...newSectionSelected, ...newSectionUnselected] },
       {
@@ -178,6 +180,7 @@ export default function PermissionDialog({ roleId }: { roleId: string }) {
   const handleMove = () => {
     const newSections = sections.map((section) => {
       if (section.id === selectedItem.sectionId) {
+        // remove current item in section
         return {
           ...section,
           permissions: section.permissions.filter((p) => !selectedItem.items.has(p.id as string)) // Remove selected items
@@ -187,7 +190,7 @@ export default function PermissionDialog({ roleId }: { roleId: string }) {
           ...section,
           permissions: [
             ...section.permissions,
-            ...Array.from(selectedItem.items)
+            ...Array.from(selectedItem.items) // transform into array from Set
               .map((itemId) => {
                 const permission = permissions.find((p) => p.id === itemId)
                 return permission ? { ...permission, selected: true } : null

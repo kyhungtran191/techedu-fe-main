@@ -80,7 +80,6 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
           className={` ${vertical ? 'h-[200px] w-full' : 'w-[30%] h-[30%] sm:w-[250px] tb:w-[300px] sm:h-[200px]'} relative `}
         >
           <img
-            loading='lazy'
             src={courseInfo?.courseThumbnailUrl ?? CardImage}
             alt='course-thumb'
             className={`h-full w-full object-cover rounded-xl`}

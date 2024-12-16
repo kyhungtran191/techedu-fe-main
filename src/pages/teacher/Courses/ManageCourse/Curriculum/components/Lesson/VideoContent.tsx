@@ -63,13 +63,17 @@ export default function VideoContent({
   }, [file])
 
   const shouldRenderVideoUpload =
-    isEdit || ( isAddNewContent && !isLoading && !primaryAsset?.fileUrl && primaryAsset?.status == 'Initial')
+    isEdit || (isAddNewContent && !isLoading && !primaryAsset?.fileUrl && primaryAsset?.status == 'Initial')
 
   const handleUpload = async () => {
     if (!file) return
+
     const totalChunks = Math.ceil(file.size / FILE_CHUNK_SIZE)
+
     let responseFileId = ''
+
     setIsLoading(true)
+
     if (totalChunks === 1) {
       await uploadChunk(file, 0, totalChunks)
         .then(async (data) => {
@@ -87,22 +91,28 @@ export default function VideoContent({
     } else {
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         const controller = new AbortController()
-        abortControllerRef.current.push(controller)
+
         const start = chunkIndex * FILE_CHUNK_SIZE
+
         const end = Math.min(start + FILE_CHUNK_SIZE, file.size)
+
         const chunkBlob = file.slice(start, end)
+
         const chunk = new File([chunkBlob], file.name)
+
         const percentCompleted = Math.round((chunkIndex / totalChunks) * 100)
 
         setProgress(percentCompleted)
+
         await uploadChunk(chunk, chunkIndex, totalChunks, responseFileId)
           .then(async (data) => {
-            console.log('Chunk index' + chunkIndex)
+            // First Chunk file
             if (chunkIndex == 0) {
               if (data && data?.data?.value && data?.data?.value?.fileId) {
                 responseFileId = data?.data?.value?.fileId
               }
             }
+            // Done
             if (chunkIndex === totalChunks - 1) {
               const res = await getAssets(courseId, sectionId, sectionItemId)
               if (res && res.data && res?.data?.value) {
@@ -126,7 +136,7 @@ export default function VideoContent({
     <>
       {shouldRenderVideoUpload && (
         <>
-          {!isLoading&& !isAddFromLibrary && (
+          {!isLoading && !isAddFromLibrary && (
             <VideoUpload onSetFile={setFile} onUpload={handleUpload} isAddNewContent={isAddNewContent}></VideoUpload>
           )}
           <div className='flex items-center justify-between font-light text-[18px] mt-6'>

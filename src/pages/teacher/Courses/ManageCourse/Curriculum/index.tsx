@@ -21,10 +21,13 @@ import { useAppContext } from '@/hooks/useAppContext'
 
 export default function Curriculum() {
   const [sections, setSections] = useState<TSectionCurriculum[]>([])
-  
-  const {profile} = useAppContext()
+
+  //current user profile
+  const { profile } = useAppContext()
   // Get course id
   const { id } = useParams()
+  const navigate = useNavigate()
+
   if (!id) {
     toast.error('course ID not exist')
     return
@@ -33,21 +36,28 @@ export default function Curriculum() {
   const orderCurriculumItemMutation = useHandleOrderSectionItemMutation()
 
   const handleDragAndDrop = async (results: DropResult) => {
+    /**
+     *
+     * source: previous position
+     * destination: new position
+     * type: type of item
+     */
     const { source, destination, type } = results
 
     if (!destination) return
 
+    // if equal id or index will do nothing
     if (source.droppableId === destination.droppableId && source.index === destination.index) return
 
+    // handle check type and reorder sections list
     if (type === 'group') {
       const reorderedSections = [...sections]
       const sourceIndex = source.index
       const destIndex = destination.index
 
       const [removedSection] = reorderedSections.splice(sourceIndex, 1)
-      reorderedSections.splice(destIndex, 0, removedSection)
 
-      console.log('reorderedSections:', reorderedSections)
+      reorderedSections.splice(destIndex, 0, removedSection)
 
       const newOrderItemsList = handleFormatReorderCurriculum(reorderedSections)
 
@@ -57,26 +67,37 @@ export default function Curriculum() {
       return
     }
 
-    // Handle drag-and-drop for sectionItems (lessons)
+    //Get current index of source and destination
     const itemSourceIndex = source.index
     const itemDestinationIndex = destination.index
 
+    //Find source index in section list
     const sourceSectionIndex = sections.findIndex((section) => `sectionList-${section.id}` === source.droppableId)
+    //Find destination index in section list
     const destinationSectionIndex = sections.findIndex(
       (section) => `sectionList-${section.id}` === destination.droppableId
     )
 
     if (sourceSectionIndex === -1 || destinationSectionIndex === -1) return
 
+    //Get all lesson from section source
     const sourceItems = [...sections[sourceSectionIndex].sectionItems]
+
+    //Get all lesson from section destination
     const destinationItems =
       source.droppableId !== destination.droppableId ? [...sections[destinationSectionIndex].sectionItems] : sourceItems
 
+    //Remove it
     const [movedItem] = sourceItems.splice(itemSourceIndex, 1)
+
+    //Change new section id for lesson
     movedItem.sectionId = sections[destinationSectionIndex].id
+
+    //Add new to destination section
     destinationItems.splice(itemDestinationIndex, 0, movedItem)
 
     const updatedSections = [...sections]
+
     updatedSections[sourceSectionIndex] = {
       ...sections[sourceSectionIndex],
       sectionItems: sourceItems
@@ -96,8 +117,6 @@ export default function Curriculum() {
       console.error('Error updating section items:', error)
     }
   }
-
-  const navigate = useNavigate()
 
   const querySectionData = useQuery({
     queryKey: ['course-sections', id],
@@ -133,12 +152,14 @@ export default function Curriculum() {
                 <p>0 min of video content uploaded</p>
                 <DropdownMenu>
                   <DropdownMenuTrigger
-                    onClick={() => navigate(`/preview-draft-course`, {
-                      state:{
-                        courseId:id,
-                        instructorId: profile?.userId
-                      }
-                    })}
+                    onClick={() =>
+                      navigate(`/preview-draft-course`, {
+                        state: {
+                          courseId: id,
+                          instructorId: profile?.userId
+                        }
+                      })
+                    }
                     className='flex items-center text-white bg-primary-1 py-3 px-[18px] rounded-lg'
                   >
                     <Play></Play>

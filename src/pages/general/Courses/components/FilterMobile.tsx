@@ -45,12 +45,11 @@ export default function FilterBar(props: IProps) {
           </div>
           <Separator className='w-full mt-3 bg-black' orientation='horizontal' />
           {/* End Header Filter */}
-          <Accordion type='single' collapsible defaultValue='rating'>
+          {/* <Accordion type='single' collapsible defaultValue='rating'>
             <AccordionItem value='rating' className='!border-b-0 pt-3'>
               <AccordionTrigger className='text-2xl hover:no-underline text-primary-1'>Rating</AccordionTrigger>
               <Separator className='w-full mb-4 bg-primary-2' orientation='horizontal' />
               <AccordionContent className='mt-0'>
-                {/* On selection */}
                 <RadioGroup defaultValue='option-one' className='' onValueChange={(value) => {}}>
                   <div className='flex items-center mb-4'>
                     <RadioGroupItem
@@ -79,10 +78,10 @@ export default function FilterBar(props: IProps) {
                 </RadioGroup>
               </AccordionContent>
             </AccordionItem>
-          </Accordion>
+          </Accordion> */}
           {/* Duration */}
-          <Accordion type='single' collapsible defaultValue='level'>
-            <AccordionItem value='level' className='!border-b-0 pt-3'>
+          <Accordion type='single' collapsible defaultValue='duration'>
+            <AccordionItem value='duration' className='!border-b-0 pt-3'>
               <AccordionTrigger className='text-2xl hover:no-underline text-primary-1'>Video duration</AccordionTrigger>
               <Separator className='w-full mb-4 bg-primary-2' orientation='horizontal' />
               <AccordionContent className='mt-0'>

@@ -1,6 +1,5 @@
 import { Heart, Play } from 'lucide-react'
 import React, { useState } from 'react'
-import ReactPlayer from 'react-player'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Instructor from '@/assets/instructor.jfif'
 import Description from '../CourseDetail/components/Description'
@@ -9,7 +8,6 @@ import Level from '@/icons/CourseDetail/Level'
 import Language from '@/icons/CourseDetail/Language'
 import Student from '@/icons/CourseDetail/Student'
 import Star from '@/icons/CourseDetail/Star'
-import LearningAccordion from './components/LearningAccordion'
 import { Separator } from '@/components/ui/separator'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import RatingProcess from './components/RatingProcess'
@@ -29,6 +27,7 @@ import SectionLoading from '@/components/Loading/SectionLoading'
 
 export default function CourseLearningSpace() {
   const [currentItem, setCurrentItem] = useState<SectionItem | undefined>()
+
   const { data, isLoading } = useQuery({
     // sẽ change sau khi đã render dc courses
     queryKey: ['publish-sections', 'eee6c380-e93e-4722-8dce-75f0056406cf', '4e9090ed-f35d-4eff-b794-97923428801f'],
@@ -44,6 +43,7 @@ export default function CourseLearningSpace() {
       toast.error('Error when fetch sections' + err)
     }
   })
+
   return (
     <div className='relative z-0 grid h-full grid-cols-1 lg:grid-cols-[1fr_363px] gap-x-5'>
       {isLoading && <SectionLoading></SectionLoading>}

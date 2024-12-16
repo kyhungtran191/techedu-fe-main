@@ -1,5 +1,6 @@
 import { ResponseLogin, TLogin, TRegister, User } from '@/@types/auth.type'
 import { ResponseData } from '@/@types/response.type'
+import { URL } from '@/apis'
 import { AUTH_API } from '@/apis/auth.api'
 import instanceAxios from '@/configs/axiosInstance'
 import axios from 'axios'
@@ -16,6 +17,10 @@ export const getMe = async () => {
 
 export const updateMe = async (body: { firstName: string; lastName: string; headline: string; bio: string }) => {
   return await instanceAxios.put<ResponseData<User>>(AUTH_API.ME, body)
+}
+
+export const getMyCourse = async () => {
+  return await instanceAxios.get<ResponseData<null>>(`${URL}courses/me/enrolled-courses`)
 }
 
 export const logout = async () => await instanceAxios.post<ResponseData<null>>(AUTH_API.LOGOUT)

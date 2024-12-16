@@ -94,7 +94,7 @@ export default function Courses() {
                   className='md:w-[100px] lg:w-[300px] h-auto py-3 border-neutral-black outline-none'
                   onChange={onSearchChange}
                 />
-                <Select>
+                {/* <Select>
                   <SelectTrigger className=' max-w-fit min-w-[200px] py-3 px-[18px] h-[47px] rounded-lg border-neutral-black text-neutral-black text-base'>
                     <SelectValue placeholder='Sort by' />
                   </SelectTrigger>
@@ -106,7 +106,7 @@ export default function Courses() {
                       <SelectItem value='newest'>Newest</SelectItem>
                     </SelectGroup>
                   </SelectContent>
-                </Select>
+                </Select> */}
                 <div
                   className='py-3 px-[18px] rounded-lg flex items-center justify-center bg-primary-1 text-white cursor-pointer xl:hidden'
                   onClick={() => setIsFilter(true)}

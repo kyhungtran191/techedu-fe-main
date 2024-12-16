@@ -92,7 +92,7 @@ export const CourseSetUpContextProvider = ({ children }: { children: React.React
     }
   }
 
-  // Reset dữ liệu chỉ khi gõ URL mới
+  // detect on type navigate URL
   useEffect(() => {
     if (performance.navigation.type === performance.navigation.TYPE_NAVIGATE) {
       handleResetData()

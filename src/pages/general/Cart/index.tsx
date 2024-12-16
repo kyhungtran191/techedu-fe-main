@@ -12,6 +12,7 @@ import { DeleteCartItem } from '@/services/client/cart.service'
 import { toast } from 'react-toastify'
 import SectionLoading from '@/components/Loading/SectionLoading'
 import { useNavigate } from 'react-router-dom'
+import { checkoutBasket } from '@/services/payment'
 export default function Cart() {
   const [isEdit, setIsEdit] = useState<boolean>(false)
   const { cart, isAuthenticated, isLoading } = useAppContext()
@@ -57,11 +58,22 @@ export default function Cart() {
   }
   const navigate = useNavigate()
 
+  const basketCheckoutMutation = useMutation({
+    mutationFn: (basketId: string) => checkoutBasket(basketId)
+  })
+
   const handleCheckoutWithPayment = () => {
-    return navigate('/checkout', {
-      state: {
-        totalPrice: countPrice,
-        orderItems: cart?.items
+    basketCheckoutMutation.mutate(cart?.id as string, {
+      onSuccess() {
+        return navigate('/checkout', {
+          state: {
+            totalPrice: countPrice,
+            orderItems: cart?.items
+          }
+        })
+      },
+      onError() {
+        toast.error('Something went wrong ! Please try again')
       }
     })
   }

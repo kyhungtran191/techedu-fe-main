@@ -46,11 +46,11 @@ const UploadStatus: React.FC<UploadStatusProps> = ({
             <TableCell className='text-center'>{initDate}</TableCell>
             <TableCell className='text-center'>
               {progress == 100 && <div className=''>Replace</div>}
-              {progress != 100 && (
+              {/* {progress != 100 && (
                 <div className='text-black cursor-pointer' onClick={onRemove}>
                   <Close className='w-6 h-6'></Close>
                 </div>
-              )}
+              )} */}
             </TableCell>
           </TableRow>
         </TableBody>

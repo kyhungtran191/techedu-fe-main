@@ -1,15 +1,9 @@
 import React, { useEffect, useRef } from 'react'
 import Logo from '@/assets/logo.png'
 import { Link, useMatch, useNavigate } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
 import AvatarPopover from '@/components/AvatarPopover'
-import SignUp from '@/components/AuthBtn/SignUp'
-import Login from '@/components/AuthBtn/Login'
 import { useAppContext } from '@/hooks/useAppContext'
 export default function Header({ headerOption }: { headerOption?: React.ReactNode }) {
-  const isLogin = useMatch('/login')
-  const isSignUp = useMatch('/signup')
-
   // Check isAuthContext
   const headerRef = useRef<null | HTMLDivElement>(null)
   const { isAuthenticated } = useAppContext()

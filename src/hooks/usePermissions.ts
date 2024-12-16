@@ -37,7 +37,7 @@ export const usePermission = (key: string, actions: TActions[]) => {
     const updatedPermissions = { ...defaultValues }
 
     actions.forEach((mode) => {
-      if (profile?.email.includes(BASIC_ROLE.DIRECTOR)) {
+      if (profile?.roles.includes(BASIC_ROLE.DIRECTOR)) {
         updatedPermissions[mode] = true
       } else if (mapPermission && userPermission?.includes(mapPermission[mode])) {
         updatedPermissions[mode] = true

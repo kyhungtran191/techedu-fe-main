@@ -1,19 +1,21 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import Logo from '@/assets/logo.png'
 import Ads from '@/assets/benefits.png'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import Language from '@/icons/CourseDetail/Language'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import Stripe from '@/assets/stripe.png'
 import { Separator } from '@/components/ui/separator'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { Item } from '@radix-ui/react-menubar'
 import { CartItem } from '@/@types/cart.type'
+import { useQuery } from '@tanstack/react-query'
+import { getOrderTranStatusById } from '@/services/payment'
+import LoadingCircle from '@/components/Loading/LoadingCircle'
 
 export default function Checkout() {
+  const { orderId, transactionId } = useParams()
+
   const location = useLocation()
   const navigate = useNavigate()
   const pageState = location.state
@@ -24,6 +26,25 @@ export default function Checkout() {
       return navigate('/my-cart')
     }
   }, [pageState?.totalPrice, pageState?.orderItems])
+
+  const orderQuery = useQuery({
+    queryKey: ['orderStatus', orderId, transactionId],
+    queryFn: () => getOrderTranStatusById(orderId as string, transactionId as string),
+    enabled: Boolean(orderId && transactionId),
+    refetchInterval: 60 * 1000
+  })
+
+  useEffect(() => {
+    const timeout = setTimeout(
+      () => {
+        toast.error('Get Order Status Timeout !')
+        navigate('/my-cart')
+      },
+      4 * 60 * 1000
+    )
+    return () => clearTimeout(timeout)
+  }, [navigate])
+
   return (
     <div className='w-screen grid sm:grid-cols-[357px_1fr] h-screen max-h-screen'>
       <div className='flex flex-col h-screen px-6 py-12 overflow-y-auto no-scrollbar bg-primary-3'>
@@ -101,8 +122,12 @@ export default function Checkout() {
           <span className='text-[32px] font-medium'>Total:</span>
           <span className='ml-6 text-4xl font-medium text-primary-1'>${pageState?.totalPrice}</span>
         </div>
-        <Button variant={'custom'} className='w-full !py-7 text-xl max-w-[500px]'>
-          Checkout
+        <Button
+          variant={'custom'}
+          className='w-full !py-7 text-xl max-w-[500px] flex items-center justify-center'
+          disabled={orderQuery.isLoading}
+        >
+          {orderQuery.isLoading ? <LoadingCircle></LoadingCircle> : 'Checkout'}
         </Button>
       </div>
     </div>

@@ -12,15 +12,15 @@ import Star from '@/icons/CourseDetail/Star'
 import Clock from '@/icons/CourseDetail/Clock'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import Folder from '@/icons/CourseDetail/Folder'
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger
+// } from '@/components/ui/dropdown-menu'
+// import Folder from '@/icons/CourseDetail/Folder'
 
 import ShortDetail from './components/ShortDetail'
 import Reviewers from './components/Reviewers'
@@ -137,7 +137,7 @@ export default function CourseDetail() {
               <div className='flex items-start '>
                 <img
                   className='w-[50px] h-[50px] rounded-xl object-cover flex-shrink-0'
-                  src={Instructor}
+                  src={data?.instructor.avatarUrl || Instructor}
                   alt='instructor-avatar'
                 />
                 <div className='ml-3'>

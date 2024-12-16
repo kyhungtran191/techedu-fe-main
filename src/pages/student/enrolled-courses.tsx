@@ -26,6 +26,9 @@ import List from '@/icons/List'
 import { Separator } from '@/components/ui/separator'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import Share from '@/icons/Share'
+import { useAppContext } from '@/hooks/useAppContext'
+import { useQuery } from '@tanstack/react-query'
+import { getMyCourse } from '@/services/auth.services'
 
 function DropDownMenuListCustom() {
   return (
@@ -85,7 +88,14 @@ function DropDownMenuListCustom() {
 }
 
 export default function EnrolledCourses() {
+  const { isAuthenticated } = useAppContext()
   const [viewMode, setViewMode] = useState<string>('list')
+
+  const myCourseQuery = useQuery({
+    queryKey: ['my-enrolledCourses', isAuthenticated],
+    queryFn: () => getMyCourse(),
+    enabled: Boolean(isAuthenticated)
+  })
 
   return (
     <div className='grid h-full grid-cols-12 overflow-y-auto  no-scrollbar rounded-xl gap-[10px]'>
@@ -159,10 +169,10 @@ export default function EnrolledCourses() {
                   </div>
                 </div>
 
-                <div className='col-span-3 sm:col-span-1'>
+                {/* <div className='col-span-3 sm:col-span-1'>
                   <Progress value={50} className='h-[20px]'></Progress>
                   <span className='block mt-2 text-sm font-light'>Completed 65%</span>
-                </div>
+                </div> */}
                 <div className='flex items-center justify-between col-span-3 sm:col-span-1 sm:justify-end gap-x-3'>
                   <Button variant={'custom'} className='w-full mr-8 sm:w-fit'>
                     Continue
@@ -175,6 +185,7 @@ export default function EnrolledCourses() {
           {/* Grid */}
           <div className={`${viewMode == 'grid' ? 'grid' : 'hidden'} grid-cols-3 gap-[18px]`}>
             <div className={`flex  flex-col w-full  bg-primary-3`}>
+              {/* Call data here */}
               <div className={` h-[200px] w-full relative `}>
                 <img src={CourseImage} alt='course-thumb' className={`h-full w-full object-cover rounded-xl`} />
                 <div className='absolute  hidden sm:flex items-center justify-center w-[38px] h-[38px] rounded-full bg-white shadow-md cursor-pointer right-[14px] top-4'>

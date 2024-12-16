@@ -26,6 +26,8 @@ import { APP_PERMISSIONS } from './constants/permissions'
 import NotFound from './pages/errors/NotFound'
 import Unauthorized from './pages/errors/Unauthorized'
 import { InstructorProfile } from './pages/teacher/main/profile'
+import CompleteCheckout from './pages/general/Checkout/CompleteCheckout'
+import Payment from './pages/general/Checkout/Payment'
 
 // Lazy loading for components
 const ResendEmail = lazy(() => import('./pages/general/resend-email'))
@@ -81,6 +83,7 @@ function App() {
         />
 
         {/* Dont need to Guard Route */}
+        <Route path='/ads' element={<Ads></Ads>}></Route>
         <Route
           path='/courses'
           element={
@@ -91,7 +94,7 @@ function App() {
         >
           <Route path=':id' element={<CourseDetail />} />
         </Route>
-        {/* End */}
+
         {/* Guest Guard */}
         <Route element={<GuestGuard></GuestGuard>}>
           <Route path='/signup' element={<SignUp />} />
@@ -209,8 +212,18 @@ function App() {
               </ClientMainLayout>
             }
           />
-          <Route path='/checkout' element={<Checkout />} />
-
+          <Route path='/checkout/:orderId/:transactionId' element={<Checkout />} />
+          <Route path='/stripe/:orderId/:transactionId' element={<Payment></Payment>}></Route>
+          {/* Complete checkout */}
+          <Route
+            path='/complete-checkout/:orderId/:transactionId'
+            element={
+              <BlankLayout>
+                <CompleteCheckout></CompleteCheckout>
+              </BlankLayout>
+            }
+          ></Route>
+          {/* End */}
           <Route path='/preview-draft-course' element={<PreviewCourse />}></Route>
 
           <Route

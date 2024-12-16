@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import React, { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import {
   clearLS,
   getAccessTokenFromLS,
@@ -17,9 +17,6 @@ import { Role } from '@/@types/admin/role.type'
 import { toast } from 'react-toastify'
 import { CartResponse } from '@/@types/cart.type'
 import { GetMyCart } from '@/services/client/cart.service'
-
-// Api call get me
-// import { Auth } from '@/services/client'
 
 type TInitialState = {
   isAuthenticated: boolean
@@ -73,6 +70,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           bio,
           headline
         } = data
+
         saveUserToLS({
           email,
           firstName,
@@ -85,8 +83,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           phoneNumber,
           roles: roles.map((item: Role) => item.name)
         })
+
         const permissionConvert = permisisons.map((item: any) => `${item.function}.${item.command}`)
+
         savePermissions(permissionConvert)
+
         setProfile({
           email,
           firstName,
@@ -99,6 +100,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           phoneNumber,
           roles: roles.map((item: Role) => item.name)
         })
+
         setPermissions(permissionConvert)
       }
     },
@@ -123,12 +125,13 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       }
     },
     onError: (err) => {
-      toast.error('Error when getCart me')
+      toast.error('Error when get cart ')
     }
   })
 
+  // App Context Global Loading
   const isLoading = isAuthenticated && (cartLoading || fetchMeLoading)
-  // GetMyCart
+
   return (
     <AppContext.Provider
       value={{
