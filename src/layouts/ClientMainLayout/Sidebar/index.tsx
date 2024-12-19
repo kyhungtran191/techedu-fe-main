@@ -147,7 +147,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   
   const isCourseLearningDetail = /\/courses\/\d+\/learn\/\d+/.test(pathname)
   const isCourseDetail = !isCourseLearningDetail && /\/courses\/[\w-]+/.test(pathname)
-
+  
   const {
     data: similarityData,
     isLoading: similarityLoading,

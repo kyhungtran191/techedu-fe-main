@@ -110,6 +110,8 @@ export default function EditAddRoleDialog({
     }
   }
 
+
+
   return (
     <>
       <Dialog defaultOpen={open} open={open} onOpenChange={setOpenDialog}>
@@ -131,7 +133,7 @@ export default function EditAddRoleDialog({
             })
           }}
         >
-          {((idRole && isLoading) || createRoleMutation.isLoading || updateRoleMutation) && (
+          {((idRole && isLoading) || createRoleMutation.isLoading || updateRoleMutation.isLoading) && (
             <SectionLoading className='z-30'></SectionLoading>
           )}
           <DialogHeader>

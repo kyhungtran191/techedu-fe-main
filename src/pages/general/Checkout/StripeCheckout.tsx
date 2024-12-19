@@ -1,8 +1,10 @@
 import { PaymentElement } from '@stripe/react-stripe-js'
 import { useState } from 'react'
 import { useStripe, useElements } from '@stripe/react-stripe-js'
+import { useParams } from 'react-router-dom'
 
 const StripeCheckout: React.FC = () => {
+  const {orderId,transactionId } = useParams()
   const stripe = useStripe()
   const elements = useElements()
 
@@ -21,7 +23,7 @@ const StripeCheckout: React.FC = () => {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/completion`
+        return_url: `${window.location.origin}/complete-checkout/${orderId}/${transactionId}`
       }
     })
 
@@ -39,7 +41,7 @@ const StripeCheckout: React.FC = () => {
   }
 
   return (
-    <form id='payment-form' onSubmit={handleSubmit} className='p-6 my-6 space-y-4 bg-white border rounded-lg shadow-lg'>
+    <form id='payment-form' onSubmit={handleSubmit} className='max-w-[600px] mx-auto p-6 my-6 space-y-4 bg-white border rounded-lg shadow-lg'>
       <PaymentElement id='payment-element' />
       <button
         type='submit'

@@ -13,7 +13,7 @@ export const GetTopics = async () =>
         name: string
       }[]
     >
-  >(`${URL}/topics`)
+  >(`${URL}topics`)
 
 export const GetCategoriesWithSubCategories = async () =>
   await axios.get<ResponseData<CategoryAll[]>>(`${CATEGORIES}/all`)

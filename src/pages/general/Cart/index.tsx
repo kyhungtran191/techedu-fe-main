@@ -64,8 +64,10 @@ export default function Cart() {
 
   const handleCheckoutWithPayment = () => {
     basketCheckoutMutation.mutate(cart?.id as string, {
-      onSuccess() {
-        return navigate('/checkout', {
+      onSuccess(data) {
+        const result =  data.data?.value
+
+        return navigate(`/checkout/${result?.orderId}/${result?.transactionId}`, {
           state: {
             totalPrice: countPrice,
             orderItems: cart?.items
@@ -80,7 +82,7 @@ export default function Cart() {
   const isFetching = useIsFetching(['my-cart', isAuthenticated])
   return (
     <div className='relative z-0 grid h-full grid-cols-1 lg:grid-cols-[1fr_30vw] gap-x-4 overflow-auto no-scrollbar'>
-      {(isFetching || deleteCartItemMutation.isLoading) && <SectionLoading className='z-30'></SectionLoading>}
+      {(basketCheckoutMutation.isLoading || isFetching || deleteCartItemMutation.isLoading) && <SectionLoading className='z-30'></SectionLoading>}
       <div className='min-h-[400px] w-full xl:min-h-auto h-full px-3 pb-6 overflow-y-auto bg-white rounded-xl no-scrollbar '>
         <div className='sticky top-0 z-10 flex items-center justify-between pt-6 bg-white pb-[18px]'>
           <div className='text-[32px] font-medium text-neutral-black '>
@@ -155,6 +157,7 @@ export default function Cart() {
               <div className='p-[8px] rounded-lg flex items-center justify-center bg-secondary-1 text-white ml-[22px]'>
                 35% OFF
               </div>
+              <div></div>
             </div>
             <Button
               className='w-full px-4 text-xl text-white rounded-lg py-7 bg-primary-1 my-[18px]'

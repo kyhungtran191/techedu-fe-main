@@ -25,7 +25,7 @@ export default function ShortDetail({
   const { cart, isAuthenticated } = useAppContext()
   const navigate = useNavigate()
   const [localIsHavingCourseCart, setLocalIsHavingCourseCart] = useState(false)
-
+  const {enrolledListCourse } = useAppContext()
   const queryClient = useQueryClient()
 
   const addToCartMutation = useMutation({
@@ -46,6 +46,10 @@ export default function ShortDetail({
 
   const handleCartService = () => {
     if (localIsHavingCourseCart) return navigate('/my-cart')
+    if(enrolledListCourse?.includes(courseData?.courseId as string)) return navigate(`/courses/${courseData?.courseId}/learn/${courseData?.instructor?.userId}`, {state:{
+        courseName: courseData?.courseLandingPage?.title
+    }})
+      
     else {
       if (courseData) {
         const itemAdd: TItemAddCart = {
@@ -61,7 +65,7 @@ export default function ShortDetail({
           instructorName: `${courseData.instructor.firstName} ${courseData.instructor.lastName}`,
           level: courseData?.courseLandingPage.level,
           viewers: courseData?.viewers || 0,
-          courseThumbnailFilePath: 'dqwdwqdwqdwqdwdqdqw'
+          courseThumbnailFilePath: courseData.courseLandingPage?.thumbnailFilePath as string
         }
         addToCartMutation.mutate(itemAdd)
       }
@@ -102,7 +106,7 @@ export default function ShortDetail({
           variant={'custom'}
           onClick={handleCartService}
         >
-          {localIsHavingCourseCart ? 'Go to Cart' : 'Add To Cart'}
+          {enrolledListCourse.includes(courseData?.courseId as string) ?'Continue' :localIsHavingCourseCart ? 'Go to Cart' : 'Add To Cart'}
         </Button>
         <div className=' flex items-center justify-center w-[60px] h-[60px] rounded-xl bg-white shadow-md cursor-pointer'>
           <Heart className=' text-primary-1'></Heart>

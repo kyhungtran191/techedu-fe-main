@@ -196,7 +196,7 @@ function App() {
           ></Route>
           {/* Learning Space */}
           <Route
-            path='/courses/:slug/learn/:lecture'
+            path='/courses/:courseId/learn/:instructorId'
             element={
               <ClientMainLayout HeaderCustom={LearningSpaceHeader}>
                 <CourseLearningSpace />

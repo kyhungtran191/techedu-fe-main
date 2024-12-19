@@ -52,7 +52,7 @@ export const UpdateOrderSection = async (courseId: string, sectionItems: Section
 }
 
 export const UpdateContentVideo = async (formData: FormData) => {
-  return await instanceAxios.put(`${SECTION_ITEM_ASSETS}/video-assets/upload`, formData, {
+  return await instanceAxios.put(`${SECTION_ITEM_ASSETS}video-assets/upload`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -72,7 +72,7 @@ export const UpdateContentArticle = async (data: {
   sectionId: number
   sectionItemId: number
   body: string
-}) => await instanceAxios.put<ResponseData<TArticleResponse>>(`${SECTION_ITEM_ASSETS}/article-assets`, data)
+}) => await instanceAxios.put<ResponseData<TArticleResponse>>(`${SECTION_ITEM_ASSETS}article-assets`, data)
 
 export const UpdateDescriptionSectionItem = async (
   courseId: string,

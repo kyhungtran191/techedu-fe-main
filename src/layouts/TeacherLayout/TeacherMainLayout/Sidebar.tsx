@@ -192,13 +192,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </ul>
               </div>
             ))}
-            <div className='flex flex-col items-start justify-center w-full '>
+            {/* <div className='flex flex-col items-start justify-center w-full '>
               <img srcSet={`${Ads} 2x`} alt='ads' className='w-[122px] h-[110px] object-cover mx-auto' />
               <p className='text-center mt-6 mb-[10px] w-full'>Connect & Grow with Peers</p>
               <Button className='w-full mx-auto border-neutral-black py-3 px-[18px]' variant={'outline'}>
                 Teaching center
               </Button>
-            </div>
+            </div> */}
             {/* <!-- Others Group --> */}
             <div>
               <ul className='flex flex-col mt-6'>

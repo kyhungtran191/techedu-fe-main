@@ -35,4 +35,10 @@ export const GetSimilarityCourse = async (courseId: string, instructorId: string
   )
 }
 
+
+export const GetCourseTitleAndStatus = async (courseId:string, instructorId:string)=>{
+  return await axios.get<ResponseData<{title:string, status:string}>>(
+    `${URL}courses/${courseId}/instructors/${instructorId}/get-title-and-status`
+  )
+}
 //

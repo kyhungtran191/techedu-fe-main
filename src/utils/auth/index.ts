@@ -148,3 +148,5 @@ export const saveCartToLocalStorage = (cart: CartResponse) => {
     console.log('Error when saving cart information to LS', err)
   }
 }
+
+

@@ -389,7 +389,7 @@ export default function LandingPage() {
                       <div className='flex flex-wrap items-start'>
                         <img
                           className='w-[50px] h-[50px] rounded-xl object-cover'
-                          src={profile?.avatar || Instructor}
+                          src={Instructor}
                           alt='instructor-avatar'
                         />
                         <div className='ml-3 '>

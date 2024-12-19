@@ -7,6 +7,6 @@ export type SubmitCourseReviewResponse = {
 }
 export const SubmitReviewCourse = async (courseId: string) => {
   return await instanceAxios.post<ResponseData<SubmitCourseReviewResponse>>(
-    `${COURSE_CURRICULUM_BASE_URL}/${courseId}/submit-for-review`
+    `${COURSE_CURRICULUM_BASE_URL}${courseId}/submit-for-review`
   )
 }

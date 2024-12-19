@@ -23,7 +23,7 @@ const LearningSpaceHeader = (props: {
   const params = useParams()
   const [open, setOpen] = useState(false)
   const { isAuthenticated } = useAppContext()
-  const { slug } = useParams()
+  const { courseId } = useParams()
   return (
     <header className='sticky top-0 flex w-full px-3 py-6 bg-white z-[30] drop-shadow-1'>
       <div className='flex items-center gap-x-3 h-[48px] flex-wrap justify-between w-full'>
@@ -45,12 +45,12 @@ const LearningSpaceHeader = (props: {
           ref={titleRef}
           className='text-[18px] sm:text-[32px] font-medium flex-1 line-clamp-1 text-ellipsis capitalize'
         >
-          {formatSlugToTitleCourseDetail(params?.lecture as string)}
+          
         </div>
         <div className='flex items-center'>
           <CircularProgressBar percentage={50}></CircularProgressBar>
           <Separator orientation='vertical' className='hidden h-6 mx-2 bg-black sm:mx-6 xs:block'></Separator>
-          <ShareButton courseId={slug as string} isOpen={open} onClose={()=>setOpen(false)} onOpenChange={setOpen}></ShareButton>
+          <ShareButton courseId={courseId as string} isOpen={open} onClose={()=>setOpen(false)} onOpenChange={setOpen}></ShareButton>
           {isAuthenticated && <AvatarPopover></AvatarPopover>}
         </div>
       </div>

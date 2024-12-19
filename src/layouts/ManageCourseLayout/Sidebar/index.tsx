@@ -13,6 +13,7 @@ import { toast } from 'react-toastify'
 import ErrorAlertDialog from '@/components/ErrorAlert'
 import SectionLoading from '@/components/Loading/SectionLoading'
 import { useAppContext } from '@/hooks/useAppContext'
+import { GetCourseTitleAndStatus } from '@/services/publish-course'
 
 interface SidebarManageProps {
   sidebarOpen: boolean
@@ -37,7 +38,7 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
   const { id } = useParams()
   const [errors, setErrors] = useState<Record<string, string[]> | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
+  const { profile} =useAppContext()
   const navigate = useNavigate()
   // close on click outside
   useEffect(() => {
@@ -129,6 +130,14 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
     })
   }
 
+  const {data:courseData,isLoading} = useQuery({
+    queryKey: ['courseDataTitle',id],
+    queryFn: ()=>GetCourseTitleAndStatus(id, profile?.userId as string),
+    enabled: Boolean(id),
+    select: (data)=>data?.data?.value
+  })
+
+
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
       {submitCourseMutation.isLoading && <SectionLoading className='z-30'></SectionLoading>}
@@ -164,9 +173,10 @@ const SidebarManage = ({ sidebarOpen, setSidebarOpen }: SidebarManageProps) => {
             Back to courses
           </span>
         </Link>
-        <div className='flex items-center gap-2'>
-          <h2 className='mt-2 mb-1 text-xl font-bold bg-white text-neutral-black'>{navigationState?.courseName}</h2>
-          <div className='px-3 py-2 rounded-lg bg-neutral-silver-1'>{navigationState?.courseStatus}</div>
+          {isLoading && <SectionLoading className='z-30'></SectionLoading>}
+        <div className='flex items-center gap-2 relative'>
+          <h2 className='mt-2 mb-1 text-xl font-bold bg-white text-neutral-black'>{courseData?.title}</h2>
+          <div className='px-3 py-2 rounded-lg bg-neutral-silver-1'>{courseData?.status}</div>
         </div>
 
         <div className='flex flex-col h-full overflow-y-scroll duration-300 ease-linear no-scrollbar'>

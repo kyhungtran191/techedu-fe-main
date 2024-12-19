@@ -12,6 +12,7 @@ import { CartItem } from '@/@types/cart.type'
 import { useQuery } from '@tanstack/react-query'
 import { getOrderTranStatusById } from '@/services/payment'
 import LoadingCircle from '@/components/Loading/LoadingCircle'
+import SectionLoading from '@/components/Loading/SectionLoading'
 
 export default function Checkout() {
   const { orderId, transactionId } = useParams()
@@ -19,6 +20,7 @@ export default function Checkout() {
   const location = useLocation()
   const navigate = useNavigate()
   const pageState = location.state
+
 
   useEffect(() => {
     if (!pageState?.totalPrice || !pageState?.orderItems) {
@@ -45,8 +47,13 @@ export default function Checkout() {
     return () => clearTimeout(timeout)
   }, [navigate])
 
+  const handleCheckout = ()=>{
+    return navigate(`/stripe/${orderId}/${transactionId}`)
+  }
+
   return (
-    <div className='w-screen grid sm:grid-cols-[357px_1fr] h-screen max-h-screen'>
+    <div className='w-screen grid sm:grid-cols-[357px_1fr] h-screen max-h-screen relative'>
+      {orderQuery.isLoading && <SectionLoading className='z-30'></SectionLoading>}
       <div className='flex flex-col h-screen px-6 py-12 overflow-y-auto no-scrollbar bg-primary-3'>
         <img srcSet={`${Logo} 2x`} alt='' className='w-[220px] h-[52px] object-cover' />
         <div className='mt-9 text-neutral-black'>
@@ -126,6 +133,7 @@ export default function Checkout() {
           variant={'custom'}
           className='w-full !py-7 text-xl max-w-[500px] flex items-center justify-center'
           disabled={orderQuery.isLoading}
+          onClick={handleCheckout}
         >
           {orderQuery.isLoading ? <LoadingCircle></LoadingCircle> : 'Checkout'}
         </Button>

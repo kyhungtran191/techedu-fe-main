@@ -22,6 +22,7 @@ interface IProps {
 
 export default function CourseCard({ courseInfo, vertical = true, wrapperClass = '', isCartItem = false }: IProps) {
   const navigate = useNavigate()
+  const {enrolledListCourse} = useAppContext()
   const { isAuthenticated, cart } = useAppContext()
   const queryClient = useQueryClient()
 
@@ -46,6 +47,10 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
     if (!isAuthenticated || !cart?.id) {
       return navigate('/login')
     }
+    if(enrolledListCourse?.includes(courseInfo?.courseId as string)) return navigate(`/courses/${courseInfo?.courseId}/learn/${courseInfo?.userId}`, {state:{
+      courseName: courseInfo?.title
+    }})
+
     if (isCourseInCart) return navigate('/my-cart')
     if (courseInfo) {
       const itemAdd: TItemAddCart = {
@@ -61,7 +66,7 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
         instructorName: courseInfo.instructorName,
         level: courseInfo?.level,
         viewers: courseInfo?.viewers,
-        courseThumbnailFilePath: 'dqwdwqdwqdwqdwdqdqw'
+        courseThumbnailFilePath: courseInfo?.courseThumbnailFilePath as string
       }
       addToCartMutation.mutate(itemAdd)
     }
@@ -124,7 +129,7 @@ export default function CourseCard({ courseInfo, vertical = true, wrapperClass =
                   handleCourseCart(e)
                 }}
               >
-                {isCourseInCart ? 'Go to cart' : 'Add to Cart'}
+                {enrolledListCourse.includes(courseInfo?.courseId as string) ?'Continue' : isCourseInCart ? 'Go to cart' : 'Add to Cart'}
               </Button>
             )}
           </div>

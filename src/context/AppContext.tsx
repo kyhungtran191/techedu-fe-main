@@ -17,6 +17,7 @@ import { Role } from '@/@types/admin/role.type'
 import { toast } from 'react-toastify'
 import { CartResponse } from '@/@types/cart.type'
 import { GetMyCart } from '@/services/client/cart.service'
+import { getMyCourse } from '@/services/auth.services'
 
 type TInitialState = {
   isAuthenticated: boolean
@@ -28,6 +29,8 @@ type TInitialState = {
   cart: CartResponse | undefined
   setCart: React.Dispatch<React.SetStateAction<CartResponse | undefined>>
   isLoading: boolean
+  enrolledListCourse:string[],
+  setEnrolledListCourse:  React.Dispatch<React.SetStateAction<string[]>>
 }
 
 const initialAppContext: TInitialState = {
@@ -39,7 +42,9 @@ const initialAppContext: TInitialState = {
   setPermissions: () => {},
   cart: getCartFromLS() || undefined,
   setCart: () => {},
-  isLoading: false
+  isLoading: false,
+  enrolledListCourse: [],
+  setEnrolledListCourse: ()=>{}
 }
 
 export const AppContext = React.createContext<TInitialState>(initialAppContext)
@@ -50,6 +55,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [permissions, setPermissions] = useState(initialAppContext.permissions || undefined)
   const [cart, setCart] = useState<CartResponse | undefined>(initialAppContext.cart || undefined)
   const accessToken = getAccessTokenFromLS()
+  const [enrolledListCourse, setEnrolledListCourse] = useState<string[]>([]) 
   const { data, isLoading: fetchMeLoading } = useQuery({
     queryKey: ['me', isAuthenticated],
     queryFn: GetMe,
@@ -129,8 +135,25 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }
   })
 
+
+  const { data: enrolledCourse, isLoading: enrolledLoading } = useQuery({
+    queryKey: ['my-enrolled-courses', isAuthenticated],
+    queryFn: getMyCourse,
+    select: (data) => data?.data?.value,
+    enabled: isAuthenticated && Boolean(accessToken),
+    onSuccess: (data) => {
+      if (data) {
+        let newListArr = data.map((item)=>item.courseId)
+        setEnrolledListCourse(newListArr)
+      }
+    },
+    onError: (err) => {
+      toast.error('Error when get enrolled course ')
+    }
+  })
+
   // App Context Global Loading
-  const isLoading = isAuthenticated && (cartLoading || fetchMeLoading)
+  const isLoading = isAuthenticated && (cartLoading || fetchMeLoading || enrolledLoading)
 
   return (
     <AppContext.Provider
@@ -143,6 +166,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setCart,
         cart,
         setPermissions,
+        enrolledListCourse,
+        setEnrolledListCourse,
         isLoading
       }}
     >

@@ -13,7 +13,7 @@ import { useMutation } from '@tanstack/react-query'
 import { logout } from '@/services/auth.services'
 import GlobalLoading from '../Loading'
 export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?: boolean }) {
-  const { isAuthenticated, setProfile, setIsAuthenticated, profile, setPermissions, setCart } = useAppContext()
+  const {setEnrolledListCourse, isAuthenticated, setProfile, setIsAuthenticated, profile, setPermissions, setCart } = useAppContext()
 
   const navigate = useNavigate()
 
@@ -21,10 +21,12 @@ export default function AvatarPopover({ isAvatarName = false }: { isAvatarName?:
     mutationFn: logout,
     onSuccess: () => {
       clearLS()
-      setIsAuthenticated(false), setProfile(undefined)
+      setIsAuthenticated(false)
+      setProfile(undefined)
       setProfile(undefined)
       setPermissions(undefined)
       setCart(undefined)
+      setEnrolledListCourse([])
       toast.success('Log out successfully !')
       navigate('/login')
     },

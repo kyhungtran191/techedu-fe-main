@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom'
 function Payment() {
   const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null)
   const [clientSecret, setClientSecret] = useState<string>('')
-
+  const [loading,setLoading] = useState(false)
   const { orderId, transactionId } = useParams()
   // Set up stripe configs
   useEffect(() => {
@@ -22,29 +22,36 @@ function Payment() {
 
   // get client secret
   useEffect(() => {
+    setLoading(true)
     instanceAxios
       .post(`${URL}payments/complete-checkout`, {
         orderId,
         transactionId
       })
       .then((response) => {
-        const { clientSecret } = response.data
+        const { clientSecret } = response?.data?.value
+        console.log('Response' + clientSecret)
         setClientSecret(clientSecret)
+       
       })
       .catch((error) => {
         console.error('Error completing checkout:', error)
+      }).finally(()=>{
+        setLoading(false)
       })
   }, [orderId, transactionId])
 
+  console.log(stripePromise, clientSecret)
+
   return (
-    <>
-      <h1>Payment</h1>
+    <div className='container my-10'>
+      <h1 className='text-lg font-semibold text-center'>Payment</h1>
       {clientSecret && stripePromise && (
         <Elements stripe={stripePromise} options={{ clientSecret }}>
           <StripeCheckout />
         </Elements>
       )}
-    </>
+    </div>
   )
 }
 

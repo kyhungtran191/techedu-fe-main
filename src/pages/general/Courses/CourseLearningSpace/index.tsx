@@ -24,14 +24,17 @@ import { GetPublishSections } from '@/services/publish-course'
 import { toast } from 'react-toastify'
 import ContentLearningSpace from '../components/ContentLearningSpace'
 import SectionLoading from '@/components/Loading/SectionLoading'
+import {  useParams } from 'react-router-dom'
 
 export default function CourseLearningSpace() {
   const [currentItem, setCurrentItem] = useState<SectionItem | undefined>()
+  
+
+  const {courseId, instructorId} = useParams()
 
   const { data, isLoading } = useQuery({
-    // sẽ change sau khi đã render dc courses
-    queryKey: ['publish-sections', 'eee6c380-e93e-4722-8dce-75f0056406cf', '4e9090ed-f35d-4eff-b794-97923428801f'],
-    queryFn: () => GetPublishSections('eee6c380-e93e-4722-8dce-75f0056406cf', '4e9090ed-f35d-4eff-b794-97923428801f'),
+    queryKey: ['publish-sections', courseId, instructorId],
+    queryFn: () => GetPublishSections(courseId as string, instructorId as string),
     select: (data) => data.data.value,
     onSuccess(data) {
       if (data) {
@@ -41,8 +44,14 @@ export default function CourseLearningSpace() {
     },
     onError(err) {
       toast.error('Error when fetch sections' + err)
-    }
+    },
+    enabled: Boolean(courseId && instructorId)
   })
+
+  // if(!pageState?.courseId || !pageState?.instructorId){
+  //   toast.error('Dont have courseId or instructor Id')
+  //   return navigate('/')
+  // }
 
   return (
     <div className='relative z-0 grid h-full grid-cols-1 lg:grid-cols-[1fr_363px] gap-x-5'>

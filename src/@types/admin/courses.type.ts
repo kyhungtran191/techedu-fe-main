@@ -99,5 +99,6 @@ type CourseLandingPage = {
   videoPromotionThumbnailUrl: string
   videoPromotionThumbnailFilePath: string
   videoPromotionFileSize: number
+  thumbnailFilePath?:string
   topics: { id: string; name: string }[]
 }
